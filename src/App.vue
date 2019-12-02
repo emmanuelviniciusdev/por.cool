@@ -1,28 +1,58 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>por.<span>cool</span></h1>
+    <img src="assets/images/pig.png" alt="porcool">
+    <p>você <b>não perde</b> por esperar</p>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
-}
+  name: 'app'
+};
 </script>
 
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Lora', serif;
+}
+
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  /* background: #ccc; */
+  overflow: auto;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 40px;
+  margin: 20px;
+  display: block;
+}
+h1 span {
+  color: #1BB450;
+}
+
+img {
+  width: 270px;
+  margin: 0 auto;
+  margin-top: 30px;
+  display: block;
+}
+
+p {
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 40px;
+  font-size: 30px;
+}
+
+@media only screen and (min-width: 1000px) {
+  #app {width: 80%;}
+  p {font-size: 35px;}
+}
+@media only screen and (min-width: 1200px) {
+  #app {width: 1000px;}
 }
 </style>
