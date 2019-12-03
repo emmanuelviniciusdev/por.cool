@@ -1,58 +1,32 @@
 <template>
   <div id="app">
-    <h1>por.<span>cool</span></h1>
-    <img src="assets/images/pig.png" alt="porcool">
-    <p>você <b>não perde</b> por esperar</p>
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </div>
+    <router-view />
   </div>
 </template>
 
-<script>
-export default {
-  name: 'app'
-};
-</script>
-
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  font-family: 'Lora', serif;
-}
-
 #app {
-  width: 100%;
-  /* background: #ccc; */
-  overflow: auto;
-  margin: 0 auto;
-}
-
-h1 {
-  font-size: 40px;
-  margin: 20px;
-  display: block;
-}
-h1 span {
-  color: #1BB450;
-}
-
-img {
-  width: 270px;
-  margin: 0 auto;
-  margin-top: 30px;
-  display: block;
-}
-
-p {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  margin-top: 40px;
-  font-size: 30px;
+  color: #2c3e50;
 }
 
-@media only screen and (min-width: 1000px) {
-  #app {width: 80%;}
-  p {font-size: 35px;}
+#nav {
+  padding: 30px;
 }
-@media only screen and (min-width: 1200px) {
-  #app {width: 1000px;}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
 }
 </style>
