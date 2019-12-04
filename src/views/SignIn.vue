@@ -9,7 +9,9 @@
 
         <img src="../assets/images/pig1.png" alt="porcool <3" />
 
-        <b-button type="is-link" outlined>clique para saber mais</b-button>
+        <router-link :to="{ name: 'learn-more' }">
+          <b-button type="is-link" outlined>clique para saber mais</b-button>
+        </router-link>
       </div>
     </div>
 

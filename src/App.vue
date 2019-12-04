@@ -2,8 +2,12 @@
   <div class="hero">
     <section class="hero-body">
       <div class="container">
-        <div class="title">por.<span>cool</span></div>
-        <router-view></router-view>
+        <router-link :to="{ name: 'signin' }" class="title"
+          >por.<span>cool</span></router-link
+        >
+        <transition name="slide" mode="out-in">
+          <router-view></router-view>
+        </transition>
       </div>
     </section>
     <footer class="footer is-primary">
@@ -24,6 +28,7 @@ export default {
   .title {
     text-align: center;
     font-size: 28px;
+    display: block;
 
     span {
       color: #1bb450;

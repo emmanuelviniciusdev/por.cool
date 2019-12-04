@@ -3,6 +3,7 @@
 // 1. Set your own initial variables and derived 
 //    variables in _variables.scss
 @import "variables";
+@import "nprogress";
 
 // 2. Setup your Custom Colors
 $linkedin: #0077b5;
@@ -29,6 +30,7 @@ $colors: map-merge($colors, $addColors);
 ::selection {
   background-color: #b3ffcd;
 }
+
 a, input, button {
   font-weight: bold;
 }
@@ -44,4 +46,13 @@ label {
   margin: 0 auto;
   margin-top: 40px;
   margin-bottom: 40px;
+}
+
+// Transition between pages effect
+.slide-enter-active, .slide-leave-active {
+  transition: opacity 0.6s, transform 0.6s;
+}
+.slide-enter, .slide-leave-to {
+  opacity: 0;
+  transform: translateX(-30%);
 }
