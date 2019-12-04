@@ -1,32 +1,39 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
+  <div class="hero">
+    <section class="hero-body">
+      <div class="container">
+        <div class="title">por.<span>cool</span></div>
+        <router-view></router-view>
+      </div>
+    </section>
+    <footer class="footer is-primary">
+      <p>por.cool — produção independente</p>
+      <p>dúvidas, ajuda? entre em contato pelo<br /><b>porcool@gmail.com</b></p>
+    </footer>
   </div>
 </template>
 
-<style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+export default {
+  name: "App"
+};
+</script>
+
+<style lang="scss">
+.hero .hero-body {
+  .title {
+    text-align: center;
+    font-size: 28px;
+
+    span {
+      color: #1bb450;
+    }
+  }
 }
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+@media screen and (min-width: 1024px) {
+  .hero .hero-body .title {
+    text-align: left;
+  }
 }
 </style>
