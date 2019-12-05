@@ -11,7 +11,7 @@
       </div>
     </section>
     <footer class="footer is-primary">
-      <p>por.cool — produção independente</p>
+      <p>porcool — produção independente</p>
       <p>dúvidas, ajuda? entre em contato pelo<br /><b>porcool@gmail.com</b></p>
     </footer>
   </div>

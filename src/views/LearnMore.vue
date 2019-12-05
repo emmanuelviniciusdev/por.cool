@@ -13,7 +13,7 @@
             <br>
             <p>brincadeiras à parte, seja muito bem-vindo de qualquer jeito...</p>
             <br>
-            <router-link to>criar uma conta</router-link><br>
+            <router-link :to="{name: 'signup'}">criar uma conta</router-link><br>
             <router-link :to="{name: 'signin'}">entrar</router-link>
         </div>
         <div class="column">

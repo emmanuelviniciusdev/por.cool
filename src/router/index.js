@@ -11,9 +11,14 @@ const routes = [
     component: () => import("../views/SignIn")
   },
   {
-    path: "/learn-more",
+    path: "/saber-mais",
     name: "learn-more",
     component: () => import("../views/LearnMore")
+  },
+  {
+    path: '/criar-uma-conta',
+    name: 'signup',
+    component: () => import("../views/SignUp")
   }
 ];
 

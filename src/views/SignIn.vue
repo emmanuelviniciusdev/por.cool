@@ -31,7 +31,7 @@
           <button class="button is-primary">entrar</button>
         </form>
 
-        <router-link to>criar uma conta</router-link>
+        <router-link :to="{name: 'signup'}">criar uma conta</router-link>
         <router-link to>recuperar minha senha</router-link>
 
         <div class="social-media-signin">
@@ -50,7 +50,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .columns {
   margin-top: 30px !important;
 }
