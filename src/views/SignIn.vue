@@ -78,10 +78,7 @@ export default {
 
   form {
     margin-bottom: 20px;
-
-    label {
-      text-align: left;
-    }
+    text-align: left;
 
     button {
       width: 100% !important;

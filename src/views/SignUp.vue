@@ -48,7 +48,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .terms-checkbox {
   margin-top: 10px;
   margin-bottom: 20px !important;
@@ -70,6 +70,7 @@ export default {
 
     form {
         width: 70%;
+        margin-top: -20px;
     }
 }
 </style>

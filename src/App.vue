@@ -2,7 +2,7 @@
   <div class="hero">
     <section class="hero-body">
       <div class="container">
-        <router-link :to="{ name: 'signin' }" class="title"
+        <router-link :to="{ name: 'signin' }" class="title app-title"
           >por.<span>cool</span></router-link
         >
         <transition name="slide" mode="out-in">
@@ -25,7 +25,7 @@ export default {
 
 <style lang="scss">
 .hero .hero-body {
-  .title {
+  .app-title {
     text-align: center;
     font-size: 28px;
     display: block;
@@ -37,7 +37,7 @@ export default {
 }
 
 @media screen and (min-width: 1024px) {
-  .hero .hero-body .title {
+  .hero .hero-body .app-title {
     text-align: left;
   }
 }

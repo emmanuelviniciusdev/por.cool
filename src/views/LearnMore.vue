@@ -29,10 +29,7 @@ export default {
 };
 </script>
 
-<style>
-.columns {
-    margin-top: 50px;
-}
+<style scoped>
 @media screen and (min-width: 769px) {
     img {
         margin-top: 80px;

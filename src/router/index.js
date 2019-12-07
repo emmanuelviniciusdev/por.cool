@@ -19,6 +19,16 @@ const routes = [
     path: '/criar-uma-conta',
     name: 'signup',
     component: () => import("../views/SignUp")
+  },
+  {
+    path: '/definir-renda',
+    name: 'define-monthly-income',
+    component: () => import("../views/DefineMonthlyIncome")
+  },
+  {
+    path: '/meus-gastos',
+    name: 'home',
+    component: () => import("../views/Home")
   }
 ];
 

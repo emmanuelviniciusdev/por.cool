@@ -5,7 +5,10 @@ import store from "./store";
 import Buefy from "buefy";
 import "./assets/scss/app.scss";
 
-Vue.use(Buefy);
+// Plugins
+Vue.use(Buefy, {
+  defaultIconPack: "fas"
+});
 
 Vue.config.productionTip = false;
 
