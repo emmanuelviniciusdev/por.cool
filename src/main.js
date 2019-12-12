@@ -3,12 +3,14 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Buefy from "buefy";
+import Vuelidate from 'vuelidate';
 import "./assets/scss/app.scss";
 
 // Plugins
 Vue.use(Buefy, {
   defaultIconPack: "fas"
 });
+Vue.use(Vuelidate);
 
 Vue.config.productionTip = false;
 

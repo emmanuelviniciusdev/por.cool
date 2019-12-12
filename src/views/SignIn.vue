@@ -20,13 +20,25 @@
     <div class="column">
       <div class="signin">
         <h1 class="title has-text-black">entre com a sua conta</h1>
-
-        <form>
-          <b-field label="e-mail">
-            <b-input type="email" placeholder="seu@email.com"></b-input>
+        <form @submit.prevent="signin()">
+          <b-field
+            label="e-mail"
+            :type="{'is-danger': hasInputErrorAndDirty('email')}"
+            :message="{'insira o seu e-mail': isInvalidInputMsg('email', 'required'), 'insira um e-mail válido...': isInvalidInputMsg('email', 'email')}"
+          >
+            <b-input
+              type="email"
+              placeholder="seu@email.com"
+              v-model.trim="form.email"
+              @change.native="$v.form.email.$model = $event.target.value"
+            ></b-input>
           </b-field>
-          <b-field label="senha">
-            <b-input type="password" placeholder="*******"></b-input>
+          <b-field
+            label="senha"
+            :type="{'is-danger': hasInputErrorAndDirty('password')}"
+            :message="{'insira a sua senha': isInvalidInputMsg('password', 'required')}"
+          >
+            <b-input type="password" placeholder="*******" v-model.trim="$v.form.password.$model"></b-input>
           </b-field>
           <button class="button is-primary">entrar</button>
         </form>
@@ -45,8 +57,41 @@
 </template>
 
 <script>
+import { required, email } from "vuelidate/lib/validators";
+
 export default {
-  name: "SignIn"
+  name: "SignIn",
+  data() {
+    return {
+      form: {
+        email: null,
+        password: null
+      }
+    };
+  },
+  validations: {
+    form: {
+      email: { required, email },
+      password: { required }
+    }
+  },
+  methods: {
+    test(str) {
+      alert(str);
+    },
+    signin() {
+      if (!this.$v.form.$invalid) {
+        console.log("signin");
+      }
+    },
+    // Validation checks
+    hasInputErrorAndDirty(input) {
+      return this.$v.form[input].$error && this.$v.form[input].$dirty;
+    },
+    isInvalidInputMsg(input, role) {
+      return !this.$v.form[input][role] && this.$v.form[input].$error;
+    }
+  }
 };
 </script>
 
