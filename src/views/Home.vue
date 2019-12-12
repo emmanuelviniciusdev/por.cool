@@ -3,17 +3,22 @@
     <div class="column is-4-desktop">
       <LateralHeader />
     </div>
-    <div class="column">opa</div>
+    <div class="column">
+      <h1 class="title has-text-black">meus gastos</h1>
+      <SpendingTable />
+    </div>
   </div>
 </template>
 
 <script>
 import LateralHeader from "../components/LateralHeader";
+import SpendingTable from "../components/SpendingTable";
 
 export default {
   name: "Home",
   components: {
-    LateralHeader
+    LateralHeader,
+    SpendingTable
   }
 };
 </script>

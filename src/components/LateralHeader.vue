@@ -10,8 +10,18 @@
           <span class="has-text-black">saldo disponível</span>
         </div>
       </div>
-      <h1 class="title has-text-black" v-if="showBalance">R$ 200,75</h1>
-      <h1 class="title has-text-black" v-else>...</h1>
+      <b-tooltip
+        type="is-dark"
+        multilined
+        position="is-bottom"
+        label="R$ 100,75 (mês passado) + R$ 100,00 (agora)"
+        v-if="showBalance"
+      >
+        <h1 class="title has-text-black">R$ 200,75</h1>
+      </b-tooltip>
+      <b-tooltip type="is-dark" multilined position="is-bottom" label="..." v-else>
+        <h1 class="title has-text-black">...</h1>
+      </b-tooltip>
     </div>
 
     <Menu class="menu" />
@@ -19,12 +29,12 @@
 </template>
 
 <script>
-import Menu from './Menu';
+import Menu from "./Menu";
 
 export default {
   name: "LateralHeader",
   components: {
-      Menu
+    Menu
   },
   data: () => ({
     showBalance: false
@@ -50,7 +60,7 @@ export default {
     }
   }
 
-  h1 {
+  .b-tooltip {
     clear: both;
     display: block;
     text-align: center;
@@ -72,7 +82,7 @@ export default {
       float: left;
     }
 
-    h1 {
+    .b-tooltip {
       text-align: left;
       padding-top: 7px;
     }
