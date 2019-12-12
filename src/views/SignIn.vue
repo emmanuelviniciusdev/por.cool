@@ -20,7 +20,7 @@
     <div class="column">
       <div class="signin">
         <h1 class="title has-text-black">entre com a sua conta</h1>
-        <form @submit.prevent="signin()">
+        <form @submit.prevent="signIn()">
           <b-field
             label="e-mail"
             :type="{'is-danger': hasInputErrorAndDirty('email')}"
@@ -76,11 +76,10 @@ export default {
     }
   },
   methods: {
-    test(str) {
-      alert(str);
-    },
-    signin() {
-      if (!this.$v.form.$invalid) {
+    signIn() {
+      const { $invalid } = this.$v.form;
+
+      if (!$invalid) {
         console.log("signin");
       }
     },
