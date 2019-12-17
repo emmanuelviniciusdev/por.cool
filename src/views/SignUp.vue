@@ -29,18 +29,18 @@
 
               <b-field
                 label="sobrenome"
-                :type="{'is-danger': hasInputErrorAndDirty('lastname')}"
+                :type="{'is-danger': hasInputErrorAndDirty('lastName')}"
                 :message="{
-                  'insira o seu sobrenome': isInvalidInputMsg('lastname', 'required'),
-                  'o sobrenome é muito curto': isInvalidInputMsg('lastname', 'minLength'),
-                  'o sobrenome é muito grande': isInvalidInputMsg('lastname', 'maxLength'),
+                  'insira o seu sobrenome': isInvalidInputMsg('lastName', 'required'),
+                  'o sobrenome é muito curto': isInvalidInputMsg('lastName', 'minLength'),
+                  'o sobrenome é muito grande': isInvalidInputMsg('lastName', 'maxLength'),
                   }"
               >
                 <b-input
                   placeholder="seu sobrenome"
                   maxlength="50"
-                  v-model.trim="form.lastname"
-                  @change.native="$v.form.lastname.$model = $event.target.value"
+                  v-model.trim="form.lastName"
+                  @change.native="$v.form.lastName.$model = $event.target.value"
                 ></b-input>
               </b-field>
 
@@ -66,7 +66,7 @@
                 :type="{'is-danger': hasInputErrorAndDirty('password')}"
                 :message="{
                   'insira uma senha segura': isInvalidInputMsg('password', 'required'),
-                  'sua senha está muito curta': isInvalidInputMsg('password', 'minLength')
+                  'no mínimo, sua senha deve conter 6 caracteres': isInvalidInputMsg('password', 'minLength')
                   }"
               >
                 <b-input
@@ -82,7 +82,7 @@
                 :type="{'is-danger': hasInputErrorAndDirty('cPassword')}"
                 :message="{
                   'insira uma senha segura': isInvalidInputMsg('cPassword', 'required'),
-                  'sua senha está muito curta': isInvalidInputMsg('cPassword', 'minLength'),
+                  'no mínimo, sua senha deve conter 6 caracteres': isInvalidInputMsg('cPassword', 'minLength'),
                   'as duas senhas não batem': isInvalidInputMsg('cPassword', 'sameAsPassword'),
                   }"
               >
@@ -100,10 +100,14 @@
               </b-checkbox>
 
               <b-field>
-                <button
-                  class="button is-primary btn-signup"
+                <!-- <button class="button is-primary btn-signup" :disabled="form.termsOfUse" :loading="true">criar conta</button> -->
+                <b-button
+                  type="is-primary"
+                  expanded
                   :disabled="!form.termsOfUse"
-                >criar conta</button>
+                  :loading="formLoading"
+                  native-type="submit"
+                >criar conta</b-button>
               </b-field>
             </div>
           </div>
@@ -121,6 +125,9 @@ import {
   maxLength,
   sameAs
 } from "vuelidate/lib/validators";
+import * as firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/database";
 
 export default {
   name: "SignUp",
@@ -128,18 +135,19 @@ export default {
     return {
       form: {
         name: null,
-        lastname: null,
+        lastName: null,
         email: null,
         password: null,
         cPassword: null,
         termsOfUse: false
-      }
+      },
+      formLoading: false
     };
   },
   validations: {
     form: {
       name: { required, minLength: minLength(2), maxLength: maxLength(50) },
-      lastname: { required, minLength: minLength(2), maxLength: maxLength(50) },
+      lastName: { required, minLength: minLength(2), maxLength: maxLength(50) },
       email: { required, email },
       password: { required, minLength: minLength(6) },
       cPassword: {
@@ -150,30 +158,80 @@ export default {
     }
   },
   methods: {
-    signUp() {
-      const { $invalid } = this.$v.form;
+    async signUp() {
+      this.loading();
 
-      if ($invalid) {
+      if (this.$v.form.$invalid) {
         this.$buefy.toast.open({
-          message: 'ei, você, preencha todos os campos corretamente',
-          type: 'is-danger',
-          position: 'is-bottom',
-          duration: 5000,
+          message: "ei, você, preencha todos os campos corretamente",
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 5000
         });
 
-        return false;
+        this.loading(false);
+
+        return;
       }
 
-      if (!$invalid) {
-        console.log('signup');
+      try {
+        const { name, lastName, email, password } = this.form;
+
+        const user = await firebase
+          .auth()
+          .createUserWithEmailAndPassword(email, password);
+        await firebase.auth().currentUser.updateProfile({ displayName: name });
+        await firebase
+          .database()
+          .ref(`users/${user.user.uid}`)
+          .set({
+            name,
+            lastName
+          });
+
+        this.clearForm();
+
+        this.$buefy.toast.open({
+          message: "bem-vindx ao porcool!!",
+          type: "is-success",
+          position: "is-bottom",
+          duration: 5000
+        });
+
+        // TODO: Redirect user to payment page
+      } catch (err) {
+        this.$buefy.toast.open({
+          message: this.signUpErrorMessages(err.code),
+          type: "is-danger",
+          position: "is-bottom",
+          duration: 10000
+        });
+      } finally {
+        this.loading(false);
       }
     },
-    // Validation checks
     hasInputErrorAndDirty(input) {
       return this.$v.form[input].$error && this.$v.form[input].$dirty;
     },
     isInvalidInputMsg(input, role) {
       return !this.$v.form[input][role] && this.$v.form[input].$error;
+    },
+    signUpErrorMessages(errorCode) {
+      const errorMessages = {
+        "auth/email-already-in-use": "este e-mail já está sendo utilizado",
+        "auth/weak-password": "no mínimo, sua senha deve conter 6 caracteres"
+      };
+
+      return errorMessages[errorCode]
+        ? errorMessages[errorCode]
+        : "parece que ocorreu um erro ao tentar criar a sua conta";
+    },
+    loading(loading = true) {
+      this.formLoading = loading;
+    },
+    clearForm() {
+      Object.keys(this.form).forEach(k => this.form[k] = null);
+      this.$v.form.$reset();
     }
   }
 };
@@ -190,10 +248,6 @@ export default {
   width: 70%;
   margin: 0 auto;
   margin-bottom: 20px;
-}
-
-.btn-signup {
-  width: 100%;
 }
 
 @media screen and (min-width: 1024px) {
