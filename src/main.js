@@ -4,6 +4,8 @@ import router from "./router";
 import store from "./store";
 import Buefy from "buefy";
 import Vuelidate from 'vuelidate';
+import firebase from 'firebase/app';
+import 'firebase/analytics';
 import "./assets/scss/app.scss";
 
 // Plugins
@@ -11,6 +13,19 @@ Vue.use(Buefy, {
   defaultIconPack: "fas"
 });
 Vue.use(Vuelidate);
+
+// Initialize Firebase
+firebase.initializeApp({
+  apiKey: "AIzaSyAMFqGceZwJ5srrPePLCXuDgaJlVXurVvI",
+  authDomain: "por.cool",
+  databaseURL: "https://porcool.firebaseio.com",
+  projectId: "porcool",
+  storageBucket: "porcool.appspot.com",
+  messagingSenderId: "6802874030",
+  appId: "1:6802874030:web:2322a618907f2774b8973f",
+  measurementId: "G-NS5TW4HLVT"
+});
+firebase.analytics();
 
 Vue.config.productionTip = false;
 
