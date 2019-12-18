@@ -40,7 +40,7 @@
           >
             <b-input type="password" placeholder="*******" v-model.trim="$v.form.password.$model"></b-input>
           </b-field>
-          <button class="button is-primary">entrar</button>
+          <b-button type="is-primary" :loading="formLoading" native-type="submit">entrar</b-button>
         </form>
 
         <router-link :to="{name: 'signup'}">criar uma conta</router-link>
@@ -58,6 +58,8 @@
 
 <script>
 import { required, email } from "vuelidate/lib/validators";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
   name: "SignIn",
@@ -66,7 +68,8 @@ export default {
       form: {
         email: null,
         password: null
-      }
+      },
+      formLoading: false
     };
   },
   validations: {
@@ -76,19 +79,45 @@ export default {
     }
   },
   methods: {
-    signIn() {
-      const { $invalid } = this.$v.form;
+    async signIn() {
+      if (!this.$v.form.$invalid) {
+        this.loading();
 
-      if (!$invalid) {
-        console.log("signin");
+        try {
+          const { email, password } = this.form;
+
+          const signIn = await firebase
+            .auth()
+            .signInWithEmailAndPassword(email, password);
+
+          this.$router.push({ name: "home" });
+        } catch (err) {
+          const toastError = this.$buefy.toast.open({
+            message: this.authErrorMessages(err.code),
+            type: "is-danger",
+            position: "is-bottom",
+            duration: 5000
+          });
+        } finally {
+          this.loading(false);
+        }
       }
     },
-    // Validation checks
     hasInputErrorAndDirty(input) {
       return this.$v.form[input].$error && this.$v.form[input].$dirty;
     },
     isInvalidInputMsg(input, role) {
       return !this.$v.form[input][role] && this.$v.form[input].$error;
+    },
+    loading(loading = true) {
+      this.formLoading = loading;
+    },
+    authErrorMessages(errorCode) {
+      const errorCodes = ["auth/user-not-found", "auth/wrong-password"];
+
+      return errorCodes.includes(errorCode)
+        ? "e-mail ou senha inválidos"
+        : "aah, parece que ocorreu um erro ao tentar entrar no porcool...";
     }
   }
 };

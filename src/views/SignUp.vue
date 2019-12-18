@@ -180,13 +180,15 @@ export default {
         const user = await firebase
           .auth()
           .createUserWithEmailAndPassword(email, password);
+
+        // Set additional user data
         await firebase.auth().currentUser.updateProfile({ displayName: name });
         await firebase
           .database()
           .ref(`users/${user.user.uid}`)
           .set({
-            name,
-            lastName
+            name: name.toLowerCase(),
+            lastName: lastName.toLowerCase()
           });
 
         this.clearForm();
@@ -200,11 +202,12 @@ export default {
 
         // TODO: Redirect user to payment page
       } catch (err) {
+        console.log(err);
         this.$buefy.toast.open({
-          message: this.signUpErrorMessages(err.code),
+          message: this.authErrorMessages(err.code),
           type: "is-danger",
           position: "is-bottom",
-          duration: 10000
+          duration: 5000
         });
       } finally {
         this.loading(false);
@@ -216,7 +219,7 @@ export default {
     isInvalidInputMsg(input, role) {
       return !this.$v.form[input][role] && this.$v.form[input].$error;
     },
-    signUpErrorMessages(errorCode) {
+    authErrorMessages(errorCode) {
       const errorMessages = {
         "auth/email-already-in-use": "este e-mail já está sendo utilizado",
         "auth/weak-password": "no mínimo, sua senha deve conter 6 caracteres"
@@ -230,7 +233,7 @@ export default {
       this.formLoading = loading;
     },
     clearForm() {
-      Object.keys(this.form).forEach(k => this.form[k] = null);
+      Object.keys(this.form).forEach(k => (this.form[k] = null));
       this.$v.form.$reset();
     }
   }
