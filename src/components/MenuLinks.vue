@@ -32,18 +32,16 @@
           @click="redirectTo('')"
           :active="isActiveRoute('')"
         ></b-menu-item>
-        <b-menu-item
-          label="sair"
-          icon="sad-tear"
-          @click="redirectTo('')"
-          :active="isActiveRoute('')"
-        ></b-menu-item>
+        <b-menu-item label="sair" icon="sad-tear" @click="signOut()"></b-menu-item>
       </b-menu-list>
     </b-menu>
   </div>
 </template>
 
 <script>
+import firebase from "firebase/app";
+import "firebase/auth";
+
 export default {
   name: "MenuLinks",
   methods: {
@@ -53,6 +51,10 @@ export default {
     },
     isActiveRoute(name) {
       return this.currentRoute.name === name;
+    },
+    signOut() {
+      firebase.auth().signOut();
+      this.$router.push({name: 'signin'});
     }
   },
   computed: {
