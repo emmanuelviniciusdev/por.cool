@@ -128,6 +128,7 @@ import {
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
+import settings from "../services/settings";
 
 export default {
   name: "SignUp",
@@ -174,12 +175,50 @@ export default {
         return;
       }
 
+      // Check if system is under maintenance
+      const {
+        blockUserRegistration,
+        maintenance
+      } = await settings.checkMaintenances();
+
+      if (blockUserRegistration || maintenance) {
+        let message = blockUserRegistration
+          ? blockUserRegistration
+          : maintenance
+          ? maintenance
+          : "Ocorreu um erro inesperado. Por favor, tenta novamente mais tarde.";
+
+        this.$buefy.toast.open({
+          message,
+          type: "is-warning",
+          position: "is-bottom",
+          duration: 5000
+        });
+
+        this.loading(false);
+
+        return;
+      }
+
       try {
         const { name, lastName, email, password } = this.form;
 
         const user = await firebase
           .auth()
           .createUserWithEmailAndPassword(email, password);
+
+        if (!user) {
+          this.$buefy.toast.open({
+            message: "desculpe, ocorreu um erro ao efetuar o seu cadastro",
+            type: "is-danger",
+            position: "is-bottom",
+            duration: 5000
+          });
+
+          this.loading(false);
+
+          return;
+        }
 
         // Set additional user data
         await firebase.auth().currentUser.updateProfile({ displayName: name });
