@@ -125,9 +125,8 @@ import {
   maxLength,
   sameAs
 } from "vuelidate/lib/validators";
-import * as firebase from "firebase/app";
+import firebase from "firebase/app";
 import "firebase/auth";
-import "firebase/database";
 import settings from "../services/settings";
 
 export default {
@@ -140,7 +139,7 @@ export default {
         email: null,
         password: null,
         cPassword: null,
-        termsOfUse: false
+        termsOfUse: true
       },
       formLoading: false
     };
@@ -223,12 +222,10 @@ export default {
         // Set additional user data
         await firebase.auth().currentUser.updateProfile({ displayName: name });
         await firebase
-          .database()
-          .ref(`users/${user.user.uid}`)
-          .set({
-            name: name.toLowerCase(),
-            lastName: lastName.toLowerCase()
-          });
+          .firestore()
+          .collection("users")
+          .doc(user.user.uid)
+          .set({ name: name.toLowerCase(), lastName: lastName.toLowerCase() });
 
         this.clearForm();
 
@@ -239,7 +236,7 @@ export default {
           duration: 5000
         });
 
-        // TODO: Redirect user to payment page
+        this.$router.push({ name: "payment" });
       } catch (err) {
         console.log(err);
         this.$buefy.toast.open({

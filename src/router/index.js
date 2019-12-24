@@ -32,6 +32,11 @@ const routes = [
     }
   },
   {
+    path: '/pagar',
+    name: 'payment',
+    component: () => import("../views/Payment")
+  },
+  {
     path: '/definir-renda',
     name: 'define-monthly-income',
     component: () => import("../views/DefineMonthlyIncome")
