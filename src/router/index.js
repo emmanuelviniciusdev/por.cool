@@ -3,6 +3,8 @@ import VueRouter from "vue-router";
 import NProgress from 'nprogress';
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/firestore';
+import moment from 'moment';
 
 Vue.use(VueRouter);
 
@@ -57,14 +59,43 @@ router.beforeEach((to, from, next) => {
   // Start loading animation
   if (to.name) NProgress.start();
 
-  // Check if user is authenticated only if router is not public
-  const requiresAuth = to.matched.some(record => !record.meta.isPublic);
-  if (requiresAuth) {
-    const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+  // Check route roles only if route is not public
+  const isPrivate = to.matched.some(record => !record.meta.isPublic);
+  if (isPrivate) {
+    const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
       // If we don't do this, the 'onAuthStateChanged()' will be executed a lot of times
       unsubscribe();
 
-      if (!user) next({name: 'signin'});
+      // Check if user is logged in
+      if (!user) {
+        next({ name: 'signin' });
+        return;
+      }
+
+      // Check if user payment is ok
+      const userPayments = await firebase
+        .firestore()
+        .collection('payments')
+        .where('user', '==', user.uid)
+        .orderBy('paymentDate', 'desc')
+        .limit(1)
+        .get();
+
+      let remainingUseDays = 0;
+
+      if (!userPayments.empty) {
+        const paymentDate = moment(new Date(userPayments.docs[0].data().paymentDate.seconds * 1000));
+        
+        remainingUseDays = 32 - moment().diff(paymentDate, 'days');
+
+        if (remainingUseDays <= 0)
+          await firebase.firestore().collection('users').doc(user.uid).update({ pendingPayment: true });
+      }
+
+      if (userPayments.empty || remainingUseDays <= 0) {
+        next({ name: 'payment' });
+        return;
+      }
     });
   }
 
