@@ -139,7 +139,7 @@ export default {
         email: null,
         password: null,
         cPassword: null,
-        termsOfUse: true
+        termsOfUse: false
       },
       formLoading: false
     };
@@ -225,7 +225,12 @@ export default {
           .firestore()
           .collection("users")
           .doc(user.user.uid)
-          .set({ name: name.toLowerCase(), lastName: lastName.toLowerCase() });
+          .set({
+            name: name.toLowerCase(),
+            lastName: lastName.toLowerCase(),
+            email: email.toLowerCase(),
+            pendingPayment: true
+          });
 
         this.clearForm();
 

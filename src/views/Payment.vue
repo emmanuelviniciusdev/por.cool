@@ -10,7 +10,8 @@
           <b>O pagamento deverá ser realizado a cada 30 dias, mas não existe nenhum tipo de vínculo que te prenda e te obrigue a pagar todo mês. Você só paga quando quiser utilizar.</b>
         </div>
         <div class="notification is-info">
-          Em breve, uma solicitação de pagamento via <b>paypal</b> será enviada para o seu e-mail e, assim que aprovado o pagamento, a sua conta será liberada.
+          Em breve, uma solicitação de pagamento via
+          <b>paypal</b> será enviada para o seu e-mail e, assim que aprovado o pagamento, a sua conta será liberada.
         </div>
       </div>
 
@@ -22,7 +23,8 @@
           class="subtitle has-text-black"
         >Sem a ajuda do porcool, a sua vida financeira fica uma bagunça 😱!1! Não perca tempo e PAGUE agora mesmo!11!!!</h2>
         <div class="notification is-info">
-          Uma solicitação de pagamento via <b>paypal</b> será enviada em breve para o seu e-mail.
+          Uma solicitação de pagamento via
+          <b>paypal</b> será enviada em breve para o seu e-mail.
         </div>
       </div>
     </div>
@@ -54,18 +56,44 @@ export default {
         .join(" ");
     }
   },
-  created() {  
+  created() {
     firebase.auth().onAuthStateChanged(async user => {
       if (user) {
-        // If user has no registered payments, then it's a new user
+        // Check if payment request has been paid by user
+        const userInfo = await firebase
+          .firestore()
+          .collection("users")
+          .doc(user.uid)
+          .get();
+
+        const { pendingPayment, monthlyIncome } = userInfo.data();
+
         const payments = await firebase
           .firestore()
           .collection("payments")
           .where("user", "==", user.uid)
           .get();
 
+        if (!pendingPayment) {
+          await firebase
+            .firestore()
+            .collection("payments")
+            .add({
+              user: user.uid,
+              paymentDate: new Date()
+            });
+
+          this.$router.push({
+            name: !monthlyIncome ? "define-monthly-income" : "home"
+          });
+
+          return;
+        }
+
         this.user = user;
         this.user.displayName = this.capitalizeName(this.user.displayName);
+        // If user has no registered payments, then it's a new user and we'll show a
+        // welcome message
         this.user.isNewUser = payments.empty;
       }
     });
