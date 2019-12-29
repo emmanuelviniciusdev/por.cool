@@ -4,7 +4,7 @@ import NProgress from 'nprogress';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
-import moment from 'moment';
+import paymentHelper from '../helpers/paymentHelper';
 
 Vue.use(VueRouter);
 
@@ -81,18 +81,9 @@ router.beforeEach((to, from, next) => {
         .limit(1)
         .get();
 
-      let remainingUseDays = 0;
+      const remainingDays = !userPayments.empty ? paymentHelper.remainingDays(userPayments.docs[0].data().paymentDate) : 0;
 
-      if (!userPayments.empty) {
-        const paymentDate = moment(new Date(userPayments.docs[0].data().paymentDate.seconds * 1000));
-        
-        remainingUseDays = 32 - moment().diff(paymentDate, 'days');
-
-        if (remainingUseDays <= 0)
-          await firebase.firestore().collection('users').doc(user.uid).update({ pendingPayment: true });
-      }
-
-      if (userPayments.empty || remainingUseDays <= 0) {
+      if (userPayments.empty || (!userPayments.empty && remainingDays <= 0)) {
         next({ name: 'payment' });
         return;
       }

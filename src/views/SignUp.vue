@@ -229,7 +229,9 @@ export default {
             name: name.toLowerCase(),
             lastName: lastName.toLowerCase(),
             email: email.toLowerCase(),
-            pendingPayment: true
+            payment: {
+              pendingPayment: true
+            }
           });
 
         this.clearForm();
