@@ -69,7 +69,8 @@ export default {
         email: null,
         password: null
       },
-      formLoading: false
+      formLoading: false,
+      submittedForm: false
     };
   },
   validations: {
@@ -80,6 +81,8 @@ export default {
   },
   methods: {
     async signIn() {
+      this.submittedForm = true;
+
       if (!this.$v.form.$invalid) {
         this.loading();
 
@@ -119,6 +122,14 @@ export default {
         ? "e-mail ou senha inválidos"
         : "aah, parece que ocorreu um erro ao tentar entrar no porcool...";
     }
+  },
+  beforeCreate() {
+    const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+      unsubscribe();
+      if (user) {
+        this.$router.push({ name: "home" });
+      }
+    });
   }
 };
 </script>
