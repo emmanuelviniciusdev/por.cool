@@ -277,6 +277,14 @@ export default {
       Object.keys(this.form).forEach(k => (this.form[k] = null));
       this.$v.form.$reset();
     }
+  },
+  beforeCreate() {
+    const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+      unsubscribe();
+      if (user) {
+        this.$router.push({ name: "home" });
+      }
+    });
   }
 };
 </script>
