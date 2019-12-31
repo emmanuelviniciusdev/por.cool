@@ -76,12 +76,6 @@ router.beforeEach((to, from, next) => {
       const userInfo = await users.doc(user.uid).get();
       const { monthlyIncome } = userInfo.data();
 
-      // Check if user has a defined monthly income
-      if (!monthlyIncome) {
-        next({ name: 'define-monthly-income' });
-        return;
-      }
-
       const payments = firebase.firestore().collection('payments');
       const userPayments = await payments
         .where('user', '==', user.uid)
@@ -91,9 +85,18 @@ router.beforeEach((to, from, next) => {
 
       // Check if user payment is ok
       const remainingDays = !userPayments.empty ? paymentHelper.remainingDays(userPayments.docs[0].data().paymentDate) : 0;
+      
+      const userPaymentIsOk = (!userPayments.empty && remainingDays > 0);
+      const userPaymentIsNotOk = (userPayments.empty || (!userPayments.empty && remainingDays <= 0));
 
-      if (userPayments.empty || (!userPayments.empty && remainingDays <= 0)) {
+      if (userPaymentIsNotOk) {
         next({ name: 'payment' });
+        return;
+      }
+
+      // Check if user has a defined monthly income
+      if (monthlyIncome === undefined && userPaymentIsOk) {
+        next({ name: 'define-monthly-income' });
         return;
       }
     });
