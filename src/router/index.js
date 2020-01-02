@@ -47,6 +47,11 @@ const routes = [
     path: '/meus-gastos',
     name: 'home',
     component: () => import("../views/Home")
+  },
+  {
+    path: '/novo-gasto',
+    name: 'add-expenses',
+    component: () => import("../views/AddExpenses")
   }
 ];
 
