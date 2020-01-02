@@ -5,8 +5,8 @@
         <b-menu-item
           label="novo gasto"
           icon="wallet"
-          @click="redirectTo('')"
-          :active="isActiveRoute('')"
+          @click="redirectTo('add-expenses')"
+          :active="isActiveRoute('add-expenses')"
         ></b-menu-item>
         <b-menu-item
           label="meus gastos"
