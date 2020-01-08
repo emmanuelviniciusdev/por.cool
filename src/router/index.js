@@ -5,6 +5,7 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import paymentHelper from '../helpers/paymentHelper';
+import store from '../store';
 
 Vue.use(VueRouter);
 
@@ -70,6 +71,9 @@ router.beforeEach((to, from, next) => {
     const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
       // If we don't do this, the 'onAuthStateChanged()' will be executed a lot of times
       unsubscribe();
+
+      // Set user info in vuex
+      console.log('set user information to vuex');
 
       // Check if user is logged in
       if (!user) {

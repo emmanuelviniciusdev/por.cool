@@ -93,6 +93,7 @@
 
 <script>
 import { Money } from "v-money";
+import expenses from "../services/expenses";
 
 export default {
   name: "InsertExpenses",
@@ -107,7 +108,7 @@ export default {
           expenseName: "",
           amount: 0,
           status: "pending",
-          type: "invoice",
+          type: "expense",
           validity: null,
           indeterminateValidity: false
         }
@@ -130,7 +131,7 @@ export default {
       this.expenses = this.expenses.filter(expense => expense.key !== key);
       if (this.expenses.length === 0) this.insertExpense();
     },
-    saveExpenses() {
+    async saveExpenses() {
       let validationError = false;
 
       this.expenses = this.expenses.map(expense => {
@@ -155,16 +156,15 @@ export default {
 
         // Make 'validity' null if 'type' is invoice or savings or 'indeterminateValidity' is true
         expense.validity =
-          type === "expense" || indeterminateValidity
-            ? null
-            : validity;
+          type === "expense" || indeterminateValidity ? null : validity;
 
         return expense;
       });
 
       if (validationError) return;
 
-      console.log(this.expenses);
+      const insert = await expenses.insert(this.expenses);
+      console.log(insert);
     }
   }
 };
@@ -182,8 +182,7 @@ export default {
   &:hover {
     transition: all 0.2s;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.07),
-      0 4px 8px rgba(0, 0, 0, 0.07), 0 8px 16px rgba(0, 0, 0, 0.07),
-      0 16px 32px rgba(0, 0, 0, 0.07), 0 32px 64px rgba(0, 0, 0, 0.07);
+      0 4px 8px rgba(0, 0, 0, 0.07);
   }
 
   .btn-delete-expense {
