@@ -7,9 +7,6 @@ const messages = {
     unexpectedError: "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde"
 };
 
-/**
- * @return object
- */
 const checkMaintenances = async (filterBy = "") => {
     let status = {};
 
