@@ -4,8 +4,13 @@ import NProgress from 'nprogress';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
-import paymentHelper from '../helpers/paymentHelper';
 import store from '../store';
+
+// Services
+import userService from '../services/user';
+
+// Helpers
+import paymentHelper from '../helpers/paymentHelper';
 
 Vue.use(VueRouter);
 
@@ -72,18 +77,16 @@ router.beforeEach((to, from, next) => {
       // If we don't do this, the 'onAuthStateChanged()' will be executed a lot of times
       unsubscribe();
 
-      // Set user info in vuex
-      console.log('set user information to vuex');
-
       // Check if user is logged in
       if (!user) {
         next({ name: 'signin' });
         return;
       }
 
-      const users = firebase.firestore().collection('users');
-      const userInfo = await users.doc(user.uid).get();
-      const { monthlyIncome } = userInfo.data();
+      // Returning null...
+      const loggedUser = store.getters['user/getUser'];
+      console.log(loggedUser);
+      return;
 
       const payments = firebase.firestore().collection('payments');
       const userPayments = await payments
@@ -104,7 +107,7 @@ router.beforeEach((to, from, next) => {
       }
 
       // Check if user has a defined monthly income
-      if (monthlyIncome === undefined && userPaymentIsOk) {
+      if (loggedUser.monthlyIncome === undefined && userPaymentIsOk) {
         next({ name: 'define-monthly-income' });
         return;
       }

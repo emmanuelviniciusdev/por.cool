@@ -1,12 +1,21 @@
+// General
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Buefy from "buefy";
 import Vuelidate from 'vuelidate';
-import firebase from 'firebase/app';
-import 'firebase/analytics';
+
+// Styles
 import "./assets/scss/app.scss";
+
+// Firebase
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/analytics';
+
+// Services
+import userService from './services/user';
 
 // Plugins
 Vue.use(Buefy, {
@@ -14,7 +23,6 @@ Vue.use(Buefy, {
 });
 Vue.use(Vuelidate);
 
-// Initialize Firebase
 firebase.initializeApp({
   apiKey: "AIzaSyAMFqGceZwJ5srrPePLCXuDgaJlVXurVvI",
   authDomain: "por.cool",
@@ -26,6 +34,21 @@ firebase.initializeApp({
   measurementId: "G-NS5TW4HLVT"
 });
 firebase.analytics();
+
+firebase.auth().onAuthStateChanged(async user => {
+  if (user) {
+    const loggedUser = await userService.get(user.uid);
+
+    // Set user data in vuex
+    store.dispatch('user/setUser', {
+      uid: user.uid,
+      displayName: user.displayName,
+      name: loggedUser.name,
+      lastName: loggedUser.lastName,
+      email: loggedUser.email,
+    });
+  }
+});
 
 Vue.config.productionTip = false;
 

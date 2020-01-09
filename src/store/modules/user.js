@@ -15,5 +15,11 @@ export default {
         setUser({ commit }, user) {
             commit('SET_USER', user);
         }
+    },
+
+    getters: {
+        getUser(state) {
+            return state.user;
+        }
     }
 };
