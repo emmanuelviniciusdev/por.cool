@@ -3,9 +3,11 @@ import "firebase/firestore";
 
 const expenses = () => firebase.firestore().collection('expenses');
 
-const insert = async expense => {
+const insert = async expensesToInsert => {
     try {
-        return await expenses().add({ ...expenses });
+        let batch = firebase.firestore().batch();
+        expensesToInsert.forEach(expense => batch.set(expenses().doc(), expense));
+        await batch.commit();
     } catch (err) {
         throw new Error(err);
     }

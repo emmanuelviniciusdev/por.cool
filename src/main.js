@@ -11,11 +11,7 @@ import "./assets/scss/app.scss";
 
 // Firebase
 import firebase from 'firebase/app';
-import 'firebase/auth';
 import 'firebase/analytics';
-
-// Services
-import userService from './services/user';
 
 // Plugins
 Vue.use(Buefy, {
@@ -34,21 +30,6 @@ firebase.initializeApp({
   measurementId: "REDACTED_PROD_MEASUREMENT"
 });
 firebase.analytics();
-
-firebase.auth().onAuthStateChanged(async user => {
-  if (user) {
-    const loggedUser = await userService.get(user.uid);
-
-    // Set user data in vuex
-    store.dispatch('user/setUser', {
-      uid: user.uid,
-      displayName: user.displayName,
-      name: loggedUser.name,
-      lastName: loggedUser.lastName,
-      email: loggedUser.email,
-    });
-  }
-});
 
 Vue.config.productionTip = false;
 
