@@ -2,15 +2,16 @@
   <div>
     <div class="expense" v-for="expense in expenses" :key="expense.key">
       <b-tooltip label="remover" type="is-dark" class="btn-delete-expense">
-        <button class="button is-small is-danger" @click="removeExpense(expense.key)">
+        <button
+          class="button is-small is-danger"
+          @click="removeExpense(expense.key)"
+          :disabled="loading"
+        >
           <b-icon icon="trash" size="is-small"></b-icon>
         </button>
       </b-tooltip>
       <b-field grouped>
-        <b-field
-          label="gasto"
-          :type="{'is-danger': expense.expenseNameError && expense.expenseName.length <= 0}"
-        >
+        <b-field label="gasto">
           <b-input
             class="input-expense-name"
             placeholder="conta de..."
@@ -56,7 +57,6 @@
         >
           <b-field
             :label="expense.type === 'invoice' ? 'esta fatura vai até' : 'esta poupança vai até'"
-            :type="{'is-danger': expense.validityError && !expenses.validity && !expense.indeterminateValidity}"
           >
             <b-datepicker
               type="month"
@@ -77,13 +77,13 @@
     </div>
 
     <div class="controls">
-      <b-tooltip label="salvar" type="is-dark">
-        <button class="button is-success" @click="saveExpenses()">
+      <b-tooltip :label="loading ? 'aguarde' : 'salvar'" type="is-dark">
+        <b-button type="is-success" :loading="loading" @click="saveExpenses()">
           <b-icon icon="save" size="is-small"></b-icon>
-        </button>
+        </b-button>
       </b-tooltip>
       <b-tooltip label="adicionar" type="is-dark">
-        <button class="button is-warning" @click="insertExpense()">
+        <button class="button is-warning" @click="insertExpense()" :disabled="loading">
           <b-icon icon="plus" size="is-small"></b-icon>
         </button>
       </b-tooltip>
@@ -94,6 +94,9 @@
 <script>
 import { Money } from "v-money";
 import expenses from "../services/expenses";
+import firebase from "firebase/app";
+import "firebase/auth";
+import userService from "../services/user";
 
 export default {
   name: "InsertExpenses",
@@ -112,10 +115,14 @@ export default {
           validity: null,
           indeterminateValidity: false
         }
-      ]
+      ],
+      loading: false
     };
   },
   methods: {
+    onLoading(state = true) {
+      this.loading = state;
+    },
     insertExpense() {
       this.expenses.push({
         key: Math.random(),
@@ -132,12 +139,14 @@ export default {
       if (this.expenses.length === 0) this.insertExpense();
     },
     async saveExpenses() {
+      this.onLoading();
+
       let validationError = false;
 
       this.expenses = this.expenses.map(expense => {
         const { expenseName, validity, type, indeterminateValidity } = expense;
 
-        // Simple validation for 'expenseName' and 'validity'
+        // Validation
         if (
           expenseName === "" ||
           (validity === null && type !== "expense" && !indeterminateValidity)
@@ -154,17 +163,25 @@ export default {
           return expense;
         }
 
-        // Make 'validity' null if 'type' is invoice or savings or 'indeterminateValidity' is true
+        // Make 'validity' null if 'type' is not invoice or savings or 'indeterminateValidity' is true
         expense.validity =
           type === "expense" || indeterminateValidity ? null : validity;
+
+        expense.user = firebase.auth().currentUser.uid;
+        delete expense.key;
 
         return expense;
       });
 
-      if (validationError) return;
+      if (validationError) {
+        this.onLoading(false);
+        return;
+      }
 
-      const insert = await expenses.insert(this.expenses);
-      console.log(insert);
+      await expenses.insert(this.expenses);
+      this.$router.push({ name: "home" });
+      
+      this.onLoading(false);
     }
   }
 };

@@ -83,10 +83,7 @@ router.beforeEach((to, from, next) => {
         return;
       }
 
-      // Returning null...
-      const loggedUser = store.getters['user/getUser'];
-      console.log(loggedUser);
-      return;
+      const loggedUser = await userService.get(user.uid);
 
       const payments = firebase.firestore().collection('payments');
       const userPayments = await payments
