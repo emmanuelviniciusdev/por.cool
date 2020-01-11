@@ -20,9 +20,21 @@
             :has-counter="false"
           ></b-input>
         </b-field>
-        <b-field label="valor">
+        <b-field label="valor total">
           <money
             v-model="expense.amount"
+            v-bind="{
+                decimal: ',',
+                thousands: '.',
+                prefix: 'R$',
+                precision: 2
+            }"
+            class="input input-amount"
+          ></money>
+        </b-field>
+        <b-field label="valor que já foi pago" v-if="expense.status === 'partially_paid'">
+          <money
+            v-model="expense.alreadyPaidAmount"
             v-bind="{
                 decimal: ',',
                 thousands: '.',
@@ -110,10 +122,12 @@ export default {
           key: Math.random(),
           expenseName: "",
           amount: 0,
+          alreadyPaidAmount: 0,
           status: "pending",
           type: "expense",
           validity: null,
-          indeterminateValidity: false
+          indeterminateValidity: false,
+          spendingDate: new Date()
         }
       ],
       loading: false
@@ -127,11 +141,13 @@ export default {
       this.expenses.push({
         key: Math.random(),
         expenseName: "",
-        amount: "",
+        amount: 0,
+        alreadyPaidAmount: 0,
         status: "pending",
         type: "expense",
         validity: null,
-        indeterminateValidity: false
+        indeterminateValidity: false,
+        spendingDate: new Date()
       });
     },
     removeExpense(key) {
@@ -217,8 +233,9 @@ export default {
     width: 120px !important;
   }
   .input-checkbox {
-    position: absolute;
-    margin-top: -8px !important;
+    position: relative;
+    top: 13px;
+    margin-bottom: 13px !important;
   }
 }
 

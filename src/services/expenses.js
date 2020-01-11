@@ -3,6 +3,23 @@ import "firebase/firestore";
 
 const expenses = () => firebase.firestore().collection('expenses');
 
+const getAll = async (userUid, validity = null) => {
+    try {
+        // TODO: Filter by 'spendingDate' as well
+        const allExpenses = await expenses()
+            .where('user', '==', userUid)
+            .orderBy('spendingDate', 'desc')
+            .get();
+        return allExpenses.docs.map(expense => ({
+            id: expense.id,
+            ...expense.data()
+        }));
+    } catch (err) {
+        console.log(err);
+        throw new Error(err);
+    }
+};
+
 const insert = async expensesToInsert => {
     try {
         let batch = firebase.firestore().batch();
@@ -30,6 +47,7 @@ const remove = async expenseId => {
 };
 
 export default {
+    getAll,
     insert,
     update,
     remove

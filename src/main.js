@@ -5,6 +5,7 @@ import router from "./router";
 import store from "./store";
 import Buefy from "buefy";
 import Vuelidate from 'vuelidate';
+import VueCurrencyFilter from 'vue-currency-filter';
 
 // Styles
 import "./assets/scss/app.scss";
@@ -18,6 +19,14 @@ Vue.use(Buefy, {
   defaultIconPack: "fas"
 });
 Vue.use(Vuelidate);
+Vue.use(VueCurrencyFilter, {
+  symbol: 'R$',
+  thousandsSeparator: '.',
+  fractionCount: 2,
+  fractionSeparator: ',',
+  symbolPosition: 'front',
+  symbolSpacing: true
+});
 
 firebase.initializeApp({
   apiKey: "REDACTED_PROD_API_KEY",

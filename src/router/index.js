@@ -10,7 +10,7 @@ import store from '../store';
 import userService from '../services/user';
 
 // Helpers
-import paymentHelper from '../helpers/paymentHelper';
+import paymentHelper from '../helpers/payment';
 
 Vue.use(VueRouter);
 

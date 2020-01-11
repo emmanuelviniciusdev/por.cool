@@ -4,7 +4,7 @@
 
     <div class="column" v-if="user">
       <div class="welcome" v-if="user.isNewUser">
-        <h1 class="title has-text-black">É isso aí, {{user.displayName}}! Você já está quase lá.</h1>
+        <h1 class="title has-text-black">É isso aí, {{user.displayName | capitalizeName}}! Você já está quase lá.</h1>
         <h2 class="subtitle has-text-black">Para continuar, efetue o pagamento no valor de R$ 10,00.</h2>
         <div class="notification is-warning">
           <b>O pagamento deverá ser realizado a cada 30 dias, mas não existe nenhum tipo de vínculo que te prenda e te obrigue a pagar todo mês. Você só paga quando quiser utilizar.</b>
@@ -18,7 +18,7 @@
       <div class="levy" v-if="!user.isNewUser">
         <h1
           class="title has-text-black"
-        >Oh, {{user.displayName}}. Os seus 30 dias de utilização se expiraram e você ainda não efetuou um novo pagamento para continuar utilizando o porcool.</h1>
+        >Oh, {{user.displayName | capitalizeName}}. Os seus 30 dias de utilização se expiraram e você ainda não efetuou um novo pagamento para continuar utilizando o porcool.</h1>
         <h2
           class="subtitle has-text-black"
         >Sem a ajuda do porcool, a sua vida financeira fica uma bagunça 😱!1! Não perca tempo e PAGUE agora mesmo!11!!!</h2>
@@ -35,7 +35,8 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-import paymentHelper from "../helpers/paymentHelper";
+import paymentHelper from "../helpers/payment";
+import filters from '../filters';
 
 export default {
   name: "Payment",
@@ -44,20 +45,13 @@ export default {
       user: null
     };
   },
-  methods: {
-    capitalizeName(name) {
-      return name
-        .split(" ")
-        .map(namePart => {
-          if (namePart !== "de" && namePart !== "do" && namePart !== "da")
-            namePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-          return namePart;
-        })
-        .join(" ");
-    }
+  filters: {
+    capitalizeName: filters.capitalizeName
   },
   beforeCreate() {
-    firebase.auth().onAuthStateChanged(async user => {
+    const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
+      unsubscribe();
+
       if (user) {
         // Check if user payment is ok. If so, we'll redirect user to home page.
         const lastUserPayment = await firebase
@@ -139,7 +133,6 @@ export default {
         }
 
         this.user = user;
-        this.user.displayName = this.capitalizeName(this.user.displayName);
         // If user has no registered payments, then it's a new user and we'll show a
         // welcome message
         this.user.isNewUser = lastUserPayment.empty;
