@@ -229,6 +229,7 @@ export default {
             name: name.toLowerCase(),
             lastName: lastName.toLowerCase(),
             email: email.toLowerCase(),
+            lookingAtSpendingDate: new Date(),
             pendingPayment: true
           });
 

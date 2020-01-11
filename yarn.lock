@@ -10382,6 +10382,13 @@ vue-cli-plugin-buefy@^0.3.7:
   resolved "https://registry.yarnpkg.com/vue-cli-plugin-buefy/-/vue-cli-plugin-buefy-0.3.7.tgz#31e5637529482a5a4564676f539db16278b0895c"
   integrity sha512-w+1Wnj1VmoLJmv0yHoLUErnFkLSzz4yTGhCz7GudDKX7vB5NpVK+/xWmiFOytuDkleWeYrJgHN8CIOY7xe26jQ==
 
+vue-currency-filter@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/vue-currency-filter/-/vue-currency-filter-4.0.3.tgz#54177b1dd786b12c81daee4050c0f3fd6fa8b91e"
+  integrity sha512-y6ANhj3V5bQAJDgVwGa0N3725YWQTZWP/+a2JqpZEL/1yNgDsDBhImo8sG9vBFL0f9qSdYcCsfIuS33fuqmEHg==
+  dependencies:
+    chalk "^3.0.0"
+
 vue-eslint-parser@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-5.0.0.tgz#00f4e4da94ec974b821a26ff0ed0f7a78402b8a1"
