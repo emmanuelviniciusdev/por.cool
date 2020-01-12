@@ -67,6 +67,7 @@
 <script>
 import firebase from "firebase/app";
 import "firebase/auth";
+import { mapState } from "vuex";
 import FilterByDate from "./FilterByDate";
 import expensesService from "../services/expenses";
 
@@ -115,23 +116,24 @@ export default {
         }
       });
     },
-    loadExpenses() {
+    async loadExpenses() {
       this.onLoading();
 
-      const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
-        unsubscribe();
-        if (user) {
-          try {
-            const userExpenses = await expensesService.getAll(user.uid);
-            this.data.table = userExpenses;
-          } catch (err) {
-            this.data.hasLoadingError = true;
-          } finally {
-            this.onLoading(false);
-          }
-        }
-      });
-    },
+      try {
+        const userExpenses = await expensesService.getAll(this.userData.uid);
+        this.data.table = userExpenses;
+      } catch (err) {
+        // console.error(err);
+        this.data.hasLoadingError = true;
+      } finally {
+        this.onLoading(false);
+      }
+    }
+  },
+  computed: {
+    ...mapState({
+      userData: state => state.user.user
+    })
   },
   created() {
     this.loadExpenses();

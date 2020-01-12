@@ -36,7 +36,7 @@ const extractOnly = (date, wishlist, params = {}) => {
 /**
  * Transform determined seconds to Date format
  * 
- * @param object firebaseDate 
+ * @param integer seconds 
  * @return Date
  */
 const transformSecondsToDate = seconds => new Date(seconds * 1000);

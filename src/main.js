@@ -13,6 +13,7 @@ import "./assets/scss/app.scss";
 // Firebase
 import firebase from 'firebase/app';
 import 'firebase/analytics';
+import 'firebase/auth';
 
 // Plugins
 Vue.use(Buefy, {
@@ -27,6 +28,12 @@ Vue.use(VueCurrencyFilter, {
   symbolPosition: 'front',
   symbolSpacing: true
 });
+
+// Services
+import userService from './services/user';
+
+// Helpers
+import dateAndTimeHelper from './helpers/dateAndTime';
 
 firebase.initializeApp({
   apiKey: "REDACTED_PROD_API_KEY",
@@ -45,5 +52,24 @@ Vue.config.productionTip = false;
 new Vue({
   router,
   store,
-  render: h => h(App)
+  data() {
+    return {
+      isReadyToRender: false
+    }
+  },
+  beforeCreate() {
+    const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
+      unsubscribe();
+
+      if (user) {
+        const loggedUser = await userService.get(user.uid);
+        this.$store.dispatch('user/set', { uid: user.uid, ...loggedUser });
+        this.isReadyToRender = true;
+      }
+    });
+  },
+  render(h) {
+    if (this.isReadyToRender)
+      return h(App);
+  },
 }).$mount("#app");

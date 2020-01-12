@@ -105,6 +105,7 @@
 
 <script>
 import { Money } from "v-money";
+import { mapState } from "vuex";
 import expenses from "../services/expenses";
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -132,6 +133,11 @@ export default {
       ],
       loading: false
     };
+  },
+  computed: {
+    ...mapState({
+      userData: state => state.user.user
+    })
   },
   methods: {
     onLoading(state = true) {
@@ -183,7 +189,7 @@ export default {
         expense.validity =
           type === "expense" || indeterminateValidity ? null : validity;
 
-        expense.user = firebase.auth().currentUser.uid;
+        expense.user = this.userData.uid;
         delete expense.key;
 
         return expense;

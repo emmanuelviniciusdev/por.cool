@@ -24,6 +24,7 @@
 
 <script>
 import { Money } from "v-money";
+import { mapState } from "vuex";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
@@ -39,35 +40,28 @@ export default {
     loading: false
   }),
   methods: {
-    submit() {
+    async submit() {
       this.loading = true;
 
-      firebase.auth().onAuthStateChanged(async user => {
-        if (user) {
-          const users = firebase.firestore().collection("users");
-          await users
-            .doc(user.uid)
-            .update({ monthlyIncome: this.noFixedIncome ? 0 : this.income });
+      const monthlyIncome = this.noFixedIncome ? 0 : this.income;
+      const users = firebase.firestore().collection("users");
 
-          this.loading = false;
+      await users.doc(this.userData.uid).update({ monthlyIncome });
+      this.$store.dispatch("user/update", { monthlyIncome });
 
-          this.$router.push({ name: "home" });
-        }
-      });
+      this.loading = false;
+
+      this.$router.push({ name: "home" });
     }
   },
-  beforeCreate() {
-    const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
-      unsubscribe();
-
-      if (user) {
-        const users = firebase.firestore().collection("users");
-        const userInfo = await users.doc(user.uid).get();
-
-        if (userInfo.data().monthlyIncome !== undefined)
-          this.$router.push({ name: "home" });
-      }
-    });
+  computed: {
+    ...mapState({
+      userData: state => state.user.user
+    })
+  },
+  created() {
+    if (this.userData.monthlyIncome !== undefined)
+      this.$router.push({ name: "home" });
   }
 };
 </script>
