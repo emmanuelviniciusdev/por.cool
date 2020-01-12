@@ -15,7 +15,6 @@ const getAll = async (userUid, validity = null) => {
             ...expense.data()
         }));
     } catch (err) {
-        console.log(err);
         throw new Error(err);
     }
 };
