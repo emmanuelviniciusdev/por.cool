@@ -29,15 +29,23 @@
           <b-tag size="is-medium">{{ types_labels[props.row.type] }}</b-tag>
         </b-table-column>
         <b-table-column field="action">
-          <button class="button is-warning is-small btn-table-action">
-            <b-icon icon="pencil-alt"></b-icon>
-          </button>
-          <button
-            class="button is-danger is-small btn-table-action"
-            @click="removeExpense(props.row)"
-          >
-            <b-icon icon="trash"></b-icon>
-          </button>
+          <b-tooltip label="editar" type="is-dark">
+            <button
+              class="button is-warning is-small btn-table-action"
+              :disabled="!canDeleteOrUpdateExpense(props.row.spendingDate)"
+            >
+              <b-icon icon="pencil-alt"></b-icon>
+            </button>
+          </b-tooltip>
+          <b-tooltip label="remover" type="is-dark">
+            <button
+              class="button is-danger is-small btn-table-action"
+              @click="removeExpense(props.row)"
+              :disabled="!canDeleteOrUpdateExpense(props.row.spendingDate)"
+            >
+              <b-icon icon="trash"></b-icon>
+            </button>
+          </b-tooltip>
         </b-table-column>
       </template>
 
@@ -56,6 +64,7 @@
 
             <div class="notification is-danger" v-if="data.hasLoadingError">
               <p>Não foi possível carregar os seus gastos</p>
+              <!-- TODO: Put a pig image here -->
             </div>
           </div>
         </section>
@@ -68,8 +77,14 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 import { mapState } from "vuex";
+import moment from "moment";
 import FilterByDate from "./FilterByDate";
+
+// Services
 import expensesService from "../services/expenses";
+
+// Helpers
+import dateAndTimeHelper from "../helpers/dateAndTime";
 
 export default {
   name: "SpendingTable",
@@ -101,8 +116,15 @@ export default {
     onLoading(state = true) {
       this.loading = state;
     },
-    removeExpense({ id: expenseDocId, expenseName, type: expenseType }) {
-      // TODO: Do not allow user to remove expense if 'spendingDate' is different from 'lookingAtSpendingDate'
+    removeExpense(expense) {
+      const {
+        id: expenseDocId,
+        expenseName,
+        type: expenseType,
+        spendingDate
+      } = expense;
+
+      if (!this.canDeleteOrUpdateExpense(spendingDate)) return;
 
       this.$buefy.dialog.confirm({
         title: `deletar ${this.types_labels[expenseType]}`,
@@ -115,6 +137,15 @@ export default {
           this.loadExpenses();
         }
       });
+    },
+    canDeleteOrUpdateExpense(spendingDate) {
+      spendingDate = dateAndTimeHelper.transformSecondsToDate(
+        spendingDate.seconds
+      );
+      return moment(this.userData.lookingAtSpendingDate).isSame(
+        spendingDate,
+        "month"
+      );
     },
     async loadExpenses() {
       this.onLoading();
@@ -143,6 +174,6 @@ export default {
 
 <style lang="scss" scoped>
 .btn-table-action {
-  margin-right: 5px;
+  margin: 2px 5px 2px 0;
 }
 </style>

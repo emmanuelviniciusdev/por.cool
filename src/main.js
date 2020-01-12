@@ -32,9 +32,6 @@ Vue.use(VueCurrencyFilter, {
 // Services
 import userService from './services/user';
 
-// Helpers
-import dateAndTimeHelper from './helpers/dateAndTime';
-
 firebase.initializeApp({
   apiKey: "REDACTED_PROD_API_KEY",
   authDomain: "REDACTED.firebaseapp.com",
