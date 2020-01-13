@@ -106,10 +106,13 @@
 <script>
 import { Money } from "v-money";
 import { mapState } from "vuex";
-import expenses from "../services/expenses";
 import firebase from "firebase/app";
 import "firebase/auth";
+import moment from 'moment';
+
+// Services
 import userService from "../services/user";
+import expenses from "../services/expenses";
 
 export default {
   name: "InsertExpenses",
@@ -128,7 +131,6 @@ export default {
           type: "expense",
           validity: null,
           indeterminateValidity: false,
-          spendingDate: new Date()
         }
       ],
       loading: false
@@ -153,12 +155,14 @@ export default {
         type: "expense",
         validity: null,
         indeterminateValidity: false,
-        spendingDate: new Date()
       });
     },
     removeExpense(key) {
       this.expenses = this.expenses.filter(expense => expense.key !== key);
       if (this.expenses.length === 0) this.insertExpense();
+    },
+    generateSpendingDate(lookingAtSpendingDate) {
+      return moment(lookingAtSpendingDate).set('date', 1).toDate();
     },
     async saveExpenses() {
       this.onLoading();
@@ -188,8 +192,9 @@ export default {
         // Make 'validity' null if 'type' is not invoice or savings or 'indeterminateValidity' is true
         expense.validity =
           type === "expense" || indeterminateValidity ? null : validity;
-
         expense.user = this.userData.uid;
+        expense.spendingDate = this.generateSpendingDate(this.userData.lookingAtSpendingDate);
+        expense.created = new Date();
         delete expense.key;
 
         return expense;
