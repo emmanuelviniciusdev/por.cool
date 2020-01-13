@@ -60,7 +60,7 @@ new Vue({
 
       if (user) {
         const loggedUser = await userService.get(user.uid);
-        this.$store.dispatch('user/set', { uid: user.uid, ...loggedUser });
+        this.$store.dispatch('user/set', { uid: user.uid, displayName: user.displayName, ...loggedUser });
         this.isReadyToRender = true;
       }
     });

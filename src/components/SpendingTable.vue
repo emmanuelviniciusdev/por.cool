@@ -52,19 +52,20 @@
       <template slot="empty">
         <section class="section">
           <div class="content has-text-black has-text-centered">
-            <div class="notification is-primary" v-if="!data.hasLoadingError">
-              <p>
-                Nenhum gasto adicionado para o mês de janeiro.
-                <b>
-                  <i>Legal.</i>
-                </b>
-              </p>
-              <!-- TODO: Put a pig image here -->
+            <div class="stoincs" v-if="!data.hasLoadingError">
+              <div class="notification">
+                <p>
+                  Nenhum gasto encontrado para {{this.userData.lookingAtSpendingDate | extractFromDateOnly('month') }} de {{this.userData.lookingAtSpendingDate | extractFromDateOnly('year') }}.
+                  <b>
+                    <i>Legal.</i>
+                  </b>
+                </p>
+              </div>
+              <img src="../assets/images/stoincs.png" alt="stoincs" />
             </div>
 
             <div class="notification is-danger" v-if="data.hasLoadingError">
               <p>Não foi possível carregar os seus gastos</p>
-              <!-- TODO: Put a pig image here -->
             </div>
           </div>
         </section>
@@ -85,6 +86,9 @@ import expensesService from "../services/expenses";
 
 // Helpers
 import dateAndTimeHelper from "../helpers/dateAndTime";
+
+// Filters
+import filters from "../filters";
 
 export default {
   name: "SpendingTable",
@@ -138,6 +142,9 @@ export default {
         }
       });
     },
+    // When expense date is different to 'lookingAtSpendingDate',
+    // that is the current spending month of the user, it returns false
+    // and means that user can't do anything at all with his expenses.
     canDeleteOrUpdateExpense(spendingDate) {
       spendingDate = dateAndTimeHelper.transformSecondsToDate(
         spendingDate.seconds
@@ -151,7 +158,10 @@ export default {
       this.onLoading();
 
       try {
-        const userExpenses = await expensesService.getAll(this.userData.uid);
+        let { lookingAtSpendingDate } = this.userData;
+
+        const userExpenses = await expensesService.getAll(this.userData.uid, lookingAtSpendingDate);
+        
         this.data.table = userExpenses;
       } catch (err) {
         // console.error(err);
@@ -166,6 +176,9 @@ export default {
       userData: state => state.user.user
     })
   },
+  filters: {
+    extractFromDateOnly: filters.extractFromDateOnly
+  },
   created() {
     this.loadExpenses();
   }
@@ -175,5 +188,9 @@ export default {
 <style lang="scss" scoped>
 .btn-table-action {
   margin: 2px 5px 2px 0;
+}
+
+.stoincs img {
+  width: 450px;
 }
 </style>

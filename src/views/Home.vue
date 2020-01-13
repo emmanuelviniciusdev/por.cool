@@ -5,17 +5,11 @@
     </div>
     <div class="column">
       <h1 class="title has-text-black">meus gastos</h1>
-
+      <FinishCurrentSpendingDate
+        :showSpendingDateWarning="showSpendingDateWarning"
+        :showResetExpensesWarning="showResetExpensesWarning"
+      />
       <FilterByDate />
-
-      <button
-        class="button is-warning spending-effective-date-btn"
-        v-if="user.lookingAtSpendingDate"
-      >
-        <b-icon icon="hand-holding-usd"></b-icon>
-        <span>fechar as contas para {{user.lookingAtSpendingDate.month + ' de ' + user.lookingAtSpendingDate.year }}</span>
-      </button>
-
       <SpendingTable />
     </div>
   </div>
@@ -24,47 +18,50 @@
 <script>
 import firebase from "firebase/app";
 import "firebase/auth";
-import userService from "../services/user";
-import dateAndTimeHelper from "../helpers/dateAndTime";
+import { mapState } from "vuex";
+import moment from "moment";
+
+// Components
 import LateralHeader from "../components/LateralHeader";
 import SpendingTable from "../components/SpendingTable";
 import FilterByDate from "../components/FilterByDate";
+import FinishCurrentSpendingDate from "../components/FinishCurrentSpendingDate";
 
-import moment from "moment";
+// Services
+import userService from "../services/user";
+
+// Helpers
+import dateAndTimeHelper from "../helpers/dateAndTime";
+
+// Filters
+import filters from "../filters";
 
 export default {
   name: "Home",
   components: {
     LateralHeader,
     SpendingTable,
-    FilterByDate
+    FilterByDate,
+    FinishCurrentSpendingDate
+  },
+  computed: {
+    ...mapState({
+      userData: state => state.user.user
+    })
   },
   data() {
     return {
-      user: {
-        displayName: null,
-        lookingAtSpendingDate: null
-      }
+      showSpendingDateWarning: false,
+      showResetExpensesWarning: false
     };
   },
   created() {
-    const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
-      unsubscribe();
-
-      if (user) {
-        const loggedUser = await userService.get(user.uid);
-
-        const lookingAtSpendingDate = dateAndTimeHelper.transformSecondsToDate(
-          loggedUser.lookingAtSpendingDate.seconds
-        );
-
-        this.user.lookingAtSpendingDate = dateAndTimeHelper.extractOnly(
-          lookingAtSpendingDate,
-          ["year", "month"]
-        );
-        this.user.displayName = user.displayName;
-      }
-    });
+    this.showSpendingDateWarning = moment().isAfter(
+      this.userData.lookingAtSpendingDate,
+      "months"
+    );
+    this.showResetExpensesWarning =
+      moment().diff(this.userData.lookingAtSpendingDate, "months") >= 2;
   }
 };
 </script>

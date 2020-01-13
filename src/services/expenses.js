@@ -1,24 +1,52 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
+import moment from 'moment';
+
+// Services
+import userService from './user';
+
+// Helpers
+import dateAndTimeHelper from '../helpers/dateAndTime';
 
 const expenses = () => firebase.firestore().collection('expenses');
 
+/**
+ * Get all expenses.
+ * 
+ * @param string userUid 
+ * @param Date validity 
+ */
 const getAll = async (userUid, validity = null) => {
     try {
-        // TODO: Filter by 'spendingDate' as well
-        const allExpenses = await expenses()
-            .where('user', '==', userUid)
-            .orderBy('spendingDate', 'desc')
-            .get();
+        let allExpenses = expenses()
+            .where('user', '==', userUid);
+
+        if (validity !== null) {
+            const lastAndNextMonthValidity = dateAndTimeHelper.lastAndNextMonth(validity);
+
+            allExpenses = allExpenses
+                .orderBy('spendingDate')
+                .where('spendingDate', '<', lastAndNextMonthValidity.startOfNextMonth)
+                .where('spendingDate', '>', lastAndNextMonthValidity.endOfLastMonth);
+        }
+
+        allExpenses = allExpenses.orderBy('created', 'desc');
+        allExpenses = await allExpenses.get();
+
         return allExpenses.docs.map(expense => ({
             id: expense.id,
             ...expense.data()
         }));
     } catch (err) {
+        // console.log(err);
         throw new Error(err);
     }
 };
 
+/**
+ * 
+ * @param array expensesToInsert 
+ */
 const insert = async expensesToInsert => {
     try {
         let batch = firebase.firestore().batch();
@@ -29,6 +57,10 @@ const insert = async expensesToInsert => {
     }
 };
 
+/**
+ * 
+ * @param string expenseId 
+ */
 const update = async expenseId => {
     try {
         return await expenses().doc(expenseId).update({ ...expenses });
@@ -37,9 +69,80 @@ const update = async expenseId => {
     }
 };
 
+/**
+ * 
+ * @param string expenseId 
+ */
 const remove = async expenseId => {
     try {
         return await expenses().doc(expenseId).delete();
+    } catch (err) {
+        throw new Error(err);
+    }
+};
+
+/**
+ * This method will update the property 'lookingAtSpendingDate' of the user
+ * to the next month using as reference 'currentLookingAtSpendingDate'.
+ * Example:
+ * currentLookingAtSpendingDate = 01 January
+ * lookingAtSpendingDate = 01 February
+ * 
+ * And also, this method will get all the expenses with type 'invoice' or 'savings'
+ * that are in validity with 'currentLookingAtSpendingDate' or have 'indeterminateValidity' setted as true.
+ * At the end, it will clone all of them to the new current generated spending date.
+ * 
+ * @param string userUid 
+ * @param Date currentLookingAtSpendingDate
+ * @returns boolean
+ */
+const finishCurrentSpendingDate = async (userUid, currentLookingAtSpendingDate) => {
+    try {
+        const nextLookingAtSpendingDate = moment(currentLookingAtSpendingDate).set('date', 1).add(1, 'months').toDate();
+        const expensesToClone = await _getExpensesToClone(userUid, currentLookingAtSpendingDate, nextLookingAtSpendingDate);
+
+        let batchCloneExpenses = firebase.firestore().batch();
+        expensesToClone.forEach(expense => batchCloneExpenses.set(expenses().doc(), expense));
+
+        await userService.update(userUid, { lookingAtSpendingDate: nextLookingAtSpendingDate });
+        await batchCloneExpenses.commit();
+
+        return true;
+    } catch (err) {
+        throw new Error(err);
+    }
+};
+
+/**
+ * Returns expenses that contains type 'invoice' or 'savings' or
+ * have the property 'indeterminateValidity' setted as true.
+ * 
+ * @param string userUid 
+ * @returns Promise
+ */
+const _getExpensesToClone = async (userUid, currentLookingAtSpendingDate, nextLookingAtSpendingDate) => {
+    try {
+        const expensesToClone = await expenses()
+            .where('user', '==', userUid)
+            .where('type', 'in', ['invoice', 'savings'])
+            .where('spendingDate', '==', currentLookingAtSpendingDate);
+
+        const expensesWithValidity = await expensesToClone.where('validity', '>=', nextLookingAtSpendingDate).get();
+        const expensesWithNoValidity = await expensesToClone.where('validity', '==', null).where('indeterminateValidity', '==', true).get();
+
+        console.log(nextLookingAtSpendingDate);
+        console.log(expensesWithValidity.docs.map(a => a.data()));
+
+        const mapUpdateExpenseDates = expense => {
+            expense.created = new Date();
+            expense.spendingDate = nextLookingAtSpendingDate;
+            return expense;
+        };
+
+        return [
+            ...expensesWithValidity.docs.map(expense => mapUpdateExpenseDates(expense.data())),
+            ...expensesWithNoValidity.docs.map(expense => mapUpdateExpenseDates(expense.data()))
+        ];
     } catch (err) {
         throw new Error(err);
     }
@@ -49,5 +152,6 @@ export default {
     getAll,
     insert,
     update,
-    remove
+    remove,
+    finishCurrentSpendingDate
 }
