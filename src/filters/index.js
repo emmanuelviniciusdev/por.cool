@@ -7,14 +7,16 @@ import dateAndTimeHelper from '../helpers/dateAndTime';
  * @returns string
  */
 const capitalizeName = name => {
-    return name
-        .split(" ")
-        .map(namePart => {
-            if (namePart !== "de" && namePart !== "do" && namePart !== "da")
-                namePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-            return namePart;
-        })
-        .join(" ");
+    if (name !== undefined) {
+        return name
+            .split(" ")
+            .map(namePart => {
+                if (namePart !== "de" && namePart !== "do" && namePart !== "da")
+                    namePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+                return namePart;
+            })
+            .join(" ");
+    }
 };
 
 /**

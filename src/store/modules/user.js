@@ -9,6 +9,9 @@ export default {
 
     mutations: {
         SET(state, user) {
+            if (user.lookingAtSpendingDate)
+                user.lookingAtSpendingDate = dateAndTimeHelper.transformSecondsToDate(user.lookingAtSpendingDate.seconds);
+
             state.user = user;
         },
         UPDATE(state, userData) {
@@ -20,7 +23,6 @@ export default {
 
     actions: {
         set({ commit }, user) {
-            user.lookingAtSpendingDate = dateAndTimeHelper.transformSecondsToDate(user.lookingAtSpendingDate.seconds);
             commit('SET', user);
         },
         update({ commit }, userData) {
