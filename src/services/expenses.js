@@ -98,7 +98,7 @@ const remove = async expenseId => {
  */
 const finishCurrentSpendingDate = async (userUid, currentLookingAtSpendingDate) => {
     try {
-        const nextLookingAtSpendingDate = moment(currentLookingAtSpendingDate).set('date', 1).add(1, 'months').toDate();
+        const nextLookingAtSpendingDate = moment(currentLookingAtSpendingDate).set('date', 1).add(1, 'months').startOf('day').toDate();
         const expensesToClone = await _getExpensesToClone(userUid, currentLookingAtSpendingDate, nextLookingAtSpendingDate);
 
         let batchCloneExpenses = firebase.firestore().batch();
@@ -129,9 +129,6 @@ const _getExpensesToClone = async (userUid, currentLookingAtSpendingDate, nextLo
 
         const expensesWithValidity = await expensesToClone.where('validity', '>=', nextLookingAtSpendingDate).get();
         const expensesWithNoValidity = await expensesToClone.where('validity', '==', null).where('indeterminateValidity', '==', true).get();
-
-        console.log(nextLookingAtSpendingDate);
-        console.log(expensesWithValidity.docs.map(a => a.data()));
 
         const mapUpdateExpenseDates = expense => {
             expense.created = new Date();

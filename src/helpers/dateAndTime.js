@@ -36,10 +36,19 @@ const extractOnly = (date, wishlist, params = {}) => {
 /**
  * Transform determined seconds to Date format
  * 
- * @param integer seconds 
+ * @param integer seconds
+ * @param object params 
  * @returns Date
  */
-const transformSecondsToDate = seconds => new Date(seconds * 1000);
+const transformSecondsToDate = (seconds, params = {}) => {
+    const { dontSetMidnight } = params;
+    let transformedDate = new Date(seconds * 1000);
+
+    if (!dontSetMidnight)
+        transformedDate = moment(transformedDate).startOf('day').toDate();
+
+    return transformedDate;
+};
 
 /**
  * Receives a date and returns the last day of the last month

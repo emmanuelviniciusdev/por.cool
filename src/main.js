@@ -54,15 +54,14 @@ new Vue({
       isReadyToRender: false
     }
   },
-  beforeCreate() {
-    const unsubscribe = firebase.auth().onAuthStateChanged(async user => {
-      unsubscribe();
-
+  created() {
+    firebase.auth().onAuthStateChanged(async user => {
       if (user) {
         const loggedUser = await userService.get(user.uid);
         this.$store.dispatch('user/set', { uid: user.uid, displayName: user.displayName, ...loggedUser });
-        this.isReadyToRender = true;
       }
+
+      this.isReadyToRender = true;
     });
   },
   render(h) {

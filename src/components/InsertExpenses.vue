@@ -162,7 +162,7 @@ export default {
       if (this.expenses.length === 0) this.insertExpense();
     },
     generateSpendingDate(lookingAtSpendingDate) {
-      return moment(lookingAtSpendingDate).set('date', 1).toDate();
+      return moment(lookingAtSpendingDate).set('date', 1).startOf('day').toDate();
     },
     async saveExpenses() {
       this.onLoading();

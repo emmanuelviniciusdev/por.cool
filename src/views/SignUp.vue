@@ -127,6 +127,7 @@ import {
 } from "vuelidate/lib/validators";
 import firebase from "firebase/app";
 import "firebase/auth";
+import moment from 'moment';
 import settings from "../services/settings";
 
 export default {
@@ -229,7 +230,7 @@ export default {
             name: name.toLowerCase(),
             lastName: lastName.toLowerCase(),
             email: email.toLowerCase(),
-            lookingAtSpendingDate: new Date(),
+            lookingAtSpendingDate: moment().startOf('months').startOf('day').toDate(),
             pendingPayment: true
           });
 
