@@ -1,12 +1,12 @@
 <template>
   <div>
     <b-table
-      :data="data.table"
+      :data="expenses"
+      :loading="loadingExpenses"
       :mobile-cards="false"
       hoverable
       paginated
       :per-page="10"
-      :loading="loading"
     >
       <template slot-scope="props">
         <b-table-column
@@ -52,7 +52,7 @@
       <template slot="empty">
         <section class="section">
           <div class="content has-text-black has-text-centered">
-            <div class="stoincs" v-if="!data.hasLoadingError">
+            <div class="stoincs" v-if="!loadingExpensesError">
               <div class="notification">
                 <p>
                   Nenhum gasto encontrado para {{this.userData.lookingAtSpendingDate | extractFromDateOnly('month') }} de {{this.userData.lookingAtSpendingDate | extractFromDateOnly('year') }}.
@@ -64,7 +64,7 @@
               <img src="../assets/images/stoincs.png" alt="stoincs" />
             </div>
 
-            <div class="notification is-danger" v-if="data.hasLoadingError">
+            <div class="notification is-danger" v-if="loadingExpensesError">
               <p>Não foi possível carregar os seus gastos</p>
             </div>
           </div>
@@ -90,36 +90,27 @@ import dateAndTimeHelper from "../helpers/dateAndTime";
 // Filters
 import filters from "../filters";
 
+// Mixins
+import SpendingTableMixin from '../mixins/SpendingTable';
+
 export default {
   name: "SpendingTable",
-  data() {
-    return {
-      data: {
-        table: [],
-        hasLoadingError: false
-      },
-      status_types: {
-        paid: "is-success",
-        partially_paid: "is-warning",
-        pending: "is-danger"
-      },
-      status_labels: {
-        paid: "pago",
-        partially_paid: "parcialmente pago",
-        pending: "pendente"
-      },
-      types_labels: {
-        invoice: "fatura",
-        expense: "gasto",
-        savings: "poupança"
-      },
-      loading: false
-    };
-  },
-  methods: {
-    onLoading(state = true) {
-      this.loading = state;
+  props: {
+    expenses: {
+      required: true,
+      type: Array
     },
+    loadingExpenses: {
+      required: true,
+      type: Boolean
+    },
+    loadingExpensesError: {
+      required: true,
+      type: Boolean
+    }
+  },
+  mixins: [SpendingTableMixin],
+  methods: {
     removeExpense(expense) {
       const {
         id: expenseDocId,
@@ -138,7 +129,10 @@ export default {
         hasIcon: true,
         onConfirm: async () => {
           await expensesService.remove(expenseDocId);
-          this.loadExpenses();
+          this.$store.dispatch("expenses/setExpenses", {
+            userUid: this.userData.uid,
+            spendingDate: this.userData.lookingAtSpendingDate
+          });
         }
       });
     },
@@ -153,22 +147,6 @@ export default {
         spendingDate,
         "month"
       );
-    },
-    async loadExpenses() {
-      this.onLoading();
-
-      try {
-        let { lookingAtSpendingDate } = this.userData;
-
-        const userExpenses = await expensesService.getAll(this.userData.uid, lookingAtSpendingDate);
-        
-        this.data.table = userExpenses;
-      } catch (err) {
-        // console.error(err);
-        this.data.hasLoadingError = true;
-      } finally {
-        this.onLoading(false);
-      }
     }
   },
   computed: {
@@ -178,9 +156,6 @@ export default {
   },
   filters: {
     extractFromDateOnly: filters.extractFromDateOnly
-  },
-  created() {
-    this.loadExpenses();
   }
 };
 </script>
