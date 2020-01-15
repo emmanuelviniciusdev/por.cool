@@ -5,12 +5,18 @@
     </div>
     <div class="column">
       <h1 class="title has-text-black">meus gastos</h1>
+      <!-- TODO: check if this component will be rendered here and not inside it -->
       <FinishCurrentSpendingDate
+        :expenses="expensesData.expenses"
         :showSpendingDateWarning="showSpendingDateWarning"
         :showResetExpensesWarning="showResetExpensesWarning"
       />
       <FilterByDate />
-      <SpendingTable />
+      <SpendingTable
+        :expenses="expensesData.expenses"
+        :loadingExpenses="expensesData.loadingExpenses"
+        :loadingExpensesError="expensesData.loadingExpensesError"
+      />
     </div>
   </div>
 </template>
@@ -46,7 +52,8 @@ export default {
   },
   computed: {
     ...mapState({
-      userData: state => state.user.user
+      userData: state => state.user.user,
+      expensesData: state => state.expenses
     })
   },
   data() {
@@ -56,6 +63,11 @@ export default {
     };
   },
   created() {
+    this.$store.dispatch("expenses/setExpenses", {
+      userUid: this.userData.uid,
+      spendingDate: this.userData.lookingAtSpendingDate
+    });
+
     this.showSpendingDateWarning = moment().isAfter(
       this.userData.lookingAtSpendingDate,
       "months"
