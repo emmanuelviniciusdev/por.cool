@@ -74,6 +74,8 @@ export default {
     );
     this.showResetExpensesWarning =
       moment().diff(this.userData.lookingAtSpendingDate, "months") >= 2;
+
+    // setInterval(() => console.log(this.userData), 2000);
   }
 };
 </script>

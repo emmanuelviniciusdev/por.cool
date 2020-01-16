@@ -98,11 +98,12 @@
         </section>
         <footer class="modal-card-foot">
           <button class="button" @click="closeModal()">cancelar</button>
-          <button
-            class="button is-primary"
+          <b-button
+            type="is-primary"
             @click="finishCurrentSpendingDate()"
             :disabled="!haveExpensesSettedActions"
-          >fechar gastos</button>
+            :loading="loadingFinishSpendingDate"
+          >fechar gastos</b-button>
         </footer>
       </div>
     </b-modal>
@@ -115,7 +116,11 @@
             você já pode fechar os gastos para
             <b>{{ `${formatedUserLookingAtSpendingDate.month} de ${formatedUserLookingAtSpendingDate.year}` }}</b>.
           </h2>
-          <button class="button is-light" @click="mayOpenModal()">fechar gastos</button>
+          <b-button
+            type="is-light"
+            @click="mayOpenModal()"
+            :loading="loadingFinishSpendingDate"
+          >fechar gastos</b-button>
           <div v-if="showResetExpensesWarning">
             <hr />
             <p>
@@ -174,7 +179,9 @@ export default {
   data() {
     return {
       formatedUserLookingAtSpendingDate: null,
+      newSpendingDate: null,
       isModalOpened: false,
+      loadingFinishSpendingDate: false,
       modifiedExpenses: []
     };
   },
@@ -195,19 +202,21 @@ export default {
     capitalizeName: filters.capitalizeName
   },
   methods: {
+    onLoadingFinishSpendingDate(state = true) {
+      this.loadingFinishSpendingDate = state;
+    },
     setExpenseTemporaryValue(index, key, value) {
       this.modifiedExpenses[index].temporary[key] = value;
       this.modifiedExpenses.splice(index, 1, {
         ...this.modifiedExpenses[index]
       });
     },
-    mayOpenModal(state = true) {
-      console.log(this.expenses);
+    async mayOpenModal() {
       const filteredExpenses = this.expenses.filter(
-        ({ status }) => status === "pending" || status === "partially_paid"
+        ({ status }) => status !== "paid"
       );
 
-      if (state && filteredExpenses.length > 0) {
+      if (filteredExpenses.length > 0) {
         this.modifiedExpenses = [
           ...filteredExpenses.map(expense => {
             expense.temporary = {};
@@ -217,126 +226,163 @@ export default {
           })
         ];
 
-        this.isModalOpened = state;
+        this.isModalOpened = true;
 
         return;
       }
 
-      this.finishCurrentSpendingDate();
+      this.onLoadingFinishSpendingDate();
+
+      // Finish current spending date with auto clone
+      await expensesService.finishCurrentSpendingDate(
+        this.userData.uid,
+        this.userData.lookingAtSpendingDate,
+        { autoClone: true }
+      );
+
+      this.updateGeneral();
+      this.onLoadingFinishSpendingDate(false);
     },
     closeModal() {
       this.isModalOpened = false;
     },
     async finishCurrentSpendingDate() {
+      this.onLoadingFinishSpendingDate();
+
       if (!this.haveExpensesSettedActions) return;
 
       const paidExpenses = [];
-      const notPaidExpenses = {
-        moveOn: {
-          // Expenses that we're gonna update only 'amount' to zero
-          expensesToUpdateNow: [],
-          // Expenses that we're gonna clone to the next month
-          expensesToClone: []
-        },
-        moveOnWithDifference: {
-          // Expenses that we're gonna update only 'amount' to zero
-          expensesToUpdateNow: [],
-          // Expenses that we're gonna clone to the next month
-          expensesToClone: []
-        },
-        moveOnWithoutDifference: {
-          // Expenses that we're gonna update only 'amount' to zero
-          expensesToUpdateNow: [],
-          // Expenses that we're gonna clone to the next month
-          expensesToClone: []
-        },
-        discard: {
-          // Expenses that we're gonna update only 'amount' to zero
-          expensesToUpdateNow: []
-        }
+      const changingExpenses = {
+        expensesToUpdateNow: [],
+        expensesToClone: []
       };
 
       this.modifiedExpenses.forEach(expense => {
         const { hasUserPaid, action } = expense.temporary;
 
-        // TODO: Improve this
+        // This props will be the same to each changing expense, so we putted it
+        // into an object.
+        const expensePropsToChange = {
+          alreadyPaidAmount: 0,
+          status: "pending",
+          created: new Date(),
+          spendingDate: this.newSpendingDate
+        };
 
         if (hasUserPaid) {
-          paidExpenses.push({ ...expense, status: "paid" });
+          paidExpenses.push({
+            ...expense,
+            status: "paid",
+            alreadyPaidAmount: 0
+          });
+
+          // Check if expense has type "invoice" or "savings".
+          // If so, we'll clone the expense if it's in force.
+          if (expense.type !== "expense") {
+            const isInForce = expense.indeterminateValidity
+              ? true
+              : moment(
+                  dateAndTimeHelper.transformSecondsToDate(
+                    expense.validity.seconds
+                  )
+                ).isSameOrAfter(moment(this.userData.lookingAtSpendingDate));
+
+            if (isInForce) {
+              changingExpenses.expensesToClone.push({
+                ...expense,
+                ...expensePropsToChange
+              });
+            }
+          }
         } else {
-          const newSpendingDate = dateAndTimeHelper.startOfMonthAndDay(
-            moment(this.userData.lookingAtSpendingDate).add(1, "months")
-          );
+          // Every expense will have its amount changed to 0 or to 'alreadyPaidAmount' value
+          // in the current spending date.
+          changingExpenses.expensesToUpdateNow.push({
+            ...expense,
+            amount:
+              expense.status === "partially_paid"
+                ? expense.alreadyPaidAmount
+                : 0,
+            alreadyPaidAmount: 0,
+            status: "paid"
+          });
 
+          // Only expense with "expense" type will have "move_on" action.
           if (action === "move_on") {
-            notPaidExpenses.moveOn.expensesToUpdateNow.push({
-              docId: expense.id,
-              amount:
-                expense.status === "partially_paid"
-                  ? expense.alreadyPaidAmount
-                  : 0
-            });
-
-            notPaidExpenses.moveOn.expensesToClone.push({
+            changingExpenses.expensesToClone.push({
               ...expense,
-              amount: expense.amount - expense.alreadyPaidAmount,
-              alreadyPaidAmount: 0,
-              status: "pending",
-              created: new Date(),
-              spendingDate: newSpendingDate
+              ...expensePropsToChange,
+              amount: expense.amount - expense.alreadyPaidAmount
             });
           } else if (action === "move_on_without_difference") {
-            notPaidExpenses.moveOnWithoutDifference.expensesToUpdateNow.push({
-              docId: expense.id,
-              amount:
-                expense.status === "partially_paid"
-                  ? expense.alreadyPaidAmount
-                  : 0
-            });
-
-            notPaidExpenses.moveOnWithoutDifference.expensesToClone.push({
+            changingExpenses.expensesToClone.push({
               ...expense,
-              alreadyPaidAmount: 0,
-              status: "pending",
-              created: new Date(),
-              spendingDate: newSpendingDate
+              ...expensePropsToChange
             });
           } else if (action === "move_on_with_difference") {
-            notPaidExpenses.moveOnWithDifference.expensesToUpdateNow.push({
-              docId: expense.id,
-              amount:
-                expense.status === "partially_paid"
-                  ? expense.alreadyPaidAmount
-                  : 0
-            });
-
-            notPaidExpenses.moveOnWithDifference.expensesToClone.push({
+            changingExpenses.expensesToClone.push({
               ...expense,
-              differenceAmount: expense.amount - expense.alreadyPaidAmount,
-              alreadyPaidAmount: 0,
-              status: "pending",
-              created: new Date(),
-              spendingDate: newSpendingDate
-            });
-          } else if (action === "discard") {
-            notPaidExpenses.discard.expensesToUpdateNow.push({
-              docId: expense.id,
-              amount:
-                expense.status === "partially_paid"
-                  ? expense.alreadyPaidAmount
-                  : 0
+              ...expensePropsToChange,
+              differenceAmount: expense.amount - expense.alreadyPaidAmount
             });
           }
         }
       });
 
-      console.log(notPaidExpenses);
+      // Remove "temporary" props without reflect on the original object.
+      // Just in case.
+      function removeUsefulProps(obj) {
+        const newObj = { ...obj };
+        delete newObj.temporary;
+        return newObj;
+      }
+
+      // Update "paid" expenses
+      await expensesService.bulkUpdate(paidExpenses.map(removeUsefulProps));
+
+      // Update "amount" and "status" of expenses before cloning them to the
+      // next spending date
+      await expensesService.bulkUpdate(
+        changingExpenses.expensesToUpdateNow.map(removeUsefulProps)
+      );
+
+      // Clone expenses to the next spending date
+      await expensesService.insert(
+        changingExpenses.expensesToClone.map(removeUsefulProps)
+      );
+
+      // Finish current spending date without auto clone
+      expensesService.finishCurrentSpendingDate(
+        this.userData.uid,
+        this.userData.lookingAtSpendingDate
+      );
+
+      this.updateGeneral();
+      this.onLoadingFinishSpendingDate(false);
+    },
+    updateGeneral() {
+      this.closeModal();
+
+      this.$store.dispatch("user/update", {
+        lookingAtSpendingDate: this.newSpendingDate
+      });
+
+      this.$store.dispatch("expenses/setExpenses", {
+        userUid: this.userData.uid,
+        spendingDate: this.newSpendingDate
+      });
     }
   },
   created() {
     this.formatedUserLookingAtSpendingDate = dateAndTimeHelper.extractOnly(
       this.userData.lookingAtSpendingDate,
       ["year", "month"]
+    );
+
+    this.newSpendingDate = dateAndTimeHelper.startOfMonthAndDay(
+      moment(this.userData.lookingAtSpendingDate)
+        .add(1, "months")
+        .toDate()
     );
   }
 };

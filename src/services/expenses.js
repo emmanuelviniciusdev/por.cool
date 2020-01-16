@@ -23,7 +23,7 @@ const getAll = async (userUid, validity = null) => {
 
         if (validity !== null) {
             const lastAndNextMonthValidity = dateAndTimeHelper.lastAndNextMonth(validity);
-
+        
             allExpenses = allExpenses
                 .orderBy('spendingDate')
                 .where('spendingDate', '<', lastAndNextMonthValidity.startOfNextMonth)
@@ -33,10 +33,12 @@ const getAll = async (userUid, validity = null) => {
         allExpenses = allExpenses.orderBy('created', 'desc');
         allExpenses = await allExpenses.get();
 
-        return allExpenses.docs.map(expense => ({
-            id: expense.id,
-            ...expense.data()
-        }));
+        return allExpenses.docs.map(expense => {
+            return {
+                ...expense.data(),
+                id: expense.id
+            };
+        });
     } catch (err) {
         // console.log(err);
         throw new Error(err);
@@ -58,12 +60,21 @@ const insert = async expensesToInsert => {
 };
 
 /**
+ * It needs expense to have the document ID as "id" in its object
+ * to make update possible.
+ * {id: expense_document_id, ...expense}
  * 
- * @param string expenseId 
+ * @param array expensesToUpdate
  */
-const update = async expenseId => {
+const bulkUpdate = async expensesToUpdate => {
     try {
-        return await expenses().doc(expenseId).update({ ...expenses });
+        let batch = firebase.firestore().batch();
+        expensesToUpdate.forEach(expense => {
+            const { id: expenseDocId } = expense;
+            delete expense.id;
+            batch.update(expenses().doc(expenseDocId), { ...expense });
+        });
+        await batch.commit();
     } catch (err) {
         throw new Error(err);
     }
@@ -88,7 +99,7 @@ const remove = async expenseId => {
  * currentLookingAtSpendingDate = 01 January
  * lookingAtSpendingDate = 01 February
  * 
- * And also, this method will get all the expenses with type 'invoice' or 'savings'
+ * And also, if 'autoClone' is true, this method will get all the expenses with type 'invoice' or 'savings'
  * that are in validity with 'currentLookingAtSpendingDate' or have 'indeterminateValidity' setted as true.
  * At the end, it will clone all of them to the new current generated spending date.
  * 
@@ -96,16 +107,20 @@ const remove = async expenseId => {
  * @param Date currentLookingAtSpendingDate
  * @returns boolean
  */
-const finishCurrentSpendingDate = async (userUid, currentLookingAtSpendingDate) => {
+const finishCurrentSpendingDate = async (userUid, currentLookingAtSpendingDate, params = {}) => {
+    const { autoClone } = params;
+
     try {
         const nextLookingAtSpendingDate = moment(currentLookingAtSpendingDate).set('date', 1).add(1, 'months').startOf('day').toDate();
         const expensesToClone = await _getExpensesToClone(userUid, currentLookingAtSpendingDate, nextLookingAtSpendingDate);
 
-        let batchCloneExpenses = firebase.firestore().batch();
-        expensesToClone.forEach(expense => batchCloneExpenses.set(expenses().doc(), expense));
+        if (autoClone === true) {
+            let batchCloneExpenses = firebase.firestore().batch();
+            expensesToClone.forEach(expense => batchCloneExpenses.set(expenses().doc(), expense));
+            await batchCloneExpenses.commit();
+        }
 
         await userService.update(userUid, { lookingAtSpendingDate: nextLookingAtSpendingDate });
-        await batchCloneExpenses.commit();
 
         return true;
     } catch (err) {
@@ -125,12 +140,14 @@ const _getExpensesToClone = async (userUid, currentLookingAtSpendingDate, nextLo
         const expensesToClone = await expenses()
             .where('user', '==', userUid)
             .where('type', 'in', ['invoice', 'savings'])
+            .where('status', '==', 'paid')
             .where('spendingDate', '==', currentLookingAtSpendingDate);
 
         const expensesWithValidity = await expensesToClone.where('validity', '>=', nextLookingAtSpendingDate).get();
         const expensesWithNoValidity = await expensesToClone.where('validity', '==', null).where('indeterminateValidity', '==', true).get();
 
         const mapUpdateExpenseDates = expense => {
+            expense.status = "pending";
             expense.created = new Date();
             expense.spendingDate = nextLookingAtSpendingDate;
             return expense;
@@ -148,7 +165,7 @@ const _getExpensesToClone = async (userUid, currentLookingAtSpendingDate, nextLo
 export default {
     getAll,
     insert,
-    update,
+    bulkUpdate,
     remove,
     finishCurrentSpendingDate
 }
