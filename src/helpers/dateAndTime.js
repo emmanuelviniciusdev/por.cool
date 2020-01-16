@@ -62,8 +62,17 @@ const lastAndNextMonth = (date) => ({
     startOfNextMonth: moment(date).add(1, 'months').startOf('months').toDate()
 });
 
+/**
+ * Set day to 1 and hour to '00:00:00'.
+ * 
+ * @param Date date 
+ * @returns Date
+ */
+const startOfMonthAndDay = date => moment(date).set('date', 1).startOf('day').toDate();
+
 export default {
     extractOnly,
     transformSecondsToDate,
-    lastAndNextMonth
+    lastAndNextMonth,
+    startOfMonthAndDay
 }
