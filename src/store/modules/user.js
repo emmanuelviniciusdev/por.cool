@@ -9,7 +9,7 @@ export default {
 
     mutations: {
         SET(state, user) {
-            if (user.lookingAtSpendingDate)
+            if (user.lookingAtSpendingDate && !(user.lookingAtSpendingDate instanceof Date))
                 user.lookingAtSpendingDate = dateAndTimeHelper.transformSecondsToDate(user.lookingAtSpendingDate.seconds);
 
             state.user = user;
