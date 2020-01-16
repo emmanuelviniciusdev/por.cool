@@ -193,6 +193,7 @@ export default {
         expense.validity =
           type === "expense" || indeterminateValidity ? null : validity;
         expense.user = this.userData.uid;
+        // TODO: Use 'dateAndTime.startOfMonthAndDay' helper instead of this local function
         expense.spendingDate = this.generateSpendingDate(this.userData.lookingAtSpendingDate);
         expense.created = new Date();
         delete expense.key;
