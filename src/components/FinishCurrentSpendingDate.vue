@@ -108,7 +108,7 @@
       </div>
     </b-modal>
 
-    <div class="hero is-warning spendingDateWarning" v-if="showSpendingDateWarning">
+    <div class="hero is-warning spendingDateWarning">
       <div class="hero-body">
         <div class="container">
           <h1 class="title">{{ this.userData.displayName | capitalizeName }},</h1>
@@ -162,14 +162,6 @@ import Vue from "vue";
 export default {
   name: "FinishCurrentSpendingDate",
   props: {
-    showSpendingDateWarning: {
-      type: Boolean,
-      required: true
-    },
-    showResetExpensesWarning: {
-      type: Boolean,
-      required: true
-    },
     expenses: {
       type: Array,
       required: true
@@ -178,8 +170,6 @@ export default {
   mixins: [SpendingTableMixin],
   data() {
     return {
-      formatedUserLookingAtSpendingDate: null,
-      newSpendingDate: null,
       isModalOpened: false,
       loadingFinishSpendingDate: false,
       modifiedExpenses: []
@@ -196,6 +186,22 @@ export default {
             !temporary.hasUserPaid && temporary.action === "nothing"
         ).length === 0
       );
+    },
+    formatedUserLookingAtSpendingDate() {
+      return dateAndTimeHelper.extractOnly(
+        this.userData.lookingAtSpendingDate,
+        ["year", "month"]
+      );
+    },
+    newSpendingDate() {
+      return dateAndTimeHelper.startOfMonthAndDay(
+        moment(this.userData.lookingAtSpendingDate)
+          .add(1, "months")
+          .toDate()
+      );
+    },
+    showResetExpensesWarning() {
+      return moment().diff(this.userData.lookingAtSpendingDate, "months") >= 2;
     }
   },
   filters: {
@@ -247,9 +253,9 @@ export default {
       this.isModalOpened = false;
     },
     async finishCurrentSpendingDate() {
-      this.onLoadingFinishSpendingDate();
-
       if (!this.haveExpensesSettedActions) return;
+
+      this.onLoadingFinishSpendingDate();
 
       const paidExpenses = [];
       const changingExpenses = {
@@ -285,12 +291,12 @@ export default {
                   dateAndTimeHelper.transformSecondsToDate(
                     expense.validity.seconds
                   )
-                ).isSameOrAfter(moment(this.userData.lookingAtSpendingDate));
-
+                ).isSameOrAfter(moment(this.newSpendingDate));
             if (isInForce) {
               changingExpenses.expensesToClone.push({
                 ...expense,
-                ...expensePropsToChange
+                ...expensePropsToChange,
+                differenceAmount: 0
               });
             }
           }
@@ -317,42 +323,51 @@ export default {
           } else if (action === "move_on_without_difference") {
             changingExpenses.expensesToClone.push({
               ...expense,
-              ...expensePropsToChange
+              ...expensePropsToChange,
+              differenceAmount: 0
             });
           } else if (action === "move_on_with_difference") {
+            const pastDifferenceAmount =
+              expense.differenceAmount !== undefined
+                ? expense.differenceAmount
+                : 0;
+
             changingExpenses.expensesToClone.push({
               ...expense,
               ...expensePropsToChange,
-              differenceAmount: expense.amount - expense.alreadyPaidAmount
+              differenceAmount:
+                expense.amount -
+                expense.alreadyPaidAmount +
+                pastDifferenceAmount
             });
           }
         }
       });
 
-      // Remove "temporary" props without reflect on the original object.
+      // Remove useless props without reflect on the original object.
       // Just in case.
-      function removeUsefulProps(obj) {
+      function removeUselessProps(obj) {
         const newObj = { ...obj };
         delete newObj.temporary;
         return newObj;
       }
 
       // Update "paid" expenses
-      await expensesService.bulkUpdate(paidExpenses.map(removeUsefulProps));
+      await expensesService.bulkUpdate(paidExpenses.map(removeUselessProps));
 
       // Update "amount" and "status" of expenses before cloning them to the
       // next spending date
       await expensesService.bulkUpdate(
-        changingExpenses.expensesToUpdateNow.map(removeUsefulProps)
+        changingExpenses.expensesToUpdateNow.map(removeUselessProps)
       );
 
       // Clone expenses to the next spending date
       await expensesService.insert(
-        changingExpenses.expensesToClone.map(removeUsefulProps)
+        changingExpenses.expensesToClone.map(removeUselessProps)
       );
 
       // Finish current spending date without auto clone
-      expensesService.finishCurrentSpendingDate(
+      await expensesService.finishCurrentSpendingDate(
         this.userData.uid,
         this.userData.lookingAtSpendingDate
       );
@@ -363,27 +378,21 @@ export default {
     updateGeneral() {
       this.closeModal();
 
-      this.$store.dispatch("user/update", {
-        lookingAtSpendingDate: this.newSpendingDate
-      });
-
       this.$store.dispatch("expenses/setExpenses", {
         userUid: this.userData.uid,
         spendingDate: this.newSpendingDate
       });
-    }
-  },
-  created() {
-    this.formatedUserLookingAtSpendingDate = dateAndTimeHelper.extractOnly(
-      this.userData.lookingAtSpendingDate,
-      ["year", "month"]
-    );
 
-    this.newSpendingDate = dateAndTimeHelper.startOfMonthAndDay(
-      moment(this.userData.lookingAtSpendingDate)
-        .add(1, "months")
-        .toDate()
-    );
+      // IT MUST BE AT THE END!
+      // Because if we update user's spending date first, the 'newSpendingDate' will
+      // automatically react to the new setted 'lookingAtSpendingDate' and get the wrong
+      // expenses with the wrong new spending date.
+      this.$store.dispatch("user/update", {
+        lookingAtSpendingDate: this.newSpendingDate
+      });
+
+      console.log(this.$store.state);
+    }
   }
 };
 </script>
