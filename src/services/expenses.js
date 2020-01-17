@@ -23,7 +23,7 @@ const getAll = async (userUid, validity = null) => {
 
         if (validity !== null) {
             const lastAndNextMonthValidity = dateAndTimeHelper.lastAndNextMonth(validity);
-        
+
             allExpenses = allExpenses
                 .orderBy('spendingDate')
                 .where('spendingDate', '<', lastAndNextMonthValidity.startOfNextMonth)
@@ -52,7 +52,10 @@ const getAll = async (userUid, validity = null) => {
 const insert = async expensesToInsert => {
     try {
         let batch = firebase.firestore().batch();
-        expensesToInsert.forEach(expense => batch.set(expenses().doc(), expense));
+        expensesToInsert.forEach(expense => {
+            delete expense.id;
+            batch.set(expenses().doc(), expense)
+        });
         await batch.commit();
     } catch (err) {
         throw new Error(err);

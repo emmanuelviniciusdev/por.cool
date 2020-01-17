@@ -5,11 +5,9 @@
     </div>
     <div class="column">
       <h1 class="title has-text-black">meus gastos</h1>
-      <!-- TODO: check if this component will be rendered here and not inside it -->
       <FinishCurrentSpendingDate
         :expenses="expensesData.expenses"
-        :showSpendingDateWarning="showSpendingDateWarning"
-        :showResetExpensesWarning="showResetExpensesWarning"
+        v-if="showSpendingDateWarning"
       />
       <FilterByDate />
       <SpendingTable
@@ -54,28 +52,16 @@ export default {
     ...mapState({
       userData: state => state.user.user,
       expensesData: state => state.expenses
-    })
-  },
-  data() {
-    return {
-      showSpendingDateWarning: false,
-      showResetExpensesWarning: false
-    };
+    }),
+    showSpendingDateWarning() {
+      return moment().isAfter(this.userData.lookingAtSpendingDate, "months");
+    }
   },
   created() {
     this.$store.dispatch("expenses/setExpenses", {
       userUid: this.userData.uid,
       spendingDate: this.userData.lookingAtSpendingDate
     });
-
-    this.showSpendingDateWarning = moment().isAfter(
-      this.userData.lookingAtSpendingDate,
-      "months"
-    );
-    this.showResetExpensesWarning =
-      moment().diff(this.userData.lookingAtSpendingDate, "months") >= 2;
-
-    // setInterval(() => console.log(this.userData), 2000);
   }
 };
 </script>
