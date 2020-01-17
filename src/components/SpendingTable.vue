@@ -14,7 +14,7 @@
           label="#"
           :class="{'has-text-weight-bold': props.row.type !== 'expense'}"
         >{{ props.row.expenseName }}</b-table-column>
-        <b-table-column field="amount" label="gasto">{{ props.row.amount | currency }}</b-table-column>
+        <b-table-column field="amount" label="gasto">{{ props.row.amount | sumAmounts(props.row) | currency }}</b-table-column>
         <b-table-column field="status" label="status">
           <b-tag :type="status_types[props.row.status]">
             <b-tooltip
@@ -155,7 +155,8 @@ export default {
     })
   },
   filters: {
-    extractFromDateOnly: filters.extractFromDateOnly
+    extractFromDateOnly: filters.extractFromDateOnly,
+    sumAmounts: filters.sumAmounts,
   }
 };
 </script>

@@ -108,11 +108,14 @@ import { Money } from "v-money";
 import { mapState } from "vuex";
 import firebase from "firebase/app";
 import "firebase/auth";
-import moment from 'moment';
+import moment from "moment";
 
 // Services
 import userService from "../services/user";
 import expenses from "../services/expenses";
+
+// Helpers
+import dateAndTime from "../helpers/dateAndTime";
 
 export default {
   name: "InsertExpenses",
@@ -130,7 +133,7 @@ export default {
           status: "pending",
           type: "expense",
           validity: null,
-          indeterminateValidity: false,
+          indeterminateValidity: false
         }
       ],
       loading: false
@@ -154,15 +157,12 @@ export default {
         status: "pending",
         type: "expense",
         validity: null,
-        indeterminateValidity: false,
+        indeterminateValidity: false
       });
     },
     removeExpense(key) {
       this.expenses = this.expenses.filter(expense => expense.key !== key);
       if (this.expenses.length === 0) this.insertExpense();
-    },
-    generateSpendingDate(lookingAtSpendingDate) {
-      return moment(lookingAtSpendingDate).set('date', 1).startOf('day').toDate();
     },
     async saveExpenses() {
       this.onLoading();
@@ -170,16 +170,24 @@ export default {
       let validationError = false;
 
       this.expenses = this.expenses.map(expense => {
-        const { expenseName, validity, type, indeterminateValidity } = expense;
+        const {
+          expenseName,
+          validity,
+          type,
+          indeterminateValidity,
+          amount,
+          alreadyPaidAmount
+        } = expense;
 
         // Validation
         if (
-          expenseName === "" ||
-          (validity === null && type !== "expense" && !indeterminateValidity)
+          (expenseName === "" )||
+          (validity === null && type !== "expense" && !indeterminateValidity) ||
+          (alreadyPaidAmount > amount)
         ) {
           this.$buefy.toast.open({
             message:
-              "Tenha certeza de que você definiu um nome e um prazo para todos os seus gastos",
+              "Tem alguma coisa errada com os seus gastos... Tenha certeza de que preencheu tudo certo.",
             type: "is-danger",
             position: "is-bottom"
           });
@@ -193,8 +201,9 @@ export default {
         expense.validity =
           type === "expense" || indeterminateValidity ? null : validity;
         expense.user = this.userData.uid;
-        // TODO: Use 'dateAndTime.startOfMonthAndDay' helper instead of this local function
-        expense.spendingDate = this.generateSpendingDate(this.userData.lookingAtSpendingDate);
+        expense.spendingDate = dateAndTime.startOfMonthAndDay(
+          this.userData.lookingAtSpendingDate
+        );
         expense.created = new Date();
         delete expense.key;
 
@@ -208,7 +217,7 @@ export default {
 
       await expenses.insert(this.expenses);
       this.$router.push({ name: "home" });
-      
+
       this.onLoading(false);
     }
   }

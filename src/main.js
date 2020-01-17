@@ -15,6 +15,12 @@ import firebase from 'firebase/app';
 import 'firebase/analytics';
 import 'firebase/auth';
 
+// Services
+import userService from './services/user';
+
+// Helpers
+import dateAndTime from './helpers/dateAndTime';
+
 // Plugins
 Vue.use(Buefy, {
   defaultIconPack: "fas"
@@ -28,9 +34,6 @@ Vue.use(VueCurrencyFilter, {
   symbolPosition: 'front',
   symbolSpacing: true
 });
-
-// Services
-import userService from './services/user';
 
 firebase.initializeApp({
   apiKey: "REDACTED_PROD_API_KEY",
@@ -46,6 +49,19 @@ firebase.analytics();
 
 Vue.config.productionTip = false;
 
+// REVIEW
+// It displays an error related to the buefy's components. Until now, there is no solution.
+// https://github.com/vuetifyjs/vuetify/issues/9999
+const ignoreWarnMessage = 'The .native modifier for v-on is only valid on components but it was used on <div>.';
+Vue.config.warnHandler = function (msg, vm, trace) {
+  // `trace` is the component hierarchy trace
+  if (msg === ignoreWarnMessage) {
+    msg = null;
+    vm = null;
+    trace = null;
+  }
+}
+
 new Vue({
   router,
   store,
@@ -59,6 +75,13 @@ new Vue({
       if (user) {
         const loggedUser = await userService.get(user.uid);
         this.$store.dispatch('user/set', { uid: user.uid, displayName: user.displayName, ...loggedUser });
+        
+        if (loggedUser !== undefined) {
+          this.$store.dispatch('expenses/setSpendingDatesList', {
+            userUid: user.uid,
+            lookingAtSpendingDate: dateAndTime.transformSecondsToDate(loggedUser.lookingAtSpendingDate.seconds)
+          });
+        }
       }
 
       this.isReadyToRender = true;
