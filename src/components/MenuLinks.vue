@@ -54,8 +54,8 @@ export default {
     },
     signOut() {
       firebase.auth().signOut();
-      this.$store.dispatch('user/set', {});
-      this.$router.push({name: 'signin'});
+      this.$store.dispatch("user/set", {});
+      this.$router.push({ name: "signin" });
     }
   },
   computed: {

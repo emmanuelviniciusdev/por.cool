@@ -31,7 +31,22 @@ const capitalizeName = name => {
  */
 const extractFromDateOnly = (date, item) => dateAndTimeHelper.extractOnly(date, [item])[item];
 
+/**
+ * It adds 'differenceAmount' to 'amount'.
+ * 
+ * @param integer amount 
+ * @param object expense
+ * @returns float 
+ */
+const sumAmounts = (amount, { differenceAmount }) => {
+    if (differenceAmount === undefined)
+        differenceAmount = 0;
+
+    return parseFloat(amount) + parseFloat(differenceAmount);
+};
+
 export default {
     capitalizeName,
-    extractFromDateOnly
+    extractFromDateOnly,
+    sumAmounts
 }

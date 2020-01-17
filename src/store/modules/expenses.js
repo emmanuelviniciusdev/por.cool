@@ -6,7 +6,11 @@ export default {
     state: {
         expenses: [],
         loadingExpenses: false,
-        loadingExpensesError: false
+        loadingExpensesError: false,
+
+        spendingDatesList: [],
+        loadingSpendingDatesList: false,
+        loadingSpendingDatesListError: false,
     },
 
     mutations: {
@@ -18,6 +22,10 @@ export default {
         },
         SET_LOADING_EXPENSES_ERROR(state, hasError = true) {
             state.loadingExpensesError = hasError;
+        },
+
+        SET_SPENDING_DATES_LIST(state, spendingDatesList) {
+            state.spendingDatesList = spendingDatesList;
         }
     },
 
@@ -25,7 +33,7 @@ export default {
         async setExpenses({ commit }, { userUid, spendingDate }) {
             commit('SET_LOADING_EXPENSES');
             commit('SET_LOADING_EXPENSES_ERROR', false);
-            
+
             try {
                 const userExpenses = await expensesService.getAll(userUid, spendingDate);
                 commit('SET_EXPENSES', userExpenses);
@@ -34,6 +42,11 @@ export default {
             } finally {
                 commit('SET_LOADING_EXPENSES', false);
             }
+        },
+
+        async setSpendingDatesList({ commit }, {userUid, lookingAtSpendingDate}) {
+            const spendingDatesList = await expensesService.getSpendingDatesList({userUid, lookingAtSpendingDate});
+            commit('SET_SPENDING_DATES_LIST', spendingDatesList);
         }
-    },
+    }
 }

@@ -71,6 +71,7 @@ const lastAndNextMonth = (date) => ({
 const startOfMonthAndDay = date => moment(date).set('date', 1).startOf('day').toDate();
 
 export default {
+    months,
     extractOnly,
     transformSecondsToDate,
     lastAndNextMonth,

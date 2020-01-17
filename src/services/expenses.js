@@ -17,6 +17,8 @@ const expenses = () => firebase.firestore().collection('expenses');
  * @param Date validity 
  */
 const getAll = async (userUid, validity = null) => {
+    if (!userUid) return;
+    
     try {
         let allExpenses = expenses()
             .where('user', '==', userUid);
@@ -165,10 +167,57 @@ const _getExpensesToClone = async (userUid, currentLookingAtSpendingDate, nextLo
     }
 };
 
+/**
+ * It returns the years and its months based on 'lookingAtSpendingDate' of the user.
+ * This information serves to populate 'FilterByDate' component and is useful
+ * in many parts of the application.
+ * 
+ * @param Object userData 
+ * @returns array
+ */
+const getSpendingDatesList = async ({ userUid, lookingAtSpendingDate }) => {
+    if (!userUid) return;
+    
+    const allExpenses = await getAll(userUid);
+    
+    const { months } = dateAndTimeHelper;
+
+    const currentDate = dateAndTimeHelper.extractOnly(lookingAtSpendingDate, ['year', 'month']);
+    const currentDateInObj = {
+        year: currentDate.year,
+        months: months.slice(0, months.indexOf(currentDate.month) + 1)
+    };
+
+    if (allExpenses.length === 0) {
+        return [currentDateInObj];
+    }
+
+    let spendingDatesList = [];
+    let trash = [];
+
+    allExpenses.forEach(({ spendingDate }) => {
+        spendingDate = dateAndTimeHelper.transformSecondsToDate(spendingDate.seconds);
+        const year = dateAndTimeHelper.extractOnly(spendingDate, ['year']).year;
+
+        if (!trash.includes(year)) {
+            spendingDatesList.push({ year, months: year === currentDate.year ? months.slice(0, months.indexOf(currentDate.month) + 1) : months });
+            trash.push(year);
+        }
+    });
+
+    if (!trash.includes(currentDate.year)) {
+        spendingDatesList.push(currentDateInObj);
+        trash.push(currentDate.year);
+    }
+
+    return spendingDatesList;
+};
+
 export default {
     getAll,
     insert,
     bulkUpdate,
     remove,
-    finishCurrentSpendingDate
+    finishCurrentSpendingDate,
+    getSpendingDatesList
 }

@@ -5,11 +5,8 @@
     </div>
     <div class="column">
       <h1 class="title has-text-black">meus gastos</h1>
-      <FinishCurrentSpendingDate
-        :expenses="expensesData.expenses"
-        v-if="showSpendingDateWarning"
-      />
-      <FilterByDate />
+      <FinishCurrentSpendingDate :expenses="expensesData.expenses" v-if="showSpendingDateWarning" />
+      <FilterByDate @onDateChange="loadExpense" />
       <SpendingTable
         :expenses="expensesData.expenses"
         :loadingExpenses="expensesData.loadingExpenses"
@@ -57,11 +54,16 @@ export default {
       return moment().isAfter(this.userData.lookingAtSpendingDate, "months");
     }
   },
+  methods: {
+    loadExpense(spendingDate = null) {
+      this.$store.dispatch("expenses/setExpenses", {
+        userUid: this.userData.uid,
+        spendingDate: spendingDate ? spendingDate : this.userData.lookingAtSpendingDate
+      });
+    }
+  },
   created() {
-    this.$store.dispatch("expenses/setExpenses", {
-      userUid: this.userData.uid,
-      spendingDate: this.userData.lookingAtSpendingDate
-    });
+    this.loadExpense();
   }
 };
 </script>
