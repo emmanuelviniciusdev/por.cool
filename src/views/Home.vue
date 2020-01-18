@@ -5,7 +5,7 @@
     </div>
     <div class="column">
       <h1 class="title has-text-black">meus gastos</h1>
-      <FinishCurrentSpendingDate :expenses="expensesData.expenses" v-if="showSpendingDateWarning" />
+      <FinishCurrentSpendingDate v-if="showSpendingDateWarning" />
       <FilterByDate @onDateChange="loadExpense" />
       <SpendingTable
         :expenses="expensesData.expenses"
