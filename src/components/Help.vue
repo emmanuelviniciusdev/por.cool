@@ -1,6 +1,6 @@
 <template>
   <div class="help">
-    <b-tooltip :label="getTooltipText()" type="is-warning">
+    <b-tooltip :label="getTooltipText()" :position="this.tooltipPosition" type="is-warning">
       <button class="help-btn" @click="openModal()">
         <b-icon type="is-warning" icon="question-circle" size="is-medium"></b-icon>
       </button>
@@ -9,7 +9,7 @@
     <b-modal :active="showModal" has-modal-card aria-role="dialog" aria-modal :canCancel="false">
       <div class="modal-card">
         <header class="modal-card-head">
-          <span class="modal-card-title">
+          <span class="modal-card-title is-size-6-mobile">
             <slot name="title"></slot>
           </span>
         </header>
@@ -27,7 +27,15 @@
 <script>
 export default {
   name: "Help",
-  props: ["tooltipText"],
+  props: {
+    tooltipText: {
+      type: String
+    },
+    tooltipPosition: {
+      type: String,
+      default: "is-top"
+    }
+  },
   data() {
     return {
       showModal: false

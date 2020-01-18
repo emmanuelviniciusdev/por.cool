@@ -8,7 +8,77 @@
           >{{ `${formatedUserLookingAtSpendingDate.month} de ${formatedUserLookingAtSpendingDate.year}` }}</p>
         </header>
         <section class="modal-card-body">
-          <h1 class="title">antes de prosseguir</h1>
+          <h1 class="title">
+            antes de prosseguir
+            <Help tooltipPosition="is-bottom">
+              <template v-slot:title>como funciona o fechamento de gastos?</template>
+              <template v-slot:body>
+                <div class="content">
+                  <h1 class="subtitle has-text-weight-normal">É bizarro de simples.</h1>
+                  <p class="is-size-5 has-text-weight-normal">
+                    Esta tela funciona assim: toda vez que termina um mês e entra outro, você precisa "fechar os gastos" para o mês antigo
+                    antes de começar a adicionar novos gastos para o novo mês.
+                    <i>
+                      Se você continuar adicionando gastos sem executar o fechamento
+                      de gastos, você estará adicionando gastos para o mês antigo, e não para o novo mês.
+                    </i>
+                  </p>
+                  <p class="is-size-5 has-text-weight-normal">
+                    Se você caiu nesta tela, quer dizer que quando você foi executar o fechamento de gastos você ainda tinha alguns gastos cujo os
+                    status estavam "pendentes" ou "parcialmente pagos".
+                    <i>
+                      Se todos os seus gastos estivessem com status "pago", você não cairia nesta tela e o
+                      fechamento seria realizado de forma automática.
+                    </i>
+                  </p>
+                  <p
+                    class="is-size-5 has-text-weight-bold"
+                  >Entendido como e por que eu você foi parar aqui, vamos ao que interessa:</p>
+                  <p class="is-size-5 has-text-weight-normal">
+                    Se o seu gasto já está pago e você apenas se esqueceu de atualizá-lo ao clicar em fechar gastos, você pode marcar a opção
+                    de
+                    <b>"já está pago?"</b> para
+                    <b>sim</b>, e o status deste gasto simplesmente se atualizará para "pago" e o fechamento
+                    ocorrerá normalmente.
+                    <img
+                      src="https://i.imgur.com/insJhSu.png"
+                    />
+                  </p>
+                  <p
+                    class="is-size-5 has-text-weight-normal"
+                  >Porém, se você de fato não efetuou o pagamento do gasto em questão, você possui algumas algumas alternativas:</p>
+                  <ul>
+                    <li>
+                      <p class="is-size-6 has-text-weight-normal">
+                        <b>passar pro próximo mês:</b> irá passar o gasto com o valor que ainda não foi pago para o próximo mês.
+                      </p>
+                    </li>
+                    <li>
+                      <p class="is-size-6 has-text-weight-normal">
+                        <b>passar pro próximo mês (com a diferença):</b> irá passar a fatura ou poupança para o próximo mês com a
+                        diferença de valor que ainda não foi paga.
+                      </p>
+                    </li>
+                    <li>
+                      <p class="is-size-6 has-text-weight-normal">
+                        <b>passar pro próximo mês (sem a diferença):</b> irá passar a fatura ou poupança para o próximo mês sem diferença
+                        nenhuma de valor. Ou seja: com o seu valor original.
+                      </p>
+                    </li>
+                    <li>
+                      <p class="is-size-6 has-text-weight-normal">
+                        <b>descartar:</b> não irá passar para o próximo mês.
+                      </p>
+                    </li>
+                  </ul>
+                  <p
+                    class="is-size-5 has-text-weight-normal"
+                  ><b>Observação:</b> todas as opções acima irão zerar os valores dos seus gastos para o mês antigo se o status for "pendente".
+                  Se o status for "parcialmente pago", elas irão considerar e definir os valores dos gastos para os valores que já haviam sido pagos.</p>
+                </div>
+              </template>
+            </Help>
+          </h1>
           <h2 class="subtitle">
             o que você pretende fazer com estes gastos que ficaram
             <i>pendentes</i> ou
@@ -21,7 +91,10 @@
                 label="#"
                 :class="{'has-text-weight-bold': props.row.type !== 'expense'}"
               >{{ props.row.expenseName }}</b-table-column>
-              <b-table-column field="amount" label="gasto">{{ props.row.amount | sumAmounts(props.row) | currency }}</b-table-column>
+              <b-table-column
+                field="amount"
+                label="gasto"
+              >{{ props.row.amount | sumAmounts(props.row) | currency }}</b-table-column>
               <b-table-column field="status" label="status">
                 <b-tag :type="status_types[props.row.status]">
                   <b-tooltip
@@ -145,6 +218,9 @@
 import { mapState } from "vuex";
 import moment from "moment";
 
+// Components
+import Help from "./Help";
+
 // Filters
 import filters from "../filters";
 
@@ -161,6 +237,9 @@ import Vue from "vue";
 
 export default {
   name: "FinishCurrentSpendingDate",
+  components: {
+    Help
+  },
   props: {
     expenses: {
       type: Array,
