@@ -71,10 +71,10 @@
                       </p>
                     </li>
                   </ul>
-                  <p
-                    class="is-size-5 has-text-weight-normal"
-                  ><b>Observação:</b> todas as opções acima irão zerar os valores dos seus gastos para o mês antigo se o status for "pendente".
-                  Se o status for "parcialmente pago", elas irão considerar e definir os valores dos gastos para os valores que já haviam sido pagos.</p>
+                  <p class="is-size-5 has-text-weight-normal">
+                    <b>Observação:</b> todas as opções acima irão zerar os valores dos seus gastos para o mês antigo se o status for "pendente".
+                    Se o status for "parcialmente pago", elas irão considerar e definir os valores dos gastos para os valores que já haviam sido pagos.
+                  </p>
                 </div>
               </template>
             </Help>
@@ -298,7 +298,16 @@ export default {
       });
     },
     async mayOpenModal() {
-      const filteredExpenses = this.expenses.filter(
+      // When we're going to finish spending date we can't access vuex's expenses
+      // because they are mutable and can be different from the expenses of current
+      // spending date that user is looking at. So, unfortunately, we have to make
+      // another server request.
+      const expenses = await expensesService.getAll(
+        this.userData.uid,
+        this.userData.lookingAtSpendingDate
+      );
+
+      const filteredExpenses = expenses.filter(
         ({ status }) => status !== "paid"
       );
 
