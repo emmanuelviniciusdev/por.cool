@@ -20,6 +20,7 @@ const routes = [
     name: "signin",
     component: () => import("../views/SignIn"),
     meta: {
+      title: 'entrar',
       isPublic: true
     }
   },
@@ -28,6 +29,7 @@ const routes = [
     name: "learn-more",
     component: () => import("../views/LearnMore"),
     meta: {
+      title: 'saiba mais!',
       isPublic: true
     }
   },
@@ -36,28 +38,41 @@ const routes = [
     name: 'signup',
     component: () => import("../views/SignUp"),
     meta: {
+      title: 'criar uma conta',
       isPublic: true
     }
   },
   {
-    path: '/pagar',
+    path: '/contribuir',
     name: 'payment',
-    component: () => import("../views/Payment")
+    component: () => import("../views/Payment"),
+    meta: {
+      title: 'contribuição'
+    }
   },
   {
     path: '/definir-renda',
     name: 'define-monthly-income',
-    component: () => import("../views/DefineMonthlyIncome")
+    component: () => import("../views/DefineMonthlyIncome"),
+    meta: {
+      title: 'definir renda mensal'
+    }
   },
   {
     path: '/meus-gastos',
     name: 'home',
-    component: () => import("../views/Home")
+    component: () => import("../views/Home"),
+    meta: {
+      title: 'meus gastos'
+    }
   },
   {
     path: '/novo-gasto',
     name: 'add-expenses',
-    component: () => import("../views/AddExpenses")
+    component: () => import("../views/AddExpenses"),
+    meta: {
+      title: 'adicionar gastos'
+    }
   }
 ];
 
@@ -69,6 +84,9 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // Start loading animation
   if (to.name) NProgress.start();
+
+  // Change page's informations
+  document.title = to.meta.title ? `porcool — ${to.meta.title}` : 'porcool';
 
   // Check route roles only if route is not public
   const isPrivate = to.matched.some(record => !record.meta.isPublic);
