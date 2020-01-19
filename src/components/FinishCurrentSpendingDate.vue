@@ -33,20 +33,20 @@
                   </p>
                   <p
                     class="is-size-5 has-text-weight-bold"
-                  >Entendido como e por que eu você foi parar aqui, vamos ao que interessa:</p>
+                  >Entendido como e por que você foi parar aqui, vamos ao que interessa:</p>
                   <p class="is-size-5 has-text-weight-normal">
                     Se o seu gasto já está pago e você apenas se esqueceu de atualizá-lo ao clicar em fechar gastos, você pode marcar a opção
                     de
                     <b>"já está pago?"</b> para
                     <b>sim</b>, e o status deste gasto simplesmente se atualizará para "pago" e o fechamento
-                    ocorrerá normalmente.
+                    ocorrerá normalmente, de forma automática.
                     <img
                       src="https://i.imgur.com/insJhSu.png"
                     />
                   </p>
                   <p
                     class="is-size-5 has-text-weight-normal"
-                  >Porém, se você de fato não efetuou o pagamento do gasto em questão, você possui algumas algumas alternativas:</p>
+                  >Porém, se você de fato não efetuou o pagamento do seu gasto em questão, você possui algumas alternativas:</p>
                   <ul>
                     <li>
                       <p class="is-size-6 has-text-weight-normal">
@@ -72,7 +72,7 @@
                     </li>
                   </ul>
                   <p class="is-size-5 has-text-weight-normal">
-                    <b>Observação:</b> todas as opções acima irão zerar os valores dos seus gastos para o mês antigo se o status for "pendente".
+                    <b>Observação:</b> todas as opções acima irão zerar os valores dos seus gastos para o mês antigo se o status estiver como "pendente".
                     Se o status for "parcialmente pago", elas irão considerar e definir os valores dos gastos para os valores que já haviam sido pagos.
                   </p>
                 </div>
@@ -298,6 +298,8 @@ export default {
       });
     },
     async mayOpenModal() {
+      this.onLoadingFinishSpendingDate();
+
       // When we're going to finish spending date we can't access vuex's expenses
       // because they are mutable and can be different from the expenses of current
       // spending date that user is looking at. So, unfortunately, we have to make
@@ -323,10 +325,10 @@ export default {
 
         this.isModalOpened = true;
 
+        this.onLoadingFinishSpendingDate(false);
+
         return;
       }
-
-      this.onLoadingFinishSpendingDate();
 
       // Finish current spending date with auto clone
       await expensesService.finishCurrentSpendingDate(
