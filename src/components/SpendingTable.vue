@@ -1,5 +1,7 @@
 <template>
   <div>
+    <EditExpense :expense="expenseToEdit" />
+
     <b-table
       :data="expenses"
       :loading="loadingExpenses"
@@ -14,16 +16,33 @@
           label="#"
           :class="{'has-text-weight-bold': props.row.type !== 'expense'}"
         >{{ props.row.expenseName }}</b-table-column>
-        <b-table-column field="amount" label="gasto">{{ props.row.amount | sumAmounts(props.row) | currency }}</b-table-column>
+        <b-table-column
+          field="amount"
+          label="gasto"
+        >{{ props.row.amount | sumAmounts(props.row) | currency }}</b-table-column>
         <b-table-column field="status" label="status">
-          <b-tag :type="status_types[props.row.status]">
-            <b-tooltip
-              v-if="props.row.status === 'partially_paid'"
-              :label="props.row.alreadyPaidAmount | currency"
-              type="is-dark"
-            >{{ status_labels[props.row.status] }}</b-tooltip>
-            <span v-else>{{ status_labels[props.row.status] }}</span>
-          </b-tag>
+          <b-dropdown
+            aria-role="list"
+            :disabled="!canDeleteOrUpdateExpense(props.row.spendingDate)"
+          >
+            <b-tag
+              class="tag-expense-type"
+              :type="status_types[props.row.status]"
+              slot="trigger"
+              role="button"
+            >
+              <b-tooltip
+                v-if="props.row.status === 'partially_paid'"
+                :label="props.row.alreadyPaidAmount | currency"
+                type="is-dark"
+              >{{ status_labels[props.row.status] }}</b-tooltip>
+              <span v-else>{{ status_labels[props.row.status] }}</span>
+            </b-tag>
+
+            <b-dropdown-item aria-role="listitem">pendente</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem">parcialmente pago</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem">pago</b-dropdown-item>
+          </b-dropdown>
         </b-table-column>
         <b-table-column field="type" label="tipo">
           <b-tag size="is-medium">{{ types_labels[props.row.type] }}</b-tag>
@@ -33,6 +52,7 @@
             <button
               class="button is-warning is-small btn-table-action"
               :disabled="!canDeleteOrUpdateExpense(props.row.spendingDate)"
+              @click.prevent="editExpense(props.row)"
             >
               <b-icon icon="pencil-alt"></b-icon>
             </button>
@@ -79,7 +99,9 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import { mapState } from "vuex";
 import moment from "moment";
-import FilterByDate from "./FilterByDate";
+
+// Components
+import EditExpense from "./EditExpense";
 
 // Services
 import expensesService from "../services/expenses";
@@ -91,7 +113,7 @@ import dateAndTimeHelper from "../helpers/dateAndTime";
 import filters from "../filters";
 
 // Mixins
-import SpendingTableMixin from '../mixins/SpendingTable';
+import SpendingTableMixin from "../mixins/SpendingTable";
 
 export default {
   name: "SpendingTable",
@@ -109,8 +131,24 @@ export default {
       type: Boolean
     }
   },
+  components: {
+    EditExpense
+  },
+  data() {
+    return {
+      expenseToEdit: {}
+    };
+  },
   mixins: [SpendingTableMixin],
   methods: {
+    editExpense(expense) {
+      if (!this.canDeleteOrUpdateExpense(expense.spendingDate)) return;
+      
+      this.expenseToEdit = expense;
+      // It is to Vue capture changes in 'this.expenseToEdit' and open edit modal
+      // without any problem.
+      this.expenseToEdit = { ...this.expenseToEdit, watchKey: Math.random() };
+    },
     removeExpense(expense) {
       const {
         id: expenseDocId,
@@ -156,7 +194,7 @@ export default {
   },
   filters: {
     extractFromDateOnly: filters.extractFromDateOnly,
-    sumAmounts: filters.sumAmounts,
+    sumAmounts: filters.sumAmounts
   }
 };
 </script>
@@ -168,5 +206,9 @@ export default {
 
 .stoincs img {
   width: 450px;
+}
+
+.tag-expense-type {
+  cursor: pointer;
 }
 </style>

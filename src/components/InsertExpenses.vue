@@ -34,6 +34,7 @@
         </b-field>
         <b-field label="valor que já foi pago" v-if="expense.status === 'partially_paid'">
           <money
+            :ref="'alreadyPaidAmountInput_' + expense.key"
             v-model="expense.alreadyPaidAmount"
             v-bind="{
                 decimal: ',',
@@ -46,7 +47,10 @@
         </b-field>
         <b-field label="status">
           <div class="select">
-            <select v-model="expense.status">
+            <select
+              v-model="expense.status"
+              @change="onAlreadyPaidAmountFocus($event.target.value, expense.key)"
+            >
               <option value="pending">pendente</option>
               <option value="partially_paid">parcialmente pago</option>
               <option value="paid">pago</option>
@@ -164,12 +168,37 @@ export default {
       this.expenses = this.expenses.filter(expense => expense.key !== key);
       if (this.expenses.length === 0) this.insertExpense();
     },
+    onAlreadyPaidAmountFocus(value, expenseKey) {
+      this.$nextTick(() => {
+        if (value === "partially_paid") {
+          this.$refs[`alreadyPaidAmountInput_${expenseKey}`][0].$el.focus();
+        } else {
+          this.expense = this.expenses.map(expense => {
+            if (expense.key === expenseKey) expense.alreadyPaidAmount = 0;
+            return expense;
+          });
+        }
+      });
+    },
     async saveExpenses() {
       this.onLoading();
 
-      let validationError = false;
+      const errorData = { error: false, msg: "" };
 
-      this.expenses = this.expenses.map(expense => {
+      const expensesToInsert = [];
+
+      this.expenses.forEach(expense => {
+        // Add more data
+        expense.validity =
+          expense.type === "expense" || expense.indeterminateValidity
+            ? null
+            : expense.validity;
+        expense.user = this.userData.uid;
+        expense.spendingDate = dateAndTime.startOfMonthAndDay(
+          this.userData.lookingAtSpendingDate
+        );
+        expense.created = new Date();
+
         const {
           expenseName,
           validity,
@@ -181,43 +210,45 @@ export default {
 
         // Validation
         if (
-          (expenseName === "" )||
-          (validity === null && type !== "expense" && !indeterminateValidity) ||
-          (alreadyPaidAmount > amount)
+          expenseName === "" ||
+          (validity === null && type !== "expense" && !indeterminateValidity)
         ) {
-          this.$buefy.toast.open({
-            message:
-              "Tem alguma coisa errada com os seus gastos... Tenha certeza de que preencheu tudo certo.",
-            type: "is-danger",
-            position: "is-bottom"
-          });
-
-          validationError = true;
-
-          return expense;
+          errorData.error = true;
+          errorData.msg =
+            "tenha certeza de que preencheu todos os campos corretamente";
         }
 
-        // Make 'validity' null if 'type' is not invoice or savings or 'indeterminateValidity' is true
-        expense.validity =
-          type === "expense" || indeterminateValidity ? null : validity;
-        expense.user = this.userData.uid;
-        expense.spendingDate = dateAndTime.startOfMonthAndDay(
-          this.userData.lookingAtSpendingDate
-        );
-        expense.created = new Date();
+        if (alreadyPaidAmount > amount) {
+          errorData.error = true;
+          errorData.msg = "você não pode pagar mais do que deve";
+        }
+
+        if (
+          validity !== null &&
+          moment(validity).isBefore(moment(this.userData.lookingAtSpendingDate))
+        ) {
+          errorData.error = true;
+          errorData.msg = `não foi possível adicionar uma fatura/poupança no passado...`;
+        }
+
+        // Delete some data
         delete expense.key;
 
-        return expense;
+        expensesToInsert.push(expense);
       });
 
-      if (validationError) {
+      if (errorData.error) {
+        this.$buefy.toast.open({
+          message: errorData.msg,
+          position: "is-bottom",
+          type: "is-danger"
+        });
         this.onLoading(false);
         return;
       }
 
-      await expenses.insert(this.expenses);
+      await expenses.insert(expensesToInsert);
       this.$router.push({ name: "home" });
-
       this.onLoading(false);
     }
   }
