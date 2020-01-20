@@ -142,9 +142,12 @@ export default {
       this.expenseToEdit = { ...this.expenseToEdit, watchKey: Math.random() };
     },
     async fastChangeStatusExpense(expense) {
+      const { status } = expense;
+
+      if (status === "partially_paid") return;
+
       this.loadingFastChangeStatus = true;
 
-      const { status } = expense;
       expense.status = status === "paid" ? "pending" : "paid";
 
       try {
