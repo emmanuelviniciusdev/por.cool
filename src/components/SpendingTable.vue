@@ -21,28 +21,19 @@
           label="gasto"
         >{{ props.row.amount | sumAmounts(props.row) | currency }}</b-table-column>
         <b-table-column field="status" label="status">
-          <b-dropdown
-            aria-role="list"
-            :disabled="!canDeleteOrUpdateExpense(props.row.spendingDate)"
+          <b-button
+            :type="status_types[props.row.status]"
+            size="is-small"
+            @dblclick="fastChangeStatusExpense(props.row)"
+            :loading="loadingFastChangeStatus"
           >
-            <b-tag
-              class="tag-expense-type"
-              :type="status_types[props.row.status]"
-              slot="trigger"
-              role="button"
-            >
-              <b-tooltip
-                v-if="props.row.status === 'partially_paid'"
-                :label="props.row.alreadyPaidAmount | currency"
-                type="is-dark"
-              >{{ status_labels[props.row.status] }}</b-tooltip>
-              <span v-else>{{ status_labels[props.row.status] }}</span>
-            </b-tag>
-
-            <b-dropdown-item aria-role="listitem">pendente</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem">parcialmente pago</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem">pago</b-dropdown-item>
-          </b-dropdown>
+            <b-tooltip
+              v-if="props.row.status === 'partially_paid'"
+              :label="props.row.alreadyPaidAmount | currency"
+              type="is-dark"
+            >{{ status_labels[props.row.status] }}</b-tooltip>
+            <span v-else>{{ status_labels[props.row.status] }}</span>
+          </b-button>
         </b-table-column>
         <b-table-column field="type" label="tipo">
           <b-tag size="is-medium">{{ types_labels[props.row.type] }}</b-tag>
@@ -136,18 +127,42 @@ export default {
   },
   data() {
     return {
-      expenseToEdit: {}
+      expenseToEdit: {},
+      loadingFastChangeStatus: false
     };
   },
   mixins: [SpendingTableMixin],
   methods: {
     editExpense(expense) {
       if (!this.canDeleteOrUpdateExpense(expense.spendingDate)) return;
-      
+
       this.expenseToEdit = expense;
       // It is to Vue capture changes in 'this.expenseToEdit' and open edit modal
       // without any problem.
       this.expenseToEdit = { ...this.expenseToEdit, watchKey: Math.random() };
+    },
+    async fastChangeStatusExpense(expense) {
+      this.loadingFastChangeStatus = true;
+
+      const { status } = expense;
+      expense.status = status === "paid" ? "pending" : "paid";
+
+      try {
+        await expensesService.update(expense);
+        this.$store.dispatch("expenses/setExpenses", {
+          userUid: this.userData.uid,
+          spendingDate: this.userData.lookingAtSpendingDate
+        });
+      } catch (err) {
+        console.log(err);
+        this.$buefy.toast.open({
+          message: "ocorreu um erro ao fazer a troca rápida de status",
+          position: "is-bottom",
+          type: "is-danger"
+        });
+      } finally {
+        this.loadingFastChangeStatus = false;
+      }
     },
     removeExpense(expense) {
       const {
@@ -206,9 +221,5 @@ export default {
 
 .stoincs img {
   width: 450px;
-}
-
-.tag-expense-type {
-  cursor: pointer;
 }
 </style>
