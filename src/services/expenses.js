@@ -18,7 +18,7 @@ const expenses = () => firebase.firestore().collection('expenses');
  */
 const getAll = async (userUid, validity = null) => {
     if (!userUid) return;
-    
+
     try {
         let allExpenses = expenses()
             .where('user', '==', userUid);
@@ -56,6 +56,10 @@ const insert = async expensesToInsert => {
         let batch = firebase.firestore().batch();
         expensesToInsert.forEach(expense => {
             delete expense.id;
+
+            if (expense.differenceAmount !== undefined && expense.differenceAmount <= 0)
+                delete expense.differenceAmount;
+
             batch.set(expenses().doc(), expense)
         });
         await batch.commit();
@@ -65,7 +69,9 @@ const insert = async expensesToInsert => {
 };
 
 /**
- * It needs expense to have the document ID as "id" in its object
+ * Updates multiple expenses.
+ * 
+ * OBS: It needs expense to have the document ID as "id" in its object
  * to make update possible.
  * {id: expense_document_id, ...expense}
  * 
@@ -73,10 +79,17 @@ const insert = async expensesToInsert => {
  */
 const bulkUpdate = async expensesToUpdate => {
     try {
+        const { FieldValue } = firebase.firestore;
+
         let batch = firebase.firestore().batch();
         expensesToUpdate.forEach(expense => {
             const { id: expenseDocId } = expense;
+
             delete expense.id;
+
+            if (expense.differenceAmount !== undefined && expense.differenceAmount <= 0)
+                expense.differenceAmount = FieldValue.delete();
+
             batch.update(expenses().doc(expenseDocId), { ...expense });
         });
         await batch.commit();
@@ -84,6 +97,36 @@ const bulkUpdate = async expensesToUpdate => {
         throw new Error(err);
     }
 };
+
+/**
+ * Updates a single expense.
+ * 
+ * OBS: It needs expense to have the document ID as "id" in its object
+ * to make update possible.
+ * {id: expense_document_id, ...expense}
+ * 
+ * @param object expense 
+ * @returns boolean | Promise
+ */
+const update = async expense => {
+    try {
+        const { FieldValue } = firebase.firestore;
+        const expenseId = expense.id;
+
+        expense.updated = new Date();
+
+        // Delete some data
+        delete expense.id;
+        if (expense.differenceAmount !== undefined && expense.differenceAmount <= 0)
+            expense.differenceAmount = FieldValue.delete();
+
+
+        await expenses().doc(expenseId).update(expense);
+        return true;
+    } catch (err) {
+        throw new Error(err);
+    }
+}
 
 /**
  * 
@@ -177,9 +220,9 @@ const _getExpensesToClone = async (userUid, currentLookingAtSpendingDate, nextLo
  */
 const getSpendingDatesList = async ({ userUid, lookingAtSpendingDate }) => {
     if (!userUid) return;
-    
+
     const allExpenses = await getAll(userUid);
-    
+
     const { months } = dateAndTimeHelper;
 
     const currentDate = dateAndTimeHelper.extractOnly(lookingAtSpendingDate, ['year', 'month']);
@@ -216,6 +259,7 @@ const getSpendingDatesList = async ({ userUid, lookingAtSpendingDate }) => {
 export default {
     getAll,
     insert,
+    update,
     bulkUpdate,
     remove,
     finishCurrentSpendingDate,

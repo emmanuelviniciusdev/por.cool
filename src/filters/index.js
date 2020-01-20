@@ -38,11 +38,11 @@ const extractFromDateOnly = (date, item) => dateAndTimeHelper.extractOnly(date, 
  * @param object expense
  * @returns float 
  */
-const sumAmounts = (amount, { differenceAmount }) => {
+const sumAmounts = (amount, { differenceAmount, alreadyPaidAmount }) => {
     if (differenceAmount === undefined)
         differenceAmount = 0;
 
-    return parseFloat(amount) + parseFloat(differenceAmount);
+    return (parseFloat(amount) + parseFloat(differenceAmount)) - parseFloat(alreadyPaidAmount);
 };
 
 export default {
