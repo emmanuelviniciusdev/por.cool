@@ -2,9 +2,9 @@
   <div class="hero">
     <section class="hero-body">
       <div class="container">
-        <router-link :to="{ name: 'signin' }" class="title app-title"
-          >por.<span>cool</span></router-link
-        >
+        <router-link :to="{ name: 'signin' }" class="title app-title">
+          por.<span>cool</span>
+        </router-link>
         <transition name="slide" mode="out-in">
           <router-view></router-view>
         </transition>
@@ -12,7 +12,11 @@
     </section>
     <footer class="footer is-primary">
       <p>porcool — produção independente</p>
-      <p>dúvidas, ajuda? entre em contato pelo<br /><b>porcool@gmail.com</b></p>
+      <p>
+        dúvidas, ajuda? entre em contato pelo
+        <br />
+        <b>porcool@gmail.com</b>
+      </p>
     </footer>
   </div>
 </template>
@@ -26,9 +30,13 @@ export default {
 <style lang="scss">
 .hero .hero-body {
   .app-title {
+    width: auto;
     text-align: center;
     font-size: 28px;
-    display: block;
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+    // background: red;
 
     span {
       color: #1bb450;
