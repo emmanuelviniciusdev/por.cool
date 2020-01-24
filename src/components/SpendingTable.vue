@@ -26,6 +26,7 @@
             size="is-small"
             @dblclick="fastChangeStatusExpense(props.row)"
             :loading="loadingFastChangeStatus"
+            :disabled="!canDeleteOrUpdateExpense(props.row.spendingDate)"
           >
             <b-tooltip
               v-if="props.row.status === 'partially_paid'"
@@ -142,6 +143,8 @@ export default {
       this.expenseToEdit = { ...this.expenseToEdit, watchKey: Math.random() };
     },
     async fastChangeStatusExpense(expense) {
+      if (!this.canDeleteOrUpdateExpense(expense.spendingDate)) return;
+
       const { status } = expense;
 
       if (status === "partially_paid") return;
