@@ -39,6 +39,15 @@ label {
   font-size: 18px !important;
 }
 
+.porcool-logo {
+  color: #000;
+  font-weight: bold;
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+  span { color: #1bb450; }
+}
+
 // Transition between pages effect
 .slide-enter-active, .slide-leave-active {
   transition: opacity 0.6s, transform 0.6s;

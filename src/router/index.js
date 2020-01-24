@@ -4,7 +4,6 @@ import NProgress from 'nprogress';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
-import store from '../store';
 
 // Services
 import userService from '../services/user';
@@ -73,7 +72,15 @@ const routes = [
     meta: {
       title: 'adicionar gastos'
     }
-  }
+  },
+  {
+    path: '*',
+    name: 'page-not-found',
+    component: () => import("../views/PageNotFound"),
+    meta: {
+      title: 'página não encontrada'
+    }
+  },
 ];
 
 const router = new VueRouter({
