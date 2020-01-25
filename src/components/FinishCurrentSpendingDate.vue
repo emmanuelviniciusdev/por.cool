@@ -226,6 +226,7 @@ import filters from "../filters";
 
 // Services
 import expensesService from "../services/expenses";
+import balancesServices from "../services/balances";
 
 // Helpers
 import dateAndTimeHelper from "../helpers/dateAndTime";
@@ -336,6 +337,12 @@ export default {
         this.userData.lookingAtSpendingDate,
         { autoClone: true }
       );
+
+      // Record the user's balance history
+      await balancesServices.recordHistory({
+        userUid: this.userData.uid,
+        spendingDate: this.userData.lookingAtSpendingDate
+      });
 
       this.updateGeneral();
       this.onLoadingFinishSpendingDate(false);
@@ -464,13 +471,23 @@ export default {
         this.userData.lookingAtSpendingDate
       );
 
+      // Record the user's balance history
+      await balancesServices.recordHistory({
+        userUid: this.userData.uid,
+        spendingDate: this.userData.lookingAtSpendingDate
+      });
+
       this.updateGeneral();
       this.onLoadingFinishSpendingDate(false);
     },
-    updateGeneral() {
+    async updateGeneral() {
       this.closeModal();
 
       this.$store.dispatch("expenses/setExpenses", {
+        userUid: this.userData.uid,
+        spendingDate: this.newSpendingDate
+      });
+      this.$store.dispatch("balances/setCurrentBalance", {
         userUid: this.userData.uid,
         spendingDate: this.newSpendingDate
       });

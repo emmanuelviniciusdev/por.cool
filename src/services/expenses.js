@@ -164,7 +164,12 @@ const finishCurrentSpendingDate = async (userUid, currentLookingAtSpendingDate, 
 
         if (autoClone === true) {
             let batchCloneExpenses = firebase.firestore().batch();
-            expensesToClone.forEach(expense => batchCloneExpenses.set(expenses().doc(), expense));
+            expensesToClone.forEach(expense => {
+                if (expense.differenceAmount !== undefined)
+                    delete expense.differenceAmount;
+
+                batchCloneExpenses.set(expenses().doc(), expense);
+            });
             await batchCloneExpenses.commit();
         }
 

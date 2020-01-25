@@ -17,7 +17,6 @@ import 'firebase/auth';
 
 // Services
 import userService from './services/user';
-import balancesService from './services/balances';
 
 // Helpers
 import dateAndTime from './helpers/dateAndTime';
@@ -78,14 +77,16 @@ new Vue({
 
         if (loggedUser !== undefined) {
           const userLookingAtSpendingDate = dateAndTime.transformSecondsToDate(loggedUser.lookingAtSpendingDate.seconds);
-          const userRemainingBalance = await balancesService.calculate({ userUid: user.uid, spendingDate: userLookingAtSpendingDate });
 
           this.$store.dispatch('user/set', { uid: user.uid, displayName: user.displayName, ...loggedUser });
           this.$store.dispatch('expenses/setSpendingDatesList', {
             userUid: user.uid,
             lookingAtSpendingDate: userLookingAtSpendingDate
           });
-          this.$store.dispatch('balances/setCurrentBalance', userRemainingBalance);
+          this.$store.dispatch('balances/setCurrentBalance', {
+            userUid: user.uid,
+            spendingDate: userLookingAtSpendingDate
+          });
         }
       }
 

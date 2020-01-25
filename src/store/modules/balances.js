@@ -1,3 +1,6 @@
+// Services
+import balancesService from '../../services/balances';
+
 export default {
     namespaced: true,
 
@@ -25,8 +28,9 @@ export default {
             commit('TOGGLE_SHOW_BALANCE');
         },
 
-        setCurrentBalance({ commit }, currentBalance) {
-            commit('SET_CURRENT_BALANCE', currentBalance);
+        async setCurrentBalance({ commit }, { userUid, spendingDate }) {
+            const remainingBalance = await balancesService.calculate({ userUid, spendingDate });
+            commit('SET_CURRENT_BALANCE', remainingBalance);
         },
         setLastMonthBalance({ commit }, lastMonthBalance) {
             commit('SET_LAST_MONTH_BALANCE', lastMonthBalance);
