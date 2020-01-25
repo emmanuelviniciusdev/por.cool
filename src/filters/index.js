@@ -32,7 +32,7 @@ const capitalizeName = name => {
 const extractFromDateOnly = (date, item) => dateAndTimeHelper.extractOnly(date, [item])[item];
 
 /**
- * It adds 'differenceAmount' to 'amount'.
+ * It calculates the expense's amount and returns the actual value.
  * 
  * @param integer amount 
  * @param object expense
