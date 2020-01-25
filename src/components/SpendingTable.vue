@@ -194,7 +194,10 @@ export default {
             spendingDate: this.userData.lookingAtSpendingDate
           });
 
-          this.refreshRemainingBalance();
+          this.$store.dispatch("balances/setCurrentBalance", {
+            userUid: this.userData.uid,
+            spendingDate: this.userData.lookingAtSpendingDate
+          });
         }
       });
     },
@@ -209,13 +212,6 @@ export default {
         spendingDate,
         "month"
       );
-    },
-    async refreshRemainingBalance() {
-      const remainingBalance = await balancesService.calculate({
-        userUid: this.userData.uid,
-        spendingDate: this.userData.lookingAtSpendingDate,
-      });
-      this.$store.dispatch('balances/setCurrentBalance', remainingBalance);
     }
   },
   computed: {

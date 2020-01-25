@@ -125,7 +125,6 @@ import moment from "moment";
 
 // Services
 import expenseService from "../services/expenses";
-import balancesService from "../services/balances";
 
 // Helpers
 import dateAndTime from "../helpers/dateAndTime";
@@ -228,7 +227,10 @@ export default {
         spendingDate: this.userData.lookingAtSpendingDate
       });
 
-      this.refreshRemainingBalance();
+      this.$store.dispatch('balances/setCurrentBalance', {
+        userUid: this.userData.uid,
+        spendingDate: this.userData.lookingAtSpendingDate
+      });
 
       this.$buefy.toast.open({
         message: "atualizado com sucesso",
@@ -254,13 +256,6 @@ export default {
           this.$refs.alreadyPaidAmountInput.$el.focus();
         else this.expenseToEdit.alreadyPaidAmount = 0;
       });
-    },
-    async refreshRemainingBalance() {
-      const remainingBalance = await balancesService.calculate({
-        userUid: this.userData.uid,
-        spendingDate: this.userData.lookingAtSpendingDate,
-      });
-      this.$store.dispatch('balances/setCurrentBalance', remainingBalance);
     }
   }
 };
