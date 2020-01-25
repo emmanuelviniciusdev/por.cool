@@ -10,12 +10,26 @@ export default {
     mutations: {
         TOGGLE_SHOW_BALANCE(state) {
             state.showBalance = !state.showBalance;
+        },
+
+        SET_CURRENT_BALANCE(state, currentBalance) {
+            state.currentBalance = currentBalance;
+        },
+        SET_LAST_MONTH_BALANCE(state, lastMonthBalance) {
+            state.lastMonthBalance = lastMonthBalance;
         }
     },
 
     actions: {
         toggleShowBalance({ commit }) {
             commit('TOGGLE_SHOW_BALANCE');
-        }
+        },
+
+        setCurrentBalance({ commit }, currentBalance) {
+            commit('SET_CURRENT_BALANCE', currentBalance);
+        },
+        setLastMonthBalance({ commit }, lastMonthBalance) {
+            commit('SET_LAST_MONTH_BALANCE', lastMonthBalance);
+        },
     }
 }
