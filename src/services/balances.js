@@ -16,17 +16,16 @@ const balanceHistory = () => firebase.firestore().collection('balance_history');
  * @param object data 
  */
 const calculate = async ({ userUid, spendingDate }) => {
+    const lastMonthSpendingDate = moment(spendingDate).subtract(1, 'months').toDate();
+
     const { monthlyIncome } = await userService.get(userUid);
-    const expenses = await expensesServices.getAll(userUid, spendingDate);
+    const currentExpenses = await expensesServices.getAll(userUid, spendingDate);
+    const userBalanceHistory = await getHistoryByDate({ userUid, spendingDate: lastMonthSpendingDate });
 
     let remainingBalance = monthlyIncome;
+    currentExpenses.forEach(({ amount, differenceAmount = 0 }) => remainingBalance -= amount + differenceAmount);
 
-    expenses.forEach(({ amount, differenceAmount }) => {
-        if (differenceAmount === undefined) differenceAmount = 0;
-        remainingBalance -= amount + differenceAmount;
-    });
-
-    return remainingBalance;
+    return remainingBalance + (userBalanceHistory.balance !== undefined ? userBalanceHistory.balance : 0);
 };
 
 /**
@@ -41,12 +40,12 @@ const recordHistory = async ({ userUid, spendingDate }) => {
 
         const { monthlyIncome } = await userService.get(userUid);
         const balance = await calculate({ userUid, spendingDate });
-        const lastMonthBalance = await calculate({ userUid, spendingDate: subtractedSpendingDate });
+        const lastMonthBalance = await getHistoryByDate({ userUid, spendingDate: subtractedSpendingDate });
 
         await balanceHistory().add({
             monthlyIncome,
             balance,
-            lastMonthBalance,
+            lastMonthBalance: lastMonthBalance.balance !== undefined ? lastMonthBalance.balance : 0,
             user: userUid,
             spendingDate,
             created: new Date()
@@ -56,7 +55,26 @@ const recordHistory = async ({ userUid, spendingDate }) => {
     }
 };
 
+/**
+ * Get an specific balance history by 'spendingDate'
+ * 
+ * @param object data
+ */
+const getHistoryByDate = async ({ userUid, spendingDate }) => {
+    try {
+        const history = await balanceHistory()
+            .where('user', '==', userUid)
+            .where('spendingDate', '==', spendingDate)
+            .get();
+
+        return history.size > 0 ? history.docs[0].data() : {};
+    } catch (err) {
+        throw new Error(err);
+    }
+};
+
 export default {
     calculate,
-    recordHistory
+    recordHistory,
+    getHistoryByDate
 }
