@@ -83,7 +83,7 @@ new Vue({
             userUid: user.uid,
             lookingAtSpendingDate: userLookingAtSpendingDate
           });
-          this.$store.dispatch('balances/setCurrentBalance', {
+          this.$store.dispatch('balances/setBalances', {
             userUid: user.uid,
             spendingDate: userLookingAtSpendingDate
           });

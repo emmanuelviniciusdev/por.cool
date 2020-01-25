@@ -487,7 +487,7 @@ export default {
         userUid: this.userData.uid,
         spendingDate: this.newSpendingDate
       });
-      this.$store.dispatch("balances/setCurrentBalance", {
+      this.$store.dispatch("balances/setBalances", {
         userUid: this.userData.uid,
         spendingDate: this.newSpendingDate
       });
