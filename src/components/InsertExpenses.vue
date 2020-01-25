@@ -116,6 +116,7 @@ import moment from "moment";
 
 // Services
 import userService from "../services/user";
+import balancesService from "../services/balances";
 import expenses from "../services/expenses";
 
 // Helpers
@@ -248,8 +249,18 @@ export default {
       }
 
       await expenses.insert(expensesToInsert);
+
+      this.refreshRemainingBalance();
+
       this.$router.push({ name: "home" });
       this.onLoading(false);
+    },
+    async refreshRemainingBalance() {
+      const remainingBalance = await balancesService.calculate({
+        userUid: this.userData.uid,
+        spendingDate: this.userData.lookingAtSpendingDate,
+      });
+      this.$store.dispatch('balances/setCurrentBalance', remainingBalance);
     }
   }
 };

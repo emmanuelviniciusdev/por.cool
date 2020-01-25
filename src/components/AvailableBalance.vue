@@ -19,7 +19,11 @@
       :label="balances.showBalance ? `${$options.filters.currency(balances.lastMonthBalance)} (do mês passado) + ${$options.filters.currency(user.monthlyIncome)} (deste mês)` : 'ver saldo'"
     >
       <h1
-        class="title has-text-black"
+        class="title"
+        :class="{
+          'has-text-black': balances.currentBalance >= 0 || !balances.showBalance,
+          'has-text-danger': balances.currentBalance < 0 && balances.showBalance
+        }"
       >{{balances.showBalance ? $options.filters.currency(balances.currentBalance) : '...'}}</h1>
     </b-tooltip>
   </div>
@@ -35,7 +39,7 @@ export default {
       balances: state => state.balances,
       user: state => state.user.user
     })
-  },
+  }
 };
 </script>
 
