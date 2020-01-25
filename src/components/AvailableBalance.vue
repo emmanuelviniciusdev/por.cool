@@ -16,7 +16,7 @@
       type="is-dark"
       multilined
       position="is-bottom"
-      :label="balances.showBalance ? `${$options.filters.currency(balances.lastMonthBalance)} (do mês passado) + ${$options.filters.currency(balances.currentBalance)} (deste mês)` : 'ver saldo'"
+      :label="balances.showBalance ? `${$options.filters.currency(balances.lastMonthBalance)} (do mês passado) + ${$options.filters.currency(user.monthlyIncome)} (deste mês)` : 'ver saldo'"
     >
       <h1
         class="title has-text-black"
@@ -31,7 +31,10 @@ import { mapState } from "vuex";
 export default {
   name: "AvailableBalance",
   computed: {
-    ...mapState(["balances"])
+    ...mapState({
+      balances: state => state.balances,
+      user: state => state.user.user
+    })
   },
 };
 </script>
