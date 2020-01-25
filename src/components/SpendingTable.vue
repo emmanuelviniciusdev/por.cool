@@ -97,6 +97,7 @@ import EditExpense from "./EditExpense";
 
 // Services
 import expensesService from "../services/expenses";
+import balancesService from "../services/balances";
 
 // Helpers
 import dateAndTimeHelper from "../helpers/dateAndTime";
@@ -192,6 +193,8 @@ export default {
             userUid: this.userData.uid,
             spendingDate: this.userData.lookingAtSpendingDate
           });
+
+          this.refreshRemainingBalance();
         }
       });
     },
@@ -206,6 +209,13 @@ export default {
         spendingDate,
         "month"
       );
+    },
+    async refreshRemainingBalance() {
+      const remainingBalance = await balancesService.calculate({
+        userUid: this.userData.uid,
+        spendingDate: this.userData.lookingAtSpendingDate,
+      });
+      this.$store.dispatch('balances/setCurrentBalance', remainingBalance);
     }
   },
   computed: {
