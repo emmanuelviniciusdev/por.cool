@@ -67,10 +67,7 @@
             <div class="stoincs" v-if="!loadingExpensesError">
               <div class="notification">
                 <p>
-                  Nenhum gasto encontrado para {{this.userData.lookingAtSpendingDate | extractFromDateOnly('month') }} de {{this.userData.lookingAtSpendingDate | extractFromDateOnly('year') }}.
-                  <b>
-                    <i>Legal.</i>
-                  </b>
+                  Nenhum gasto foi encontrado por aqui...
                 </p>
               </div>
               <img src="../assets/images/stoincs.png" alt="stoincs" />

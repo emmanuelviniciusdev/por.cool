@@ -6,6 +6,9 @@ import moment from 'moment';
 import userService from './user';
 import expensesServices from './expenses';
 
+// Helpers
+import dateAndTimeHelper from '../helpers/dateAndTime';
+
 const additionalBalances = () => firebase.firestore().collection('additional_balances');
 const balanceHistory = () => firebase.firestore().collection('balance_history');
 
@@ -61,7 +64,7 @@ const recordHistory = async ({ userUid, spendingDate }) => {
 
 /**
  * This function will convert a number with many decimal places
- * to a number with only 3 decimal places.
+ * to a number with only 2 decimal places.
  * Example:
  * '-2.7284841053187847e-12' => '-2.73'
  * 
@@ -95,9 +98,49 @@ const getHistoryByDate = async ({ userUid, spendingDate }) => {
     }
 };
 
+/**
+ * Inserts a new additional balance.
+ * 
+ * @param object data 
+ */
+const addAdditionalBalance = async data => {
+    try {
+        const { balance, spendingDate, userUid: user } = data;
+        await additionalBalances().add({
+            balance,
+            spendingDate,
+            user,
+            created: new Date()
+        });
+    } catch (err) {
+        throw new Error(err);
+    }
+};
+
+/**
+ * Returns a list of additional balances by the given 'spendingDate'.
+ * 
+ * @param object data 
+ */
+const getAdditionalBalances = async ({ userUid, spendingDate }) => {
+    try {
+        const balances = await additionalBalances()
+            .where('user', '==', userUid)
+            .where('spendingDate', '==', spendingDate)
+            .orderBy('created', 'desc')
+            .get();
+
+        return balances.docs.map(balance => balance.data());
+    } catch (err) {
+        // console.log(err);
+        throw new Error(err);
+    }
+};
 
 export default {
     calculate,
     recordHistory,
-    getHistoryByDate
+    getHistoryByDate,
+    addAdditionalBalance,
+    getAdditionalBalances
 }

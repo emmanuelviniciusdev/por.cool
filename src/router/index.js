@@ -74,6 +74,14 @@ const routes = [
     }
   },
   {
+    path: '/meus-saldos',
+    name: 'balances',
+    component: () => import("../views/Balances"),
+    meta: {
+      title: 'meus saldos'
+    }
+  },
+  {
     path: '*',
     name: 'page-not-found',
     component: () => import("../views/PageNotFound"),

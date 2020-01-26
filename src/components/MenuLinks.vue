@@ -17,18 +17,12 @@
         <b-menu-item
           label="meus saldos"
           icon="dollar-sign"
-          @click="redirectTo('')"
-          :active="isActiveRoute('')"
+          @click="redirectTo('balances')"
+          :active="isActiveRoute('balances')"
         ></b-menu-item>
         <b-menu-item
           label="minha conta"
           icon="user"
-          @click="redirectTo('')"
-          :active="isActiveRoute('')"
-        ></b-menu-item>
-        <b-menu-item
-          label="anotações"
-          icon="sticky-note"
           @click="redirectTo('')"
           :active="isActiveRoute('')"
         ></b-menu-item>
