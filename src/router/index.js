@@ -78,7 +78,8 @@ const routes = [
     name: 'page-not-found',
     component: () => import("../views/PageNotFound"),
     meta: {
-      title: 'página não encontrada'
+      title: 'página não encontrada',
+      isPublic: true
     }
   },
 ];
