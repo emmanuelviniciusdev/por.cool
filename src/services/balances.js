@@ -22,10 +22,14 @@ const calculate = async ({ userUid, spendingDate }) => {
     const currentExpenses = await expensesServices.getAll(userUid, spendingDate);
     const userBalanceHistory = await getHistoryByDate({ userUid, spendingDate: lastMonthSpendingDate });
 
-    let remainingBalance = monthlyIncome;
+    const lastMonthBalance = userBalanceHistory.balance !== undefined ? _treatFloatNumber(userBalanceHistory.balance) : 0;
+
+    let remainingBalance = _treatFloatNumber(monthlyIncome + lastMonthBalance);
+
+    // Calculate remaining balance for this month
     currentExpenses.forEach(({ amount, differenceAmount = 0 }) => remainingBalance -= amount + differenceAmount);
 
-    return remainingBalance + (userBalanceHistory.balance !== undefined ? userBalanceHistory.balance : 0);
+    return remainingBalance;
 };
 
 /**
@@ -56,6 +60,24 @@ const recordHistory = async ({ userUid, spendingDate }) => {
 };
 
 /**
+ * This function will convert a number with many decimal places
+ * to a number with only 3 decimal places.
+ * Example:
+ * '-2.7284841053187847e-12' => '-2.73'
+ * 
+ * @param float number 
+ */
+const _treatFloatNumber = number => {
+    let splittedNumber = number.toString().split(".");
+
+    if (splittedNumber[1] === undefined || splittedNumber[1].length < 3)
+        return parseFloat(number);
+
+    splittedNumber[1] = splittedNumber[1].substr(0, 3);
+    return parseFloat(Number(splittedNumber.join(".")).toFixed(2));
+};
+
+/**
  * Get an specific balance history by 'spendingDate'
  * 
  * @param object data
@@ -72,6 +94,7 @@ const getHistoryByDate = async ({ userUid, spendingDate }) => {
         throw new Error(err);
     }
 };
+
 
 export default {
     calculate,
