@@ -113,6 +113,21 @@ const getHistoryByDate = async ({ userUid, spendingDate }) => {
     }
 };
 
+
+/**
+ * Get all balance history by 'userUid'
+ * 
+ * @param string userUid 
+ */
+const getAllHistory = async userUid => {
+    try {
+        const allHistory = await balanceHistory().where('user', '==', userUid).get();
+        return allHistory.docs.map(history => ({ id: history.id, ...history.data() }));
+    } catch (err) {
+        throw err;
+    }
+};
+
 /**
  * Inserts a new additional balance.
  * 
@@ -138,13 +153,14 @@ const addAdditionalBalance = async data => {
  * 
  * @param object data 
  */
-const getAdditionalBalances = async ({ userUid, spendingDate }) => {
+const getAdditionalBalances = async ({ userUid, spendingDate = null }) => {
     try {
-        const balances = await additionalBalances()
-            .where('user', '==', userUid)
-            .where('spendingDate', '==', spendingDate)
-            .orderBy('created', 'desc')
-            .get();
+        let balances = additionalBalances().where('user', '==', userUid).orderBy('created', 'desc');
+
+        if (spendingDate !== null)
+            balances = balances.where('spendingDate', '==', spendingDate);
+
+        balances = await balances.get();
 
         return balances.docs.map(balance => ({ id: balance.id, ...balance.data() }));
     } catch (err) {
@@ -166,12 +182,37 @@ const removeAdditionalBalance = async docId => {
     }
 };
 
+/**
+ * Deletes all user's balances
+ * 
+ * @param string userUid 
+ */
+const reset = async userUid => {
+    try {
+        const balancesToDelete = await getAdditionalBalances({ userUid });
+        const balanceHistoryToDelete = await getAllHistory(userUid);
+
+        let batch = firebase.firestore().batch();
+
+        // Delete additional balances and balance history
+        balancesToDelete.forEach(({ id }) => batch.delete(additionalBalances().doc(id)));
+        balanceHistoryToDelete.forEach(({ id }) => batch.delete(balanceHistory().doc(id)));
+
+        await batch.commit();
+    } catch (err) {
+        console.log(err);
+        throw new Error(err);
+    }
+};
+
 export default {
     calculate,
     calculateAdditionalBalancesOnly,
     recordHistory,
     getHistoryByDate,
+    getAllHistory,
     addAdditionalBalance,
     getAdditionalBalances,
-    removeAdditionalBalance
+    removeAdditionalBalance,
+    reset
 }

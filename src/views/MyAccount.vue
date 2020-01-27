@@ -187,7 +187,11 @@
             <b>todos</b> os seus saldos e gastos serão excluídos
             <b>para sempre</b>.
           </p>
-          <b-button style="margin-top: 10px;">recomeçar do zero</b-button>
+          <b-button
+            style="margin-top: 10px;"
+            @click="startOver()"
+            :loading="loadingStartOver"
+          >recomeçar do zero</b-button>
         </div>
 
         <div class="notification is-danger">
@@ -222,6 +226,10 @@ import filters from "../filters";
 // Services
 import paymentService from "../services/payment";
 import authService from "../services/auth";
+import userService from "../services/user";
+
+// Helpers
+import dateAndTimeHelper from "../helpers/dateAndTime";
 
 export default {
   name: "MyAccount",
@@ -250,7 +258,9 @@ export default {
         newEmail: "",
         confirmNewEmail: "",
         password: ""
-      }
+      },
+
+      loadingStartOver: false
     };
   },
   validations: {
@@ -351,6 +361,70 @@ export default {
       } finally {
         this.loadingChangeEmail = false;
       }
+    },
+    async startOver() {
+      this.$buefy.dialog.prompt({
+        title: "confirmar senha",
+        message: "Por favor, confirme sua senha",
+        inputAttrs: {
+          placeholder: "******",
+          type: "password"
+        },
+        type: "is-warning",
+        cancelText: "cancelar",
+        confirmText: "recomeçar do zero",
+        canCancel: ["button", "escape"],
+        onConfirm: async password => {
+          this.loadingStartOver = true;
+
+          try {
+            // Authenticate password
+            try {
+              await authService.reauthenticate(password);
+            } catch (err) {
+              let message = "a senha está incorreta";
+
+              if (err.code === "auth/too-many-requests")
+                message =
+                  "Você excedeu o limite de tentativas. Por favor, tente novamente mais tarde.";
+
+              this.$buefy.toast.open({
+                message,
+                type: "is-danger",
+                position: "is-bottom"
+              });
+
+              return false;
+            }
+
+            await userService.startOver(this.userData.uid);
+
+            this.$store.dispatch("user/update", {
+              lookingAtSpendingDate: dateAndTimeHelper.startOfMonthAndDay(
+                new Date()
+              )
+            });
+            this.$store.dispatch("balances/setBalances", {
+              userUid: this.userData.uid,
+              spendingDate: this.userData.lookingAtSpendingDate
+            });
+
+            this.$buefy.toast.open({
+              message: "reset realizado com sucesso! agora sim, sem bagunça...",
+              type: "is-success",
+              position: "is-bottom"
+            });
+          } catch {
+            this.$buefy.toast.open({
+              message: "ocorreu um erro ao resetar suas finanças",
+              type: "is-danger",
+              position: "is-bottom"
+            });
+          } finally {
+            this.loadingStartOver = false;
+          }
+        }
+      });
     },
     hasInputErrorAndDirty(form, input) {
       return this.$v[form][input].$error && this.$v[form][input].$dirty;

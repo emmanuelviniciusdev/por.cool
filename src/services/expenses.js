@@ -261,6 +261,23 @@ const getSpendingDatesList = async ({ userUid, lookingAtSpendingDate }) => {
     return spendingDatesList;
 };
 
+/**
+ * Deletes all user's expenses
+ * 
+ * @param string userUid 
+ */
+const reset = async (userUid) => {
+    try {
+        const expensesToDelete = await getAll(userUid);
+        
+        let batch = firebase.firestore().batch();
+        expensesToDelete.forEach(({ id }) => batch.delete(expenses().doc(id)));
+        await batch.commit();
+    } catch (err) {
+        throw new Error(err);
+    }
+};
+
 export default {
     getAll,
     insert,
@@ -268,5 +285,6 @@ export default {
     bulkUpdate,
     remove,
     finishCurrentSpendingDate,
-    getSpendingDatesList
+    getSpendingDatesList,
+    reset
 }
