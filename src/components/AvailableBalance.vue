@@ -16,7 +16,7 @@
       type="is-dark"
       multilined
       position="is-bottom"
-      :label="balances.showBalance ? `${$options.filters.currency(balances.lastMonthBalance)} (do mês passado) + ${$options.filters.currency(user.monthlyIncome)} (deste mês)` : 'ver saldo'"
+      :label="balances.showBalance ? `${$options.filters.currency(balances.lastMonthBalance)} (do mês passado) + ${$options.filters.currency(balanceOfNow)} (deste mês)` : 'ver saldo'"
     >
       <h1
         class="title"
@@ -37,8 +37,14 @@ export default {
   computed: {
     ...mapState({
       balances: state => state.balances,
-      user: state => state.user.user
-    })
+      userData: state => state.user.user
+    }),
+    balanceOfNow() {
+      const { monthlyIncome } = this.userData;
+      const { additionalBalances } = this.balances;
+
+      return monthlyIncome + additionalBalances;
+    }
   }
 };
 </script>

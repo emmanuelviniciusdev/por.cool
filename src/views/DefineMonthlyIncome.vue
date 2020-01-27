@@ -47,7 +47,12 @@ export default {
       const users = firebase.firestore().collection("users");
 
       await users.doc(this.userData.uid).update({ monthlyIncome });
+      
       this.$store.dispatch("user/update", { monthlyIncome });
+      this.$store.dispatch("balances/setBalances", {
+        userUid: this.userData.uid,
+        spendingDate: this.userData.lookingAtSpendingDate
+      });
 
       this.loading = false;
 
