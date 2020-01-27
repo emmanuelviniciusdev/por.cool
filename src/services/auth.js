@@ -17,7 +17,7 @@ const changePassword = async (currentPassword, newPassword) => {
         const user = auth().currentUser;
         
         try {
-            await _reauthenticate(currentPassword);
+            await reauthenticate(currentPassword);
         } catch {
             return _response({ error: true, message: "a senha está incorreta" });
         }
@@ -42,7 +42,7 @@ const changeEmail = async (password, newEmail) => {
         const user = auth().currentUser;
 
         try {
-            await _reauthenticate(password);
+            await reauthenticate(password);
         } catch {
             return _response({ error: true, message: "a senha está incorreta" });
         }
@@ -64,14 +64,14 @@ const changeEmail = async (password, newEmail) => {
  * 
  * @param string password 
  */
-const _reauthenticate = async password => {
+const reauthenticate = async password => {
     try {
         const user = auth().currentUser;
         const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
 
         return await user.reauthenticateWithCredential(credential);
     } catch (err) {
-        throw new Error(err);
+        throw err;
     }
 };
 
@@ -84,5 +84,6 @@ const _response = ({ error, message }) => ({ error: error ?? false, message: mes
 
 export default {
     changePassword,
-    changeEmail
+    changeEmail,
+    reauthenticate
 }
