@@ -103,6 +103,10 @@ export default {
           try {
             await balancesService.removeAdditionalBalance(id);
 
+            this.$store.dispatch("balances/setBalances", {
+              userUid: this.userData.uid,
+              spendingDate: this.userData.lookingAtSpendingDate
+            });
             this.$store.dispatch("balances/setBalancesList", {
               userUid: this.userData.uid,
               spendingDate: this.userData.lookingAtSpendingDate

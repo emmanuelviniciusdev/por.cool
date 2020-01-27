@@ -119,6 +119,10 @@ export default {
           userUid: this.userData.uid
         });
 
+        this.$store.dispatch("balances/setBalances", {
+          userUid: this.userData.uid,
+          spendingDate: this.userData.lookingAtSpendingDate
+        });
         this.$store.dispatch("balances/setBalancesList", {
           userUid: this.userData.uid,
           spendingDate: this.userData.lookingAtSpendingDate

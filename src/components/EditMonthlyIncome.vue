@@ -30,16 +30,10 @@
       </div>
     </b-modal>
 
-    <p class="is-size-5 has-text-weight-normal has-text-black">
-      a sua renda fixa mensal é de:
-      <b>{{userData.monthlyIncome | currency}}.</b>&#32;
-      <b-button
-        type="is-warning"
-        size="is-small"
-        icon-left="money-check-alt"
-        @click="onOpenModal()"
-      >alterar</b-button>
-    </p>
+    <div class="notification is-primary">
+      <p class="is-size-5">sua renda fixa atual é de <b>{{ this.userData.monthlyIncome | currency }}</b></p>
+      <b-button @click="onOpenModal()" style="margin-top: 10px;">clique para alterar</b-button>
+    </div>
   </div>
 </template>
 

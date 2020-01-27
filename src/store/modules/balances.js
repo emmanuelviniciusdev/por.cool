@@ -10,6 +10,7 @@ export default {
         showBalance: false,
         currentBalance: 0,
         lastMonthBalance: 0,
+        additionalBalances: 0,
 
         balancesList: [],
         loadingBalancesList: false,
@@ -21,9 +22,10 @@ export default {
             state.showBalance = !state.showBalance;
         },
 
-        SET_BALANCES(state, { currentBalance, lastMonthBalance }) {
+        SET_BALANCES(state, { currentBalance, lastMonthBalance, additionalBalances }) {
             state.currentBalance = currentBalance;
             state.lastMonthBalance = lastMonthBalance;
+            state.additionalBalances = additionalBalances;
         },
         SET_CURRENT_BALANCE(state, currentBalance) {
             state.currentBalance = currentBalance;
@@ -50,10 +52,12 @@ export default {
 
             const currentBalance = await balancesService.calculate({ userUid, spendingDate });
             const lastMonthBalance = await balancesService.getHistoryByDate({ userUid, spendingDate: lastMonthSpendingDate });
+            const additionalBalances = await balancesService.calculateAdditionalBalancesOnly({ userUid, spendingDate });
 
             commit('SET_BALANCES', {
                 currentBalance,
-                lastMonthBalance: lastMonthBalance.balance ? lastMonthBalance.balance : 0
+                lastMonthBalance: lastMonthBalance.balance ? lastMonthBalance.balance : 0,
+                additionalBalances
             });
         },
         async setCurrentBalance({ commit }, { userUid, spendingDate }) {

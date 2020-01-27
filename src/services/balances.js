@@ -6,9 +6,6 @@ import moment from 'moment';
 import userService from './user';
 import expensesServices from './expenses';
 
-// Helpers
-import dateAndTimeHelper from '../helpers/dateAndTime';
-
 const additionalBalances = () => firebase.firestore().collection('additional_balances');
 const balanceHistory = () => firebase.firestore().collection('balance_history');
 
@@ -19,20 +16,38 @@ const balanceHistory = () => firebase.firestore().collection('balance_history');
  * @param object data 
  */
 const calculate = async ({ userUid, spendingDate }) => {
-    const lastMonthSpendingDate = moment(spendingDate).subtract(1, 'months').toDate();
+    try {
+        const lastMonthSpendingDate = moment(spendingDate).subtract(1, 'months').toDate();
 
-    const { monthlyIncome } = await userService.get(userUid);
-    const currentExpenses = await expensesServices.getAll(userUid, spendingDate);
-    const userBalanceHistory = await getHistoryByDate({ userUid, spendingDate: lastMonthSpendingDate });
+        const { monthlyIncome } = await userService.get(userUid);
+        const currentExpenses = await expensesServices.getAll(userUid, spendingDate);
+        const userBalanceHistory = await getHistoryByDate({ userUid, spendingDate: lastMonthSpendingDate });
+        const userAdditionalBalances = await calculateAdditionalBalancesOnly({ userUid, spendingDate });
 
-    const lastMonthBalance = userBalanceHistory.balance !== undefined ? _treatFloatNumber(userBalanceHistory.balance) : 0;
+        const lastMonthBalance = userBalanceHistory.balance !== undefined ? _treatFloatNumber(userBalanceHistory.balance) : 0;
 
-    let remainingBalance = _treatFloatNumber(monthlyIncome + lastMonthBalance);
+        let remainingBalance = _treatFloatNumber(monthlyIncome + lastMonthBalance + userAdditionalBalances);
 
-    // Calculate remaining balance for this month
-    currentExpenses.forEach(({ amount, differenceAmount = 0 }) => remainingBalance -= amount + differenceAmount);
+        // Calculate remaining balance for this month
+        currentExpenses.forEach(({ amount, differenceAmount = 0 }) => remainingBalance -= amount + differenceAmount);
 
-    return remainingBalance;
+        return remainingBalance;
+    } catch (err) {
+        throw new Error(err);
+    }
+};
+
+const calculateAdditionalBalancesOnly = async ({ userUid, spendingDate }) => {
+    try {
+        const userAdditionalBalances = await getAdditionalBalances({ userUid, spendingDate });
+
+        let balancesSum = 0;
+        userAdditionalBalances.forEach(data => balancesSum += data.balance);
+
+        return _treatFloatNumber(balancesSum);
+    } catch (err) {
+        throw new Error(err);
+    }
 };
 
 /**
@@ -153,6 +168,7 @@ const removeAdditionalBalance = async docId => {
 
 export default {
     calculate,
+    calculateAdditionalBalancesOnly,
     recordHistory,
     getHistoryByDate,
     addAdditionalBalance,
