@@ -23,8 +23,8 @@
         <b-menu-item
           label="minha conta"
           icon="user"
-          @click="redirectTo('')"
-          :active="isActiveRoute('')"
+          @click="redirectTo('my-account')"
+          :active="isActiveRoute('my-account')"
         ></b-menu-item>
         <b-menu-item label="sair" icon="sad-tear" @click="signOut()"></b-menu-item>
       </b-menu-list>
