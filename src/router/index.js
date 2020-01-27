@@ -82,6 +82,14 @@ const routes = [
     }
   },
   {
+    path: '/minha-conta',
+    name: 'my-account',
+    component: () => import("../views/MyAccount"),
+    meta: {
+      title: 'minha conta'
+    }
+  },
+  {
     path: '*',
     name: 'page-not-found',
     component: () => import("../views/PageNotFound"),
