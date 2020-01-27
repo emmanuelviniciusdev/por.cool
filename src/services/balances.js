@@ -105,9 +105,10 @@ const getHistoryByDate = async ({ userUid, spendingDate }) => {
  */
 const addAdditionalBalance = async data => {
     try {
-        const { balance, spendingDate, userUid: user } = data;
+        const { balance, description, spendingDate, userUid: user } = data;
         await additionalBalances().add({
             balance,
+            description,
             spendingDate,
             user,
             created: new Date()
@@ -130,9 +131,22 @@ const getAdditionalBalances = async ({ userUid, spendingDate }) => {
             .orderBy('created', 'desc')
             .get();
 
-        return balances.docs.map(balance => balance.data());
+        return balances.docs.map(balance => ({ id: balance.id, ...balance.data() }));
     } catch (err) {
         // console.log(err);
+        throw new Error(err);
+    }
+};
+
+/**
+ * Deletes an additional balance by document ID
+ * 
+ * @param string docId 
+ */
+const removeAdditionalBalance = async docId => {
+    try {
+        await additionalBalances().doc(docId).delete();
+    } catch (err) {
         throw new Error(err);
     }
 };
@@ -142,5 +156,6 @@ export default {
     recordHistory,
     getHistoryByDate,
     addAdditionalBalance,
-    getAdditionalBalances
+    getAdditionalBalances,
+    removeAdditionalBalance
 }

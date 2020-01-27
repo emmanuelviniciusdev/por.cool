@@ -5,29 +5,31 @@
     </div>
     <div class="column">
       <div class="title-and-help">
-        <h1 class="title has-text-black">meus gastos</h1>
-        <Help>
-          <template v-slot:title>meus gastos</template>
-          <template v-slot:body>
-            <div class="content">
-              <p
-                class="is-size-5 has-text-weight-normal"
-              >Nesta tela, você terá uma listagem de todos os seus gastos que foram adicionados, referentes ao respectivo ano e mês selecionados.</p>
-              <p class="is-size-5 has-text-weight-normal">
-                <b>Dicas:</b>
-                <ul>
-                  <li>
-                    <p class="is-size-6 has-text-weight-normal">
-                      Você sabia que se clicar 2x em cima do botão de status do seu gasto, o status muda? Mas atenção: ele só vai de "pendente" para "pago" e vice-versa.
-                      <b>Não funciona caso o status esteja como "parcialmente pago".</b>
-                    </p>
-                    <img src="https://i.imgur.com/u5xNOv2.png" alt="clique 2x em cima do botão de status e veja a mágica acontecer">
-                  </li>
-                </ul>
-              </p>
-            </div>
-          </template>
-        </Help>
+        <h1 class="title has-text-black">
+          meus gastos
+          <Help>
+            <template v-slot:title>meus gastos</template>
+            <template v-slot:body>
+              <div class="content">
+                <p
+                  class="is-size-5 has-text-weight-normal"
+                >Nesta tela, você terá uma listagem de todos os seus gastos que foram adicionados, referentes ao respectivo ano e mês selecionados.</p>
+                <p class="is-size-5 has-text-weight-normal">
+                  <b>Dicas:</b>
+                  <ul>
+                    <li>
+                      <p class="is-size-6 has-text-weight-normal">
+                        Você sabia que se clicar 2x em cima do botão de status do seu gasto, o status muda? Mas atenção: ele só vai de "pendente" para "pago" e vice-versa.
+                        <b>Não funciona caso o status esteja como "parcialmente pago".</b>
+                      </p>
+                      <img src="https://i.imgur.com/u5xNOv2.png" alt="clique 2x em cima do botão de status e veja a mágica acontecer">
+                    </li>
+                  </ul>
+                </p>
+              </div>
+            </template>
+          </Help>
+        </h1>
       </div>
       <FinishCurrentSpendingDate v-if="showSpendingDateWarning" />
       <FilterByDate @onDateChange="loadExpense" />

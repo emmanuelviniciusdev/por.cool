@@ -9,11 +9,17 @@
           </p>
         </div>
         <section class="modal-card-body">
-          <b-field label="valor do saldo">
+          <b-field
+            label="valor do saldo"
+            :type="{'is-danger': hasInputErrorAndDirty('balance')}"
+            :message="{
+              'insira o valor do saldo': isInvalidInputMsg('balance', 'required'),
+            }"
+          >
             <money
               class="input"
-              style="width: 300px;"
-              v-model.trim="balance"
+              style="width: 200px;"
+              v-model.trim="$v.form.balance.$model"
               v-bind="{
                     decimal: ',',
                     thousands: '.',
@@ -21,6 +27,21 @@
                     precision: 2
                 }"
             ></money>
+          </b-field>
+          <b-field
+            label="descrição (opcional)"
+            :type="{'is-danger': hasInputErrorAndDirty('description')}"
+            :message="{
+              'a descrição é muito grande': isInvalidInputMsg('description', 'maxLength'),
+            }"
+          >
+            <b-input
+              style="width: 300px;"
+              v-model.trim="$v.form.description.$model"
+              placeholder="descrição"
+              maxlength="20"
+              :has-counter="true"
+            ></b-input>
           </b-field>
         </section>
         <footer class="modal-card-foot">
@@ -37,6 +58,7 @@
 <script>
 import { mapState } from "vuex";
 import { Money } from "v-money";
+import { required, maxLength } from "vuelidate/lib/validators";
 
 // Services
 import balancesService from "../services/balances";
@@ -53,8 +75,18 @@ export default {
     return {
       openModal: false,
       loading: false,
-      balance: 0
+
+      form: {
+        balance: 0,
+        description: ""
+      }
     };
+  },
+  validations: {
+    form: {
+      balance: { required },
+      description: { maxLength: maxLength(20) }
+    }
   },
   computed: {
     ...mapState({
@@ -75,11 +107,14 @@ export default {
       this.loading = state;
     },
     async addBalance() {
+      if (this.$v.form.$invalid) return;
+
       this.onLoading();
 
       try {
         await balancesService.addAdditionalBalance({
-          balance: this.balance,
+          balance: this.form.balance,
+          description: this.form.description,
           spendingDate: this.userData.lookingAtSpendingDate,
           userUid: this.userData.uid
         });
@@ -95,7 +130,8 @@ export default {
           position: "is-bottom"
         });
 
-        this.balance = 0;
+        this.form.balance = 0;
+        this.form.description = "";
 
         this.onOpenModal(false);
       } catch (err) {
@@ -107,6 +143,12 @@ export default {
       } finally {
         this.onLoading(false);
       }
+    },
+    hasInputErrorAndDirty(input) {
+      return this.$v.form[input].$error && this.$v.form[input].$dirty;
+    },
+    isInvalidInputMsg(input, role) {
+      return !this.$v.form[input][role] && this.$v.form[input].$error;
     }
   }
 };
