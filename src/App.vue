@@ -20,7 +20,7 @@
           <p>
             dúvidas, ajuda? entre em contato pelo
             <br />
-            <b>porcool@gmail.com</b>
+            <b>porcool@yahoo.com</b>
           </p>
         </div>
 
