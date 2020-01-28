@@ -42,6 +42,15 @@ const routes = [
     }
   },
   {
+    path: '/recuperar-senha',
+    name: 'recover-password',
+    component: () => import("../views/RecoverPassword"),
+    meta: {
+      title: 'recuperar senha',
+      isPublic: true
+    }
+  },
+  {
     path: '/contribuir',
     name: 'payment',
     component: () => import("../views/Payment"),

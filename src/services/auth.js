@@ -18,7 +18,7 @@ const auth = () => firebase.auth();
 const changePassword = async (currentPassword, newPassword) => {
     try {
         const user = auth().currentUser;
-        
+
         try {
             await reauthenticate(currentPassword);
         } catch {
@@ -87,6 +87,27 @@ const deleteAccount = async password => {
     }
 };
 
+
+/**
+ * Send an email to user recover password
+ * 
+ * @param string email 
+ */
+const recoverPassword = async email => {
+    try {
+        const foundUser = await userService.findUserByEmail(email);
+
+        if (foundUser.uid === undefined)
+            return _response({ error: true, message: "este e-mail não existe no porcool" });
+        
+        await auth().sendPasswordResetEmail(email);
+
+        return _response({ message: "recuperação de senha enviada com sucesso" });
+    } catch (err) {
+        throw _response({ error: true, message: "ocorreu um erro ao enviar a recuperação de senha [1]" });
+    }
+};
+
 /**
  * Re-authenticate user based on user's password
  * 
@@ -114,5 +135,6 @@ export default {
     changePassword,
     changeEmail,
     reauthenticate,
-    deleteAccount
+    deleteAccount,
+    recoverPassword
 }

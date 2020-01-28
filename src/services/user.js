@@ -70,9 +70,24 @@ const deleteUser = async userUid => {
     }
 };
 
+/**
+ * Find an user by email
+ * 
+ * @param string email 
+ */
+const findUserByEmail = async email => {
+    try {
+        const foundUser = await users().where('email', '==', email).get();
+        return foundUser.size > 0 ? { uid: foundUser.docs[0].id, ...foundUser.docs[0].data() } : {};
+    } catch (err) {
+        throw new Error(err);
+    }
+}
+
 export default {
     get,
     update,
     startOver,
-    deleteUser
+    deleteUser,
+    findUserByEmail
 }
