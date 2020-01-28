@@ -3,8 +3,7 @@
     <div class="column is-12 is-6-desktop">
       <div class="introduction">
         <h1 class="has-text-black">
-          fazer o controle dos seus gastos pessoais financeiros nunca foi tão
-          fácil. e prático.
+          fazer o controle dos seus gastos financeiros cotidianos nunca ficou tão fácil. e prático.
         </h1>
 
         <img src="../assets/images/pig1.png" alt="porcool <3" />
@@ -48,8 +47,9 @@
 
         <div class="social-media-signin">
           <h1 class="title has-text-black">entre com a sua rede social</h1>
-          <button class="button facebook">facebook</button>
-          <button class="button google">google</button>
+          <!-- <button class="button facebook">facebook</button>
+          <button class="button google">google</button> -->
+          <div class="notification">em breve</div>
         </div>
       </div>
     </div>
