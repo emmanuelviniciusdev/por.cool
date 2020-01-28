@@ -2,9 +2,9 @@
   <div class="columns is-multiline">
     <div class="column is-12 is-6-desktop">
       <div class="introduction">
-        <h1 class="has-text-black">
-          fazer o controle dos seus gastos financeiros cotidianos nunca ficou tão fácil. e prático.
-        </h1>
+        <h1
+          class="has-text-black"
+        >fazer o controle dos seus gastos financeiros cotidianos nunca ficou tão fácil. e prático.</h1>
 
         <img src="../assets/images/pig1.png" alt="porcool <3" />
 
@@ -43,12 +43,12 @@
         </form>
 
         <router-link :to="{name: 'signup'}">criar uma conta</router-link>
-        <router-link to>recuperar minha senha</router-link>
+        <router-link :to="{name: 'recover-password'}">recuperar minha senha</router-link>
 
         <div class="social-media-signin">
           <h1 class="title has-text-black">entre com a sua rede social</h1>
           <!-- <button class="button facebook">facebook</button>
-          <button class="button google">google</button> -->
+          <button class="button google">google</button>-->
           <div class="notification">em breve</div>
         </div>
       </div>
