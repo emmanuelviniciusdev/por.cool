@@ -84,7 +84,13 @@
             <i>pendentes</i> ou
             <i>parcialmente pagos</i>?
           </h2>
-          <b-table :data="modifiedExpenses" :mobile-cards="true" hoverable paginated :per-page="10">
+          <b-table
+            :data="modifiedExpenses.filter(({status, type}) => !(status === 'paid' && type !== 'expense'))"
+            :mobile-cards="true"
+            hoverable
+            paginated
+            :per-page="10"
+          >
             <template slot-scope="props">
               <b-table-column
                 field="expenseName"
@@ -113,7 +119,7 @@
                   <div class="control has-icons-left">
                     <div class="select">
                       <select
-                        @change="setExpenseTemporaryValue(props.index, 'hasUserPaid', $event.target.value === 'true')"
+                        @change="setExpenseTemporaryValue(props.row.temporary.pseudoId, 'hasUserPaid', $event.target.value === 'true')"
                       >
                         <option value="false" selected>não</option>
                         <option value="true">sim</option>
@@ -135,7 +141,7 @@
                   <div class="control has-icons-left">
                     <div class="select">
                       <select
-                        @change="setExpenseTemporaryValue(props.index, 'action', $event.target.value)"
+                        @change="setExpenseTemporaryValue(props.row.temporary.pseudoId, 'action', $event.target.value)"
                       >
                         <option value="nothing" selected>o que pretende fazer, então?</option>
                         <option
@@ -292,11 +298,21 @@ export default {
     onLoadingFinishSpendingDate(state = true) {
       this.loadingFinishSpendingDate = state;
     },
-    setExpenseTemporaryValue(index, key, value) {
-      this.modifiedExpenses[index].temporary[key] = value;
-      this.modifiedExpenses.splice(index, 1, {
-        ...this.modifiedExpenses[index]
-      });
+    setExpenseTemporaryValue(pseudoId, key, value) {
+      const triggeredExpense = this.modifiedExpenses.filter(
+        ({ temporary }) => temporary.pseudoId === pseudoId
+      )[0];
+      const indexOfTriggeredExpense = this.modifiedExpenses.indexOf(
+        triggeredExpense
+      );
+
+      if (indexOfTriggeredExpense !== -1) {
+        this.modifiedExpenses[indexOfTriggeredExpense].temporary[key] = value;
+
+        this.modifiedExpenses.splice(indexOfTriggeredExpense, 1, {
+          ...this.modifiedExpenses[indexOfTriggeredExpense]
+        });
+      }
     },
     async mayOpenModal() {
       this.onLoadingFinishSpendingDate();
@@ -311,24 +327,40 @@ export default {
       );
 
       const filteredExpenses = expenses.filter(
-        ({ status }) => status !== "paid"
+        ({ status, type }) => status !== "paid" || type !== "expense"
       );
 
       if (filteredExpenses.length > 0) {
         this.modifiedExpenses = [
           ...filteredExpenses.map(expense => {
+            const hasAutoClone =
+              expense.status === "paid" && expense.type !== "expense";
+
             expense.temporary = {};
-            expense.temporary.action = "nothing";
-            expense.temporary.hasUserPaid = false;
+            expense.temporary.pseudoId = Math.random();
+            expense.temporary.action = !hasAutoClone
+              ? "nothing"
+              : "nothing_autoclone";
+            expense.temporary.hasUserPaid = hasAutoClone;
+
             return expense;
           })
         ];
 
-        this.isModalOpened = true;
+        // Check if there is only expenses to auto clone.
+        // If so, we don't need to open modal.
+        const modifiedExpensesHasOnlyAutoClone =
+          this.modifiedExpenses.filter(
+            ({ temporary }) => temporary.action === "nothing"
+          ).length === 0;
 
-        this.onLoadingFinishSpendingDate(false);
+        if (!modifiedExpensesHasOnlyAutoClone) {
+          this.isModalOpened = true;
 
-        return;
+          this.onLoadingFinishSpendingDate(false);
+
+          return;
+        }
       }
 
       // Finish current spending date with auto clone
