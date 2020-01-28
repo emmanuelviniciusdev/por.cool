@@ -5,12 +5,34 @@ import "firebase/firestore";
 import paymentHelper from '../helpers/payment';
 import dateAndTimeHelper from '../helpers/dateAndTime';
 
-/**
- * Returns information about user's last payment
- * 
- * @param string userUid 
- */
 const payments = () => firebase.firestore().collection('payments');
+
+/**
+ * Get all user's payment
+ * 
+ * @param string data
+ */
+const getAll = async userUid => {
+    if (!userUid) return;
+
+    try {
+        let allPayments = payments()
+            .where('user', '==', userUid);
+
+        allPayments = allPayments.orderBy('paymentDate', 'desc');
+        allPayments = await allPayments.get();
+
+        return allPayments.docs.map(expense => {
+            return {
+                ...expense.data(),
+                id: expense.id
+            };
+        });
+    } catch (err) {
+        // console.log(err);
+        throw new Error(err);
+    }
+};
 
 /**
  * Returns information about last user's payment
@@ -36,6 +58,28 @@ const lastPaymentInfo = async userUid => {
     }
 };
 
+
+/**
+ * Deletes all user's payments
+ * 
+ * @param string userUid 
+ */
+const reset = async userUid => {
+    try {
+        const paymentsToDelete = await getAll(userUid);
+
+        let batch = firebase.firestore().batch();
+        paymentsToDelete.forEach(({ id }) => batch.delete(payments().doc(id)));
+
+        await batch.commit();
+    } catch (err) {
+        console.log(err);
+        throw new Error(err);
+    }
+};
+
 export default {
-    lastPaymentInfo
+    getAll,
+    lastPaymentInfo,
+    reset
 };
