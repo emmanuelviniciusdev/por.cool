@@ -57,8 +57,22 @@ const startOver = async userUid => {
     }
 };
 
+/**
+ * Deletes user's document
+ * 
+ * @param string userUid 
+ */
+const deleteUser = async userUid => {
+    try {
+        await users().doc(userUid).delete();
+    } catch (err) {
+        throw new Error(err);
+    }
+};
+
 export default {
     get,
     update,
-    startOver
+    startOver,
+    deleteUser
 }

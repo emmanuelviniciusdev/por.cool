@@ -3,6 +3,9 @@ import "firebase/firestore";
 
 // Services
 import userService from '../services/user';
+import balancesService from '../services/balances';
+import expensesService from '../services/expenses';
+import paymentService from '../services/payment';
 
 const auth = () => firebase.auth();
 
@@ -60,6 +63,31 @@ const changeEmail = async (password, newEmail) => {
 };
 
 /**
+ * Delete user's account.
+ * 
+ * @param string password 
+ */
+const deleteAccount = async password => {
+    try {
+        const user = auth().currentUser;
+
+        try {
+            await reauthenticate(password);
+        } catch {
+            return _response({ error: true, message: "a senha está incorreta" });
+        }
+
+        await expensesService.reset(user.uid);
+        await balancesService.reset(user.uid);
+        await paymentService.reset(user.uid);
+        await userService.deleteUser(user.uid);
+        await user.delete();
+    } catch (err) {
+        throw err;
+    }
+};
+
+/**
  * Re-authenticate user based on user's password
  * 
  * @param string password 
@@ -85,5 +113,6 @@ const _response = ({ error, message }) => ({ error: error ?? false, message: mes
 export default {
     changePassword,
     changeEmail,
-    reauthenticate
+    reauthenticate,
+    deleteAccount
 }

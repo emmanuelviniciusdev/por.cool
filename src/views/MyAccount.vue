@@ -199,7 +199,12 @@
           <p
             class="is-size-6 has-text-weight-normal"
           >Deleta todos os seus dados e vínculos com o porcool.</p>
-          <b-button style="margin-top: 10px;">deletar</b-button>
+          <p class="is-size-6 has-text-weight-bold">Esta ação não tem mais volta.</p>
+          <b-button
+            style="margin-top: 10px;"
+            @click="deleteAccount()"
+            :loading="loadingDeleteAccount"
+          >deletar</b-button>
         </div>
       </div>
     </div>
@@ -260,7 +265,8 @@ export default {
         password: ""
       },
 
-      loadingStartOver: false
+      loadingStartOver: false,
+      loadingDeleteAccount: false
     };
   },
   validations: {
@@ -422,6 +428,56 @@ export default {
             });
           } finally {
             this.loadingStartOver = false;
+          }
+        }
+      });
+    },
+    deleteAccount() {
+      this.$buefy.dialog.prompt({
+        title: "confirmar senha",
+        message: "Por favor, confirme sua senha",
+        inputAttrs: {
+          placeholder: "******",
+          type: "password"
+        },
+        type: "is-danger",
+        cancelText: "cancelar",
+        confirmText: "deletar conta",
+        canCancel: ["button", "escape"],
+        onConfirm: async password => {
+          this.loadingDeleteAccount = true;
+
+          try {
+            // Authenticate password
+            try {
+              await authService.reauthenticate(password);
+            } catch (err) {
+              let message = "a senha está incorreta";
+
+              if (err.code === "auth/too-many-requests")
+                message =
+                  "Você excedeu o limite de tentativas. Por favor, tente novamente mais tarde.";
+
+              this.$buefy.toast.open({
+                message,
+                type: "is-danger",
+                position: "is-bottom"
+              });
+
+              return false;
+            }
+
+            await authService.deleteAccount(password);
+
+            this.$router.push({ name: "goodbye" });
+          } catch {
+            this.$buefy.toast.open({
+              message: "ocorreu um erro ao deletar sua conta",
+              type: "is-danger",
+              position: "is-bottom"
+            });
+          } finally {
+            this.loadingDeleteAccount = false;
           }
         }
       });

@@ -90,6 +90,15 @@ const routes = [
     }
   },
   {
+    path: '/adeus',
+    name: 'goodbye',
+    component: () => import("../views/Goodbye"),
+    meta: {
+      title: 'adeus',
+      isPublic: true
+    }
+  },
+  {
     path: '*',
     name: 'page-not-found',
     component: () => import("../views/PageNotFound"),
