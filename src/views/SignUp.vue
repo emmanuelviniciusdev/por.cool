@@ -96,7 +96,8 @@
 
               <b-checkbox class="terms-checkbox" v-model="form.termsOfUse">
                 li e aceito os
-                <router-link to>termos de uso</router-link>
+                <router-link :to="{name: 'terms-of-use'}">termos de uso</router-link> e a
+                <router-link :to="{name: 'privacy-policy'}">política de privacidade</router-link>
               </b-checkbox>
 
               <b-field>
