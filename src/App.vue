@@ -11,13 +11,25 @@
       </div>
     </section>
     <footer class="footer is-primary">
-      <p class="has-text-black has-text-weight-bold">closed beta</p>
-      <p>porcool — produção independente</p>
-      <p>
-        dúvidas, ajuda? entre em contato pelo
-        <br />
-        <b>porcool@gmail.com</b>
-      </p>
+      <div class="columns">
+        <div class="column">
+          <h6 class="title is-6">informações</h6>
+          <p>
+            <b>closed beta</b> — porcool — produção independente
+          </p>
+          <p>
+            dúvidas, ajuda? entre em contato pelo
+            <br />
+            <b>porcool@gmail.com</b>
+          </p>
+        </div>
+
+        <div class="column">
+          <h6 class="title is-6">fique por dentro</h6>
+          <router-link :to="{name: 'terms-of-use'}">Termos de Uso</router-link><br>
+          <router-link :to="{name: 'privacy-policy'}">Política de Privacidade</router-link>
+        </div>
+      </div>
     </footer>
   </div>
 </template>

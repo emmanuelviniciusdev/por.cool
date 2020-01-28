@@ -108,6 +108,24 @@ const routes = [
     }
   },
   {
+    path: '/termos-de-uso',
+    name: 'terms-of-use',
+    component: () => import("../views/TermsOfUse"),
+    meta: {
+      title: 'termos de uso',
+      isPublic: true
+    }
+  },
+  {
+    path: '/politica-de-privacidade',
+    name: 'privacy-policy',
+    component: () => import("../views/PrivacyPolicy"),
+    meta: {
+      title: 'política de privacidade',
+      isPublic: true
+    }
+  },
+  {
     path: '*',
     name: 'page-not-found',
     component: () => import("../views/PageNotFound"),
