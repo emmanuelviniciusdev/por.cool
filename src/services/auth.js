@@ -95,16 +95,10 @@ const deleteAccount = async password => {
  */
 const recoverPassword = async email => {
     try {
-        const foundUser = await userService.findUserByEmail(email);
-
-        if (foundUser.uid === undefined)
-            return _response({ error: true, message: "este e-mail não existe no porcool" });
-        
         await auth().sendPasswordResetEmail(email);
-
         return _response({ message: "recuperação de senha enviada com sucesso" });
     } catch (err) {
-        throw _response({ error: true, message: "ocorreu um erro ao enviar a recuperação de senha [1]" });
+        throw err;
     }
 };
 

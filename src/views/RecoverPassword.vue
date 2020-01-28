@@ -83,8 +83,13 @@ export default {
         this.$v.form.$reset();
         this.form.email = "";
       } catch (err) {
+        let message = "ocorreu um erro ao enviar a recuperação de senha";
+
+        if (err.code === "auth/user-not-found")
+          message = "e-mail não encontrado no porcool";
+
         this.$buefy.toast.open({
-          message: "ocorreu um erro ao enviar a recuperação de senha [2]",
+          message,
           type: "is-danger",
           position: "is-bottom"
         });
