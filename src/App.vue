@@ -11,6 +11,7 @@
       </div>
     </section>
     <footer class="footer is-primary">
+      <p class="has-text-black has-text-weight-bold">closed beta</p>
       <p>porcool — produção independente</p>
       <p>
         dúvidas, ajuda? entre em contato pelo
