@@ -5,25 +5,25 @@
     <p>Deixamos claro que poderemos modificar ou alterar a Política de Privacidade a qualquer momento e, cabe a você, analisar periodicamente a mais atualizada versão desta Política de Privacidade.</p>
 
     <h2 class="subtitle has-text-weight-bold">Informações coletadas</h2>
-    <p>Em nosso servidor, coletaremos informações cadastrais (nome, sobrenome, e-mail, senha) e informações financeiras (gastos, saldos).</p>
-    <p>Utilizamos o Google Analytics. Com ele, poderá também ser coletados, mas com a possibilidade de não ser, os seguintes dados:</p>
+    <p>Em nosso servidor, coletaremos dados cadastrais (nome, sobrenome, e-mail, senha) e dados de suas finanças em geral.</p>
+    <p>Utilizamos o Google Analytics. Com ele, também serão coletados os seguintes dados:</p>
     <div class="content">
       <ul>
-        <li>número de usuários e sessões</li>
-        <li>duração da sessão</li>
-        <li>sistemas operacionais</li>
-        <li>modelos de dispositivos</li>
-        <li>geografia</li>
-        <li>primeiras inicializações</li>
-        <li>aberturas do aplicativo</li>
-        <li>atualizações do aplicativo</li>
-        <li>compras no app</li>
+        <li>Número de usuários e sessões ativas no momento.</li>
+        <li>Duração de cada sessão.</li>
+        <li>Sistemas operacionais utilizados pelos visitantes e/ou usuários.</li>
+        <li>Modelo dos dispositivos utilizados pelos visitantes e/ou usuários.</li>
+        <li>Local geográfico em que o visitante e/ou usuário se encontram.</li>
+        <li>Primeiras inicializações na nossa plataforma.</li>
+        <li>Dados de aberturas da plataforma.</li>
+        <li>Atualizações da plataforma.</li>
+        <li>Compras na plataforma.</li>
       </ul>
     </div>
-    <p>Ao utilizar o Porcool, você concorda e consente com tais coletas de dados.</p>
+    <p>Ao acessar e/ou utilizar o Porcool, você concorda e consente com tais coletas de dados.</p>
 
     <h2 class="subtitle has-text-weight-bold">Uso das informações coletadas</h2>
-    <p>Os dados coletados ficarão disponíveis e serão utilizados apenas dentro de nossos servidores. Terceiros não terão acesso a eles, exceto mediante a algum pedido de justiça.</p>
+    <p>Os dados coletados ficarão disponíveis apenas em nossos servidores, sendo utilizados pelo Porcool e podendo ser utilizados por alguns de nossos outros softwares oficiais – como ferramentas administrativas e etc. Terceiros não terão acesso a eles, exceto mediante a algum mandado judicial contra algum de nossos usuários.</p>
 
     <h2 class="subtitle has-text-weight-bold">A respeito de cookies</h2>
     <p>O Porcool utiliza-se de cookies para manter ativa a sessão do usuário autenticado.</p>
