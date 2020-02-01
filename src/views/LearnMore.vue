@@ -6,7 +6,7 @@
             <p class="is-italic has-text-weight-bold">História...</p>
             <p><i>Antes de continuar, deixa eu me apresentar: meu nome é Emmanuel e fui eu que dei vida ao porcool.</i></p>
             <p>O porcool surgiu de uma necessidade de transformar uma simples planilha de controle financeiro pessoal para alguma coisa mais "elaborada", que fizesse algumas coisas de maneira automatizada para mim.</p>
-            <p>Editar planilhas é ruim, chato, horrível. Você pode até automatizá-las com suas funções matemáticas mirabolantes e deixá-las uns 2% mais usual. Mas elas continuarão sendo planilhas.</p>
+            <p>Editar planilhas é ruim, chato, horrível. Você pode até automatizá-las com suas funções matemáticas mirabolantes e deixá-las uns 2% mais usuais. Mas elas continuarão sendo planilhas.</p>
             <p>Então eu pensei: <i>eu poderia criar alguma coisa simples, que faça as coisas de maneira mais fácil e prática pro meu dia a dia...</i></p>
             <p>No começo, a minha ideia era desenvolver alguma coisa só para mim utilizar, mas no meio do caminho me veio na cabeça que poderiam existir mais pessoas que também abonimassem planilhas, então eu desenvolvi a ferramenta de uma forma que tornasse possível sua utilização também por outras pessoas.</p>
             <p class="is-italic has-text-weight-bold">O que vai dar pra mim fazer com o porcool?</p>

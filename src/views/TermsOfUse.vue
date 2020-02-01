@@ -23,8 +23,8 @@
 
     <h2 class="subtitle has-text-weight-bold">4. Pagamento</h2>
     <p>Você está ciente e concorda que, para utilizar o Porcool, você precisa pagar uma quantia estipulada no valor de R$ 10,00 a cada 30 dias. Está ciente também de que não existe nenhum tipo de vínculo que te prenda e te obrigue a pagar todo mês: você só paga quando quiser utilizar o Porcool.</p>
-    <p>O pagamento poderá ser feito via Paypal ou pessoalmente para algum responsável.</p>
-    <p>Você está ciente de que a devolução será realizada com a mesma forma de pagamento que foi utilizada para realizar a compra de nossos serviços. Você também está ciente de que possui um prazo de no máximo 7 (sete) dias para pedir o seu reembolso e, caso passado este prazo, a devolução não será mais possível em hipótese alguma.</p>
+    <p>O pagamento poderá ser realizado via Paypal ou qualquer outro meio previsto mediante a contato através de meios de contatos oficiais. Por favor, consulte-os.</p>
+    <p>Você está ciente de que a devolução será realizada com a mesma forma de pagamento que foi utilizada para realizar a compra de nossos serviços. Você também está ciente de que possui um prazo de no máximo 7 (sete) dias para pedir o seu reembolso e, caso este prazo chegue ao fim, a devolução não será mais possível em hipótese alguma.</p>
 
     <h2 class="subtitle has-text-weight-bold">5. Uso da Plataforma</h2>
     <p>É explicitamente proibido se aproveitar de eventuais vulnerabilidades da plataforma para ganho próprio ou para prejudicar a integridade da mesma. No caso de descumprimento deste termo, o usuário será suspenso permanentemente do Porcool, sem direito a nenhum tipo de reembolso.</p>
