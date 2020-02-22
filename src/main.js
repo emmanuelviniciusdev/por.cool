@@ -35,7 +35,8 @@ Vue.use(VueCurrencyFilter, {
   symbolSpacing: true
 });
 
-firebase.initializeApp({
+// Firebase configs
+let firebaseConfig = {
   apiKey: "REDACTED_PROD_API_KEY",
   authDomain: "REDACTED.firebaseapp.com",
   databaseURL: "https://REDACTED.firebaseio.com",
@@ -44,7 +45,22 @@ firebase.initializeApp({
   messagingSenderId: "REDACTED_PROD_SENDER",
   appId: "1:REDACTED_PROD_SENDER:web:2322a618907f2774b8973f",
   measurementId: "REDACTED_PROD_MEASUREMENT"
-});
+};
+
+if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+  firebaseConfig = {
+    apiKey: "REDACTED_DEV_API_KEY",
+    authDomain: "REDACTED-tests.firebaseapp.com",
+    databaseURL: "https://REDACTED-tests.firebaseio.com",
+    projectId: "REDACTED-tests",
+    storageBucket: "REDACTED-tests.appspot.com",
+    messagingSenderId: "REDACTED_DEV_SENDER",
+    appId: "1:REDACTED_DEV_SENDER:web:7455009961027762bbddf4",
+    measurementId: "REDACTED_DEV_MEASUREMENT"
+  };
+}
+
+firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 Vue.config.productionTip = false;
