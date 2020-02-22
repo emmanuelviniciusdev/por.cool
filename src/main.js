@@ -35,7 +35,8 @@ Vue.use(VueCurrencyFilter, {
   symbolSpacing: true
 });
 
-firebase.initializeApp({
+// Firebase configs
+let firebaseConfig = {
   apiKey: "AIzaSyAMFqGceZwJ5srrPePLCXuDgaJlVXurVvI",
   authDomain: "por.cool",
   databaseURL: "https://porcool.firebaseio.com",
@@ -44,7 +45,22 @@ firebase.initializeApp({
   messagingSenderId: "6802874030",
   appId: "1:6802874030:web:2322a618907f2774b8973f",
   measurementId: "G-NS5TW4HLVT"
-});
+};
+
+if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+  firebaseConfig = {
+    apiKey: "AIzaSyASSL0JgM0wOwPyP7tus35ZJuhGLnEbGE4",
+    authDomain: "porcool-tests.firebaseapp.com",
+    databaseURL: "https://porcool-tests.firebaseio.com",
+    projectId: "porcool-tests",
+    storageBucket: "porcool-tests.appspot.com",
+    messagingSenderId: "350309528861",
+    appId: "1:350309528861:web:7455009961027762bbddf4",
+    measurementId: "G-32SV0EMC44"
+  };
+}
+
+firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 Vue.config.productionTip = false;
