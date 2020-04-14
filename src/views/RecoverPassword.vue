@@ -123,6 +123,7 @@ export default {
 
   form {
     width: 400px;
+    margin-top: 20px;
   }
 }
 </style>
