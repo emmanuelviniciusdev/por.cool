@@ -10,13 +10,13 @@
         ></b-menu-item>
         <b-menu-item
           label="meus gastos"
-          icon="hand-holding-usd"
+          icon="dollar-sign"
           @click="redirectTo('home')"
           :active="isActiveRoute('home')"
         ></b-menu-item>
         <b-menu-item
           label="meus saldos"
-          icon="dollar-sign"
+          icon="hand-holding-usd"
           @click="redirectTo('balances')"
           :active="isActiveRoute('balances')"
         ></b-menu-item>
