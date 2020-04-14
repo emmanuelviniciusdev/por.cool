@@ -1,5 +1,5 @@
 <template>
-  <div class="columns">
+  <div class="columns payment-wrapper">
     <b-loading :active="!user"></b-loading>
 
     <div class="column" v-if="user">
@@ -146,5 +146,10 @@ export default {
 .welcome p {
   font-weight: bold;
   color: red;
+}
+
+.payment-wrapper {
+  width: 100%;
+  max-width: 900px;
 }
 </style>
