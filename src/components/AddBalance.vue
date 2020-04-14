@@ -4,7 +4,7 @@
       <div class="modal-card" style="width: auto">
         <div class="modal-card-head">
           <p class="modal-card-title">
-            adionando saldo para
+            adicionando saldo para
             <b>{{formatedUserLookingAtSpendingDate.month + ' de ' + formatedUserLookingAtSpendingDate.year}}</b>
           </p>
         </div>
