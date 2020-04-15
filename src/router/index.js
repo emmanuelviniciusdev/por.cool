@@ -137,7 +137,10 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  routes
+  routes,
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  }
 });
 
 // Intercepting routes
@@ -172,7 +175,7 @@ router.beforeEach((to, from, next) => {
 
       // Check if user payment is ok
       const remainingDays = !userPayments.empty ? paymentHelper.remainingDays(userPayments.docs[0].data().paymentDate) : 0;
-      
+
       const userPaymentIsOk = (!userPayments.empty && remainingDays > 0);
       const userPaymentIsNotOk = (userPayments.empty || (!userPayments.empty && remainingDays <= 0));
 
