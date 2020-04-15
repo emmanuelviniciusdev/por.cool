@@ -15,7 +15,7 @@
         <div class="column">
           <h6 class="title is-6">informações</h6>
           <p>
-            <b>closed beta</b> — porcool — produção independente
+            <b>closed beta v1.0.1</b> — porcool — produção independente
           </p>
           <p>
             dúvidas, ajuda? entre em contato pelo
