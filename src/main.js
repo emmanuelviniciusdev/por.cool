@@ -15,6 +15,10 @@ import firebase from 'firebase/app';
 import 'firebase/analytics';
 import 'firebase/auth';
 
+// Firebase Environment Configuration
+import firebaseConfigDevelopment from '../environment.development';
+import firebaseConfigProduction from '../environment.production';
+
 // Services
 import userService from './services/user';
 
@@ -35,30 +39,10 @@ Vue.use(VueCurrencyFilter, {
   symbolSpacing: true
 });
 
-// Firebase configs
-let firebaseConfig = {
-  apiKey: "REDACTED_PROD_API_KEY",
-  authDomain: "REDACTED.firebaseapp.com",
-  databaseURL: "https://REDACTED.firebaseio.com",
-  projectId: "REDACTED",
-  storageBucket: "REDACTED.appspot.com",
-  messagingSenderId: "REDACTED_PROD_SENDER",
-  appId: "1:REDACTED_PROD_SENDER:web:2322a618907f2774b8973f",
-  measurementId: "REDACTED_PROD_MEASUREMENT"
-};
-
-if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-  firebaseConfig = {
-    apiKey: "REDACTED_DEV_API_KEY",
-    authDomain: "REDACTED-tests.firebaseapp.com",
-    databaseURL: "https://REDACTED-tests.firebaseio.com",
-    projectId: "REDACTED-tests",
-    storageBucket: "REDACTED-tests.appspot.com",
-    messagingSenderId: "REDACTED_DEV_SENDER",
-    appId: "1:REDACTED_DEV_SENDER:web:7455009961027762bbddf4",
-    measurementId: "REDACTED_DEV_MEASUREMENT"
-  };
-}
+// Firebase configs - Load based on environment
+const firebaseConfig = (!process.env.NODE_ENV || process.env.NODE_ENV === "development")
+  ? firebaseConfigDevelopment
+  : firebaseConfigProduction;
 
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();

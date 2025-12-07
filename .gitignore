@@ -6,6 +6,10 @@ node_modules
 .env.local
 .env.*.local
 
+# Firebase environment configuration files
+environment.development.js
+environment.production.js
+
 # Log files
 npm-debug.log*
 yarn-debug.log*
