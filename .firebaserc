@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "porcool-tests",
+    "production": "porcool",
+    "test": "porcool-tests"
+  }
+}

@@ -6,7 +6,9 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy:production": "npm run build && npx firebase-tools@11 deploy --only hosting -P production",
+    "deploy:test": "npm run build && npx firebase-tools@11 deploy --only hosting -P test"
   },
   "dependencies": {
     "buefy": "^0.8.0",
