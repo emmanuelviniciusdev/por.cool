@@ -91,6 +91,14 @@ const routes = [
     }
   },
   {
+    path: '/bancos-e-instituicoes',
+    name: 'banks',
+    component: () => import("../views/Banks"),
+    meta: {
+      title: 'bancos e instituições'
+    }
+  },
+  {
     path: '/minha-conta',
     name: 'my-account',
     component: () => import("../views/MyAccount"),
