@@ -21,6 +21,12 @@
           :active="isActiveRoute('balances')"
         ></b-menu-item>
         <b-menu-item
+          label="bancos e instituições"
+          icon="university"
+          @click="redirectTo('banks')"
+          :active="isActiveRoute('banks')"
+        ></b-menu-item>
+        <b-menu-item
           label="minha conta"
           icon="user"
           @click="redirectTo('my-account')"

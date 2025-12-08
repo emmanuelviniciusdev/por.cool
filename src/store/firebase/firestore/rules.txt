@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+		match /settings/{setting} {
+    	allow read;
+    }
+
+    match /users/{user} {
+    	allow write;
+    	allow read: if request.auth.uid == user || request.auth.token.admin == true;
+    }
+
+    match /expenses/{expense} {
+    	allow write: if request.auth.uid != null;
+    	allow read: if request.auth.uid == resource.data.user;
+    }
+
+    match /additional_balances/{additionalBalance} {
+    	allow write: if request.auth.uid != null;
+    	allow read: if request.auth.uid == resource.data.user;
+    }
+
+    match /balance_history/{balanceHistory} {
+    	allow write: if request.auth.uid != null;
+    	allow read: if request.auth.uid == resource.data.user;
+    }
+
+    match /payments/{payment} {
+    	allow write: if request.auth.uid != null;
+    	allow read: if request.auth.uid == resource.data.user || request.auth.token.admin == true;
+    }
+
+    match /banks/{bank} {
+    	allow write: if request.auth.uid != null;
+    	allow read: if request.auth.uid == resource.data.user || request.auth.token.admin == true;
+    }
+  }
+}
