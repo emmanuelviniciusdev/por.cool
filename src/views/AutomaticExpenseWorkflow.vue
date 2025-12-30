@@ -78,10 +78,12 @@ export default {
     })
   },
   methods: {
-    loadEntries() {
+    loadEntries(spendingDate = null) {
       this.$store.dispatch("expenseAutomaticWorkflow/setWorkflowEntries", {
         userUid: this.userData.uid,
-        spendingDate: this.userData.lookingAtSpendingDate
+        spendingDate: spendingDate
+          ? spendingDate
+          : this.userData.lookingAtSpendingDate
       });
     },
     loadPreSavedDescriptions() {
