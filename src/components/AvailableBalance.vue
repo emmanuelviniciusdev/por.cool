@@ -1,5 +1,8 @@
 <template>
-  <div class="balance-info" @click="$store.dispatch('balances/toggleShowBalance')">
+  <div
+    class="balance-info"
+    @click="$store.dispatch('balances/toggleShowBalance')"
+  >
     <div class="level available-balance">
       <div class="level-item">
         <b-icon
@@ -16,15 +19,30 @@
       type="is-dark"
       multilined
       position="is-bottom"
-      :label="balances.showBalance ? `${$options.filters.currency(balances.lastMonthBalance)} (do mês passado) + ${$options.filters.currency(balanceOfNow)} (deste mês)` : 'ver saldo'"
+      :label="
+        balances.showBalance
+          ? `${$options.filters.currency(
+              balances.lastMonthBalance
+            )} (do mês passado) + ${$options.filters.currency(
+              balanceOfNow
+            )} (deste mês)`
+          : 'ver saldo'
+      "
     >
       <h1
         class="title"
         :class="{
-          'has-text-black': balances.currentBalance >= 0 || !balances.showBalance,
+          'has-text-black':
+            balances.currentBalance >= 0 || !balances.showBalance,
           'has-text-danger': balances.currentBalance < 0 && balances.showBalance
         }"
-      >{{balances.showBalance ? $options.filters.currency(balances.currentBalance) : '...'}}</h1>
+      >
+        {{
+          balances.showBalance
+            ? $options.filters.currency(balances.currentBalance)
+            : "..."
+        }}
+      </h1>
     </b-tooltip>
   </div>
 </template>

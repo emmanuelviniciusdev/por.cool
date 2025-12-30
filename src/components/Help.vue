@@ -1,12 +1,26 @@
 <template>
   <div class="help">
-    <b-tooltip :label="getTooltipText()" :position="this.tooltipPosition" type="is-warning">
+    <b-tooltip
+      :label="getTooltipText()"
+      :position="this.tooltipPosition"
+      type="is-warning"
+    >
       <button class="help-btn" @click="openModal()">
-        <b-icon type="is-warning" icon="question-circle" size="is-medium"></b-icon>
+        <b-icon
+          type="is-warning"
+          icon="question-circle"
+          size="is-medium"
+        ></b-icon>
       </button>
     </b-tooltip>
 
-    <b-modal :active="showModal" has-modal-card aria-role="dialog" aria-modal :canCancel="false">
+    <b-modal
+      :active="showModal"
+      has-modal-card
+      aria-role="dialog"
+      aria-modal
+      :canCancel="false"
+    >
       <div class="modal-card">
         <header class="modal-card-head">
           <span class="modal-card-title is-size-6-mobile">
@@ -17,7 +31,9 @@
           <slot name="body"></slot>
         </section>
         <footer class="modal-card-foot">
-          <b-button type="is-primary" @click="closeModal()">entendido!</b-button>
+          <b-button type="is-primary" @click="closeModal()"
+            >entendido!</b-button
+          >
         </footer>
       </div>
     </b-modal>

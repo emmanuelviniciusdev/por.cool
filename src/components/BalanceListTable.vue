@@ -9,8 +9,12 @@
       :per-page="10"
     >
       <template slot-scope="props">
-        <b-table-column field="balance" label="saldo">{{props.row.balance | currency}}</b-table-column>
-        <b-table-column field="description" label="descrição">{{props.row.description}}</b-table-column>
+        <b-table-column field="balance" label="saldo">{{
+          props.row.balance | currency
+        }}</b-table-column>
+        <b-table-column field="description" label="descrição">{{
+          props.row.description
+        }}</b-table-column>
         <b-table-column field="action" label="#">
           <b-tooltip label="remover" type="is-dark">
             <button
@@ -28,7 +32,9 @@
         <section class="section">
           <div class="content has-text-black has-text-centered">
             <div v-if="!loadingBalancesListError">
-              <div class="notification">Nenhum saldo foi encontrado por aqui...</div>
+              <div class="notification">
+                Nenhum saldo foi encontrado por aqui...
+              </div>
             </div>
 
             <div class="notification is-danger" v-if="loadingBalancesListError">
@@ -125,5 +131,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

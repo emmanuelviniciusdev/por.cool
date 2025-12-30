@@ -1,14 +1,17 @@
 <template>
   <div>
     <h1 class="title">recuperar senha</h1>
-    <p>se você se esqueceu de sua senha, você pode recuperá-la inserindo abaixo o e-mail registrado em sua conta</p>
+    <p>
+      se você se esqueceu de sua senha, você pode recuperá-la inserindo abaixo o
+      e-mail registrado em sua conta
+    </p>
     <form @submit.prevent="submit()">
       <b-field
         label="e-mail"
-        :type="{'is-danger': hasInputErrorAndDirty('email')}"
+        :type="{ 'is-danger': hasInputErrorAndDirty('email') }"
         :message="{
-            'insira o seu e-mail': isInvalidInputMsg('email', 'required'),
-            'insira um e-mail válido...': isInvalidInputMsg('email', 'email')
+          'insira o seu e-mail': isInvalidInputMsg('email', 'required'),
+          'insira um e-mail válido...': isInvalidInputMsg('email', 'email')
         }"
       >
         <b-input
@@ -23,7 +26,8 @@
           type="is-primary"
           native-type="submit"
           :loading="loadingRecoverPassword"
-        >recuperar senha</b-button>
+          >recuperar senha</b-button
+        >
       </b-field>
     </form>
   </div>

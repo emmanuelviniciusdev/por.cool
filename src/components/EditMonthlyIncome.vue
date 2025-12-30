@@ -5,7 +5,7 @@
         <div class="modal-card-head">
           <p class="modal-card-title">
             sua renda atual:
-            <b>{{userData.monthlyIncome | currency}}</b>
+            <b>{{ userData.monthlyIncome | currency }}</b>
           </p>
         </div>
         <section class="modal-card-body">
@@ -15,24 +15,36 @@
               style="width: 300px;"
               v-model.trim="monthlyIncome"
               v-bind="{
-                    decimal: ',',
-                    thousands: '.',
-                    prefix: 'R$',
-                    precision: 2
-                }"
+                decimal: ',',
+                thousands: '.',
+                prefix: 'R$',
+                precision: 2
+              }"
             ></money>
           </b-field>
         </section>
         <footer class="modal-card-foot">
-          <b-button type="is-default" @click="onOpenModal(false)">cancelar</b-button>
-          <b-button type="is-primary" @click="updateMonthlyIncome()" :loading="loading">alterar</b-button>
+          <b-button type="is-default" @click="onOpenModal(false)"
+            >cancelar</b-button
+          >
+          <b-button
+            type="is-primary"
+            @click="updateMonthlyIncome()"
+            :loading="loading"
+            >alterar</b-button
+          >
         </footer>
       </div>
     </b-modal>
 
     <div class="notification is-primary">
-      <p class="is-size-5">sua renda fixa atual é de <b>{{ this.userData.monthlyIncome | currency }}</b></p>
-      <b-button @click="onOpenModal()" style="margin-top: 10px;">clique para alterar</b-button>
+      <p class="is-size-5">
+        sua renda fixa atual é de
+        <b>{{ this.userData.monthlyIncome | currency }}</b>
+      </p>
+      <b-button @click="onOpenModal()" style="margin-top: 10px;"
+        >clique para alterar</b-button
+      >
     </div>
   </div>
 </template>
@@ -80,7 +92,7 @@ export default {
         });
         this.$store.dispatch("balances/setBalances", {
           userUid: this.userData.uid,
-          spendingDate: this.userData.lookingAtSpendingDate,
+          spendingDate: this.userData.lookingAtSpendingDate
         });
 
         this.$buefy.toast.open({
@@ -104,5 +116,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

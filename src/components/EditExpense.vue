@@ -2,19 +2,26 @@
   <div>
     <b-modal
       :active="openModal"
-      :custom-class="{'modify-modal': expenseToEdit.type !== 'expense'}"
+      :custom-class="{ 'modify-modal': expenseToEdit.type !== 'expense' }"
       :canCancel="false"
     >
       <div class="modal-card" style="width: auto;">
         <div class="modal-card-head">
           <p class="modal-card-title">
             editando
-            <b>{{expenseToEdit.expenseName ? expenseToEdit.expenseName : 'insira o nome do gasto...'}}</b>
+            <b>{{
+              expenseToEdit.expenseName
+                ? expenseToEdit.expenseName
+                : "insira o nome do gasto..."
+            }}</b>
           </p>
         </div>
         <section class="modal-card-body">
           <b-field grouped>
-            <b-field label="gasto" :type="{'is-danger': hasInputErrorAndDirty('expenseName')}">
+            <b-field
+              label="gasto"
+              :type="{ 'is-danger': hasInputErrorAndDirty('expenseName') }"
+            >
               <b-input
                 v-model.trim="$v.expenseToEdit.expenseName.$model"
                 class="input-expense-name"
@@ -27,36 +34,42 @@
               <money
                 v-model.trim="expenseToEdit.amount"
                 v-bind="{
-                decimal: ',',
-                thousands: '.',
-                prefix: 'R$',
-                precision: 2
-            }"
+                  decimal: ',',
+                  thousands: '.',
+                  prefix: 'R$',
+                  precision: 2
+                }"
                 class="input input-amount"
               ></money>
             </b-field>
-            <b-field label="valor diferencial" v-if="expenseToEdit.differenceAmount !== undefined">
+            <b-field
+              label="valor diferencial"
+              v-if="expenseToEdit.differenceAmount !== undefined"
+            >
               <money
                 v-model.trim="expenseToEdit.differenceAmount"
                 v-bind="{
-                decimal: ',',
-                thousands: '.',
-                prefix: 'R$',
-                precision: 2
-            }"
+                  decimal: ',',
+                  thousands: '.',
+                  prefix: 'R$',
+                  precision: 2
+                }"
                 class="input input-amount"
               ></money>
             </b-field>
-            <b-field label="valor que já foi pago" v-if="expenseToEdit.status === 'partially_paid'">
+            <b-field
+              label="valor que já foi pago"
+              v-if="expenseToEdit.status === 'partially_paid'"
+            >
               <money
                 ref="alreadyPaidAmountInput"
                 v-model.trim="expenseToEdit.alreadyPaidAmount"
                 v-bind="{
-                decimal: ',',
-                thousands: '.',
-                prefix: 'R$',
-                precision: 2
-            }"
+                  decimal: ',',
+                  thousands: '.',
+                  prefix: 'R$',
+                  precision: 2
+                }"
                 class="input input-amount"
               ></money>
             </b-field>
@@ -84,11 +97,18 @@
             </b-field>
 
             <div
-              v-if="expenseToEdit.type === 'invoice' || expenseToEdit.type === 'savings'"
+              v-if="
+                expenseToEdit.type === 'invoice' ||
+                  expenseToEdit.type === 'savings'
+              "
               style="display: inline-block !important;"
             >
               <b-field
-                :label="expenseToEdit.type === 'invoice' ? 'esta fatura vai até' : 'esta poupança vai até'"
+                :label="
+                  expenseToEdit.type === 'invoice'
+                    ? 'esta fatura vai até'
+                    : 'esta poupança vai até'
+                "
               >
                 <b-datepicker
                   editable
@@ -103,14 +123,17 @@
                 <b-checkbox
                   class="input-checkbox"
                   v-model.trim="expenseToEdit.indeterminateValidity"
-                >tempo indeterminado</b-checkbox>
+                  >tempo indeterminado</b-checkbox
+                >
               </b-field>
             </div>
           </b-field>
         </section>
         <footer class="modal-card-foot">
           <b-button @click="openModal = false">cancelar</b-button>
-          <b-button type="is-warning" @click="save()" :loading="isLoading">salvar</b-button>
+          <b-button type="is-warning" @click="save()" :loading="isLoading"
+            >salvar</b-button
+          >
         </footer>
       </div>
     </b-modal>
@@ -202,7 +225,10 @@ export default {
         errorData.msg = `você não pode pagar um valor maior do que aquele que você deve (R$ ${owedAmount}) 😞`;
       }
 
-      if (validity !== null && moment(validity).isBefore(moment(this.userData.lookingAtSpendingDate))) {
+      if (
+        validity !== null &&
+        moment(validity).isBefore(moment(this.userData.lookingAtSpendingDate))
+      ) {
         errorData.error = true;
         errorData.msg = `não foi possível adicionar uma fatura/poupança no passado...`;
       }
@@ -227,7 +253,7 @@ export default {
         spendingDate: this.userData.lookingAtSpendingDate
       });
 
-      this.$store.dispatch('balances/setCurrentBalance', {
+      this.$store.dispatch("balances/setCurrentBalance", {
         userUid: this.userData.uid,
         spendingDate: this.userData.lookingAtSpendingDate
       });

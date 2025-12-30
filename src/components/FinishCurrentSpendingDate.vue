@@ -3,66 +3,83 @@
     <b-modal :active="isModalOpened" full-screen :canCancel="false">
       <div class="modal-card" style="width: auto">
         <header class="modal-card-head">
-          <p
-            class="modal-card-title"
-          >{{ `${formatedUserLookingAtSpendingDate.month} de ${formatedUserLookingAtSpendingDate.year}` }}</p>
+          <p class="modal-card-title">
+            {{
+              `${formatedUserLookingAtSpendingDate.month} de ${formatedUserLookingAtSpendingDate.year}`
+            }}
+          </p>
         </header>
         <section class="modal-card-body">
           <h1 class="title">
             antes de prosseguir
             <Help tooltipPosition="is-bottom">
-              <template v-slot:title>como funciona o fechamento de gastos?</template>
+              <template v-slot:title
+                >como funciona o fechamento de gastos?</template
+              >
               <template v-slot:body>
                 <div class="content">
-                  <h1 class="subtitle has-text-weight-normal">É bizarro de simples.</h1>
+                  <h1 class="subtitle has-text-weight-normal">
+                    É bizarro de simples.
+                  </h1>
                   <p class="is-size-5 has-text-weight-normal">
-                    Esta tela funciona assim: toda vez que termina um mês e entra outro, você precisa "fechar os gastos" para o mês antigo
-                    antes de começar a adicionar novos gastos para o novo mês.
+                    Esta tela funciona assim: toda vez que termina um mês e
+                    entra outro, você precisa "fechar os gastos" para o mês
+                    antigo antes de começar a adicionar novos gastos para o novo
+                    mês.
                     <i>
-                      Se você continuar adicionando gastos sem executar o fechamento
-                      de gastos, você estará adicionando gastos para o mês antigo, e não para o novo mês.
+                      Se você continuar adicionando gastos sem executar o
+                      fechamento de gastos, você estará adicionando gastos para
+                      o mês antigo, e não para o novo mês.
                     </i>
                   </p>
                   <p class="is-size-5 has-text-weight-normal">
-                    Se você caiu nesta tela, quer dizer que quando você foi executar o fechamento de gastos você ainda tinha alguns gastos cujo os
-                    status estavam "pendentes" ou "parcialmente pagos".
+                    Se você caiu nesta tela, quer dizer que quando você foi
+                    executar o fechamento de gastos você ainda tinha alguns
+                    gastos cujo os status estavam "pendentes" ou "parcialmente
+                    pagos".
                     <i>
-                      Se todos os seus gastos estivessem com status "pago", você não cairia nesta tela e o
-                      fechamento seria realizado de forma automática.
+                      Se todos os seus gastos estivessem com status "pago", você
+                      não cairia nesta tela e o fechamento seria realizado de
+                      forma automática.
                     </i>
                   </p>
-                  <p
-                    class="is-size-5 has-text-weight-bold"
-                  >Entendido como e por que você foi parar aqui, vamos ao que interessa:</p>
+                  <p class="is-size-5 has-text-weight-bold">
+                    Entendido como e por que você foi parar aqui, vamos ao que
+                    interessa:
+                  </p>
                   <p class="is-size-5 has-text-weight-normal">
-                    Se o seu gasto já está pago e você apenas se esqueceu de atualizá-lo ao clicar em fechar gastos, você pode marcar a opção
-                    de
-                    <b>"já está pago?"</b> para
-                    <b>sim</b>, e o status deste gasto simplesmente se atualizará para "pago" e o fechamento
+                    Se o seu gasto já está pago e você apenas se esqueceu de
+                    atualizá-lo ao clicar em fechar gastos, você pode marcar a
+                    opção de
+                    <b>"já está pago?"</b> para <b>sim</b>, e o status deste
+                    gasto simplesmente se atualizará para "pago" e o fechamento
                     ocorrerá normalmente, de forma automática.
-                    <img
-                      src="https://i.imgur.com/insJhSu.png"
-                    />
+                    <img src="https://i.imgur.com/insJhSu.png" />
                   </p>
-                  <p
-                    class="is-size-5 has-text-weight-normal"
-                  >Porém, se você de fato não efetuou o pagamento do seu gasto em questão, você possui algumas alternativas:</p>
+                  <p class="is-size-5 has-text-weight-normal">
+                    Porém, se você de fato não efetuou o pagamento do seu gasto
+                    em questão, você possui algumas alternativas:
+                  </p>
                   <ul>
                     <li>
                       <p class="is-size-6 has-text-weight-normal">
-                        <b>passar pro próximo mês:</b> irá passar o gasto com o valor que ainda não foi pago para o próximo mês.
+                        <b>passar pro próximo mês:</b> irá passar o gasto com o
+                        valor que ainda não foi pago para o próximo mês.
                       </p>
                     </li>
                     <li>
                       <p class="is-size-6 has-text-weight-normal">
-                        <b>passar pro próximo mês (com a diferença):</b> irá passar a fatura ou poupança para o próximo mês com a
+                        <b>passar pro próximo mês (com a diferença):</b> irá
+                        passar a fatura ou poupança para o próximo mês com a
                         diferença de valor que ainda não foi paga.
                       </p>
                     </li>
                     <li>
                       <p class="is-size-6 has-text-weight-normal">
-                        <b>passar pro próximo mês (sem a diferença):</b> irá passar a fatura ou poupança para o próximo mês sem diferença
-                        nenhuma de valor. Ou seja: com o seu valor original.
+                        <b>passar pro próximo mês (sem a diferença):</b> irá
+                        passar a fatura ou poupança para o próximo mês sem
+                        diferença nenhuma de valor. Ou seja: com o seu valor
+                        original.
                       </p>
                     </li>
                     <li>
@@ -72,8 +89,11 @@
                     </li>
                   </ul>
                   <p class="is-size-5 has-text-weight-normal">
-                    <b>Observação:</b> todas as opções acima irão zerar os valores dos seus gastos para o mês antigo se o status estiver como "pendente".
-                    Se o status for "parcialmente pago", elas irão considerar e definir os valores dos gastos para os valores que já haviam sido pagos.
+                    <b>Observação:</b> todas as opções acima irão zerar os
+                    valores dos seus gastos para o mês antigo se o status
+                    estiver como "pendente". Se o status for "parcialmente
+                    pago", elas irão considerar e definir os valores dos gastos
+                    para os valores que já haviam sido pagos.
                   </p>
                 </div>
               </template>
@@ -81,11 +101,14 @@
           </h1>
           <h2 class="subtitle">
             o que você pretende fazer com estes gastos que ficaram
-            <i>pendentes</i> ou
-            <i>parcialmente pagos</i>?
+            <i>pendentes</i> ou <i>parcialmente pagos</i>?
           </h2>
           <b-table
-            :data="modifiedExpenses.filter(({status, type}) => !(status === 'paid' && type !== 'expense'))"
+            :data="
+              modifiedExpenses.filter(
+                ({ status, type }) => !(status === 'paid' && type !== 'expense')
+              )
+            "
             :mobile-cards="true"
             hoverable
             paginated
@@ -95,31 +118,42 @@
               <b-table-column
                 field="expenseName"
                 label="#"
-                :class="{'has-text-weight-bold': props.row.type !== 'expense'}"
-              >{{ props.row.expenseName }}</b-table-column>
-              <b-table-column
-                field="amount"
-                label="gasto"
-              >{{ props.row.amount | sumAmounts(props.row) | currency }}</b-table-column>
+                :class="{
+                  'has-text-weight-bold': props.row.type !== 'expense'
+                }"
+                >{{ props.row.expenseName }}</b-table-column
+              >
+              <b-table-column field="amount" label="gasto">{{
+                props.row.amount | sumAmounts(props.row) | currency
+              }}</b-table-column>
               <b-table-column field="status" label="status">
                 <b-tag :type="status_types[props.row.status]">
                   <b-tooltip
                     v-if="props.row.status === 'partially_paid'"
                     :label="props.row.alreadyPaidAmount | currency"
                     type="is-dark"
-                  >{{ status_labels[props.row.status] }}</b-tooltip>
+                    >{{ status_labels[props.row.status] }}</b-tooltip
+                  >
                   <span v-else>{{ status_labels[props.row.status] }}</span>
                 </b-tag>
               </b-table-column>
               <b-table-column field="type" label="tipo">
-                <b-tag size="is-medium">{{ types_labels[props.row.type] }}</b-tag>
+                <b-tag size="is-medium">{{
+                  types_labels[props.row.type]
+                }}</b-tag>
               </b-table-column>
               <b-table-column field="status" label="já está pago?">
                 <div class="field">
                   <div class="control has-icons-left">
                     <div class="select">
                       <select
-                        @change="setExpenseTemporaryValue(props.row.temporary.pseudoId, 'hasUserPaid', $event.target.value === 'true')"
+                        @change="
+                          setExpenseTemporaryValue(
+                            props.row.temporary.pseudoId,
+                            'hasUserPaid',
+                            $event.target.value === 'true'
+                          )
+                        "
                       >
                         <option value="false" selected>não</option>
                         <option value="true">sim</option>
@@ -128,45 +162,67 @@
                     <div class="icon is-small is-left">
                       <i
                         :class="{
-                        'fas fa-thumbs-up': props.row.temporary.hasUserPaid,
-                        'fas fa-thumbs-down': !props.row.temporary.hasUserPaid,
-                      }"
+                          'fas fa-thumbs-up': props.row.temporary.hasUserPaid,
+                          'fas fa-thumbs-down': !props.row.temporary.hasUserPaid
+                        }"
                       ></i>
                     </div>
                   </div>
                 </div>
               </b-table-column>
               <b-table-column field="action">
-                <div class="field" style="width: 300px;" v-if="!props.row.temporary.hasUserPaid">
+                <div
+                  class="field"
+                  style="width: 300px;"
+                  v-if="!props.row.temporary.hasUserPaid"
+                >
                   <div class="control has-icons-left">
                     <div class="select">
                       <select
-                        @change="setExpenseTemporaryValue(props.row.temporary.pseudoId, 'action', $event.target.value)"
+                        @change="
+                          setExpenseTemporaryValue(
+                            props.row.temporary.pseudoId,
+                            'action',
+                            $event.target.value
+                          )
+                        "
                       >
-                        <option value="nothing" selected>o que pretende fazer, então?</option>
+                        <option value="nothing" selected
+                          >o que pretende fazer, então?</option
+                        >
                         <option
                           value="move_on"
                           v-if="props.row.type === 'expense'"
-                        >passar pro próximo mês</option>
+                          >passar pro próximo mês</option
+                        >
                         <option
                           value="move_on_with_difference"
                           v-if="props.row.type !== 'expense'"
-                        >passar pro próximo mês (com a diferença)</option>
+                          >passar pro próximo mês (com a diferença)</option
+                        >
                         <option
                           value="move_on_without_difference"
                           v-if="props.row.type !== 'expense'"
-                        >passar pro próximo mês (sem a diferença)</option>
+                          >passar pro próximo mês (sem a diferença)</option
+                        >
                         <option value="discard">descartar</option>
                       </select>
                     </div>
                     <div class="icon is-small is-left">
                       <i
                         :class="{
-                        'fas fa-question-circle': props.row.temporary.action === 'nothing',
-                        'fas fa-dollar-sign': props.row.temporary.action === 'move_on_with_difference',
-                        'fas fa-angle-double-right': ['move_on', 'move_on_without_difference'].includes(props.row.temporary.action ),
-                        'fas fa-trash-alt': props.row.temporary.action === 'discard',
-                      }"
+                          'fas fa-question-circle':
+                            props.row.temporary.action === 'nothing',
+                          'fas fa-dollar-sign':
+                            props.row.temporary.action ===
+                            'move_on_with_difference',
+                          'fas fa-angle-double-right': [
+                            'move_on',
+                            'move_on_without_difference'
+                          ].includes(props.row.temporary.action),
+                          'fas fa-trash-alt':
+                            props.row.temporary.action === 'discard'
+                        }"
                       ></i>
                     </div>
                   </div>
@@ -182,7 +238,8 @@
             @click="finishCurrentSpendingDate()"
             :disabled="!haveExpensesSettedActions"
             :loading="loadingFinishSpendingDate"
-          >fechar gastos</b-button>
+            >fechar gastos</b-button
+          >
         </footer>
       </div>
     </b-modal>
@@ -190,26 +247,31 @@
     <div class="hero is-warning spendingDateWarning">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title">{{ this.userData.displayName | capitalizeName }},</h1>
+          <h1 class="title">
+            {{ this.userData.displayName | capitalizeName }},
+          </h1>
           <h2 class="subtitle">
             você já pode fechar os gastos para
-            <b>{{ `${formatedUserLookingAtSpendingDate.month} de ${formatedUserLookingAtSpendingDate.year}` }}</b>.
+            <b>{{
+              `${formatedUserLookingAtSpendingDate.month} de ${formatedUserLookingAtSpendingDate.year}`
+            }}</b
+            >.
           </h2>
           <b-button
             type="is-light"
             @click="mayOpenModal()"
             :loading="loadingFinishSpendingDate"
-          >fechar gastos</b-button>
+            >fechar gastos</b-button
+          >
           <div v-if="showResetExpensesWarning">
             <hr />
             <p>
               <i>
-                Notamos que você não utiliza o porcool já faz alguns meses.
-                Se você já não se lembra mais do que gastou dentro deste intervalo de tempo e gostaria de fazer um reset de tudo para recomeçar
-                a fazer o seu controle financeiro do zero,
-                <a
-                  href="#"
-                >clique aqui</a> ou acesse
+                Notamos que você não utiliza o porcool já faz alguns meses. Se
+                você já não se lembra mais do que gastou dentro deste intervalo
+                de tempo e gostaria de fazer um reset de tudo para recomeçar a
+                fazer o seu controle financeiro do zero,
+                <a href="#">clique aqui</a> ou acesse
                 <b>minha conta > recomeçar do zero.</b>
               </i>
             </p>

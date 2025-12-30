@@ -1,82 +1,103 @@
-import moment from 'moment';
+import moment from "moment";
 
 // Services
-import balancesService from '../../services/balances';
+import balancesService from "../../services/balances";
 
 export default {
-    namespaced: true,
+  namespaced: true,
 
-    state: {
-        showBalance: false,
-        currentBalance: 0,
-        lastMonthBalance: 0,
-        additionalBalances: 0,
+  state: {
+    showBalance: false,
+    currentBalance: 0,
+    lastMonthBalance: 0,
+    additionalBalances: 0,
 
-        balancesList: [],
-        loadingBalancesList: false,
-        loadingBalancesListError: false,
+    balancesList: [],
+    loadingBalancesList: false,
+    loadingBalancesListError: false
+  },
+
+  mutations: {
+    TOGGLE_SHOW_BALANCE(state) {
+      state.showBalance = !state.showBalance;
     },
 
-    mutations: {
-        TOGGLE_SHOW_BALANCE(state) {
-            state.showBalance = !state.showBalance;
-        },
-
-        SET_BALANCES(state, { currentBalance, lastMonthBalance, additionalBalances }) {
-            state.currentBalance = currentBalance;
-            state.lastMonthBalance = lastMonthBalance;
-            state.additionalBalances = additionalBalances;
-        },
-        SET_CURRENT_BALANCE(state, currentBalance) {
-            state.currentBalance = currentBalance;
-        },
-
-        SET_BALANCES_LIST(state, balancesList) {
-            state.balancesList = balancesList;
-        },
-        SET_LOADING_BALANCES_LIST(state, isLoading = true) {
-            state.loadingBalancesList = isLoading;
-        },
-        SET_LOADING_BALANCES_LIST_ERROR(state, hasError = true) {
-            state.loadingBalancesListError = hasError;
-        },
+    SET_BALANCES(
+      state,
+      { currentBalance, lastMonthBalance, additionalBalances }
+    ) {
+      state.currentBalance = currentBalance;
+      state.lastMonthBalance = lastMonthBalance;
+      state.additionalBalances = additionalBalances;
+    },
+    SET_CURRENT_BALANCE(state, currentBalance) {
+      state.currentBalance = currentBalance;
     },
 
-    actions: {
-        toggleShowBalance({ commit }) {
-            commit('TOGGLE_SHOW_BALANCE');
-        },
-
-        async setBalances({ commit }, { userUid, spendingDate }) {
-            const lastMonthSpendingDate = moment(spendingDate).subtract(1, 'months').toDate();
-
-            const currentBalance = await balancesService.calculate({ userUid, spendingDate });
-            const lastMonthBalance = await balancesService.getHistoryByDate({ userUid, spendingDate: lastMonthSpendingDate });
-            const additionalBalances = await balancesService.calculateAdditionalBalancesOnly({ userUid, spendingDate });
-
-            commit('SET_BALANCES', {
-                currentBalance,
-                lastMonthBalance: lastMonthBalance.balance ? lastMonthBalance.balance : 0,
-                additionalBalances
-            });
-        },
-        async setCurrentBalance({ commit }, { userUid, spendingDate }) {
-            const remainingBalance = await balancesService.calculate({ userUid, spendingDate });
-            commit('SET_CURRENT_BALANCE', remainingBalance);
-        },
-
-        async setBalancesList({ commit }, { userUid, spendingDate }) {
-            commit('SET_LOADING_BALANCES_LIST');
-            commit('SET_LOADING_BALANCES_LIST_ERROR', false);
-
-            try {
-                const balancesList = await balancesService.getAdditionalBalances({ userUid, spendingDate });
-                commit('SET_BALANCES_LIST', balancesList);
-            } catch {
-                commit('SET_LOADING_BALANCES_LIST_ERROR');
-            } finally {
-                commit('SET_LOADING_BALANCES_LIST', false);
-            }
-        }
+    SET_BALANCES_LIST(state, balancesList) {
+      state.balancesList = balancesList;
+    },
+    SET_LOADING_BALANCES_LIST(state, isLoading = true) {
+      state.loadingBalancesList = isLoading;
+    },
+    SET_LOADING_BALANCES_LIST_ERROR(state, hasError = true) {
+      state.loadingBalancesListError = hasError;
     }
-}
+  },
+
+  actions: {
+    toggleShowBalance({ commit }) {
+      commit("TOGGLE_SHOW_BALANCE");
+    },
+
+    async setBalances({ commit }, { userUid, spendingDate }) {
+      const lastMonthSpendingDate = moment(spendingDate)
+        .subtract(1, "months")
+        .toDate();
+
+      const currentBalance = await balancesService.calculate({
+        userUid,
+        spendingDate
+      });
+      const lastMonthBalance = await balancesService.getHistoryByDate({
+        userUid,
+        spendingDate: lastMonthSpendingDate
+      });
+      const additionalBalances = await balancesService.calculateAdditionalBalancesOnly(
+        { userUid, spendingDate }
+      );
+
+      commit("SET_BALANCES", {
+        currentBalance,
+        lastMonthBalance: lastMonthBalance.balance
+          ? lastMonthBalance.balance
+          : 0,
+        additionalBalances
+      });
+    },
+    async setCurrentBalance({ commit }, { userUid, spendingDate }) {
+      const remainingBalance = await balancesService.calculate({
+        userUid,
+        spendingDate
+      });
+      commit("SET_CURRENT_BALANCE", remainingBalance);
+    },
+
+    async setBalancesList({ commit }, { userUid, spendingDate }) {
+      commit("SET_LOADING_BALANCES_LIST");
+      commit("SET_LOADING_BALANCES_LIST_ERROR", false);
+
+      try {
+        const balancesList = await balancesService.getAdditionalBalances({
+          userUid,
+          spendingDate
+        });
+        commit("SET_BALANCES_LIST", balancesList);
+      } catch {
+        commit("SET_LOADING_BALANCES_LIST_ERROR");
+      } finally {
+        commit("SET_LOADING_BALANCES_LIST", false);
+      }
+    }
+  }
+};
