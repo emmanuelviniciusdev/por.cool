@@ -5,16 +5,19 @@
         <div class="modal-card-head">
           <p class="modal-card-title">
             editando
-            <b>{{bankToEdit.nome ? bankToEdit.nome : 'insira o nome...'}}</b>
+            <b>{{ bankToEdit.nome ? bankToEdit.nome : "insira o nome..." }}</b>
           </p>
         </div>
         <section class="modal-card-body">
           <b-field
             label="nome"
-            :type="{'is-danger': hasInputErrorAndDirty('nome')}"
+            :type="{ 'is-danger': hasInputErrorAndDirty('nome') }"
             :message="{
-              'insira o nome do banco ou instituição': isInvalidInputMsg('nome', 'required'),
-              'o nome é muito grande': isInvalidInputMsg('nome', 'maxLength'),
+              'insira o nome do banco ou instituição': isInvalidInputMsg(
+                'nome',
+                'required'
+              ),
+              'o nome é muito grande': isInvalidInputMsg('nome', 'maxLength')
             }"
           >
             <b-input
@@ -30,22 +33,31 @@
             <label class="label">tipos de operações</label>
             <div class="control checkboxes-control">
               <div class="checkbox-wrapper">
-                <b-checkbox v-model="bankToEdit.cartaoCredito">cartão de crédito</b-checkbox>
+                <b-checkbox v-model="bankToEdit.cartaoCredito"
+                  >cartão de crédito</b-checkbox
+                >
               </div>
               <div class="checkbox-wrapper">
-                <b-checkbox v-model="bankToEdit.movimentacaoDinheiro">movimentação de dinheiro</b-checkbox>
+                <b-checkbox v-model="bankToEdit.movimentacaoDinheiro"
+                  >movimentação de dinheiro</b-checkbox
+                >
               </div>
               <div class="checkbox-wrapper">
-                <b-checkbox v-model="bankToEdit.investimentos">investimentos</b-checkbox>
+                <b-checkbox v-model="bankToEdit.investimentos"
+                  >investimentos</b-checkbox
+                >
               </div>
             </div>
           </div>
 
           <b-field
             label="observações (opcional)"
-            :type="{'is-danger': hasInputErrorAndDirty('observacoes')}"
+            :type="{ 'is-danger': hasInputErrorAndDirty('observacoes') }"
             :message="{
-              'as observações são muito grandes': isInvalidInputMsg('observacoes', 'maxLength'),
+              'as observações são muito grandes': isInvalidInputMsg(
+                'observacoes',
+                'maxLength'
+              )
             }"
           >
             <b-input
@@ -60,7 +72,9 @@
         </section>
         <footer class="modal-card-foot">
           <b-button @click="closeModal()">cancelar</b-button>
-          <b-button type="is-warning" @click="save()" :loading="isLoading">salvar</b-button>
+          <b-button type="is-warning" @click="save()" :loading="isLoading"
+            >salvar</b-button
+          >
         </footer>
       </div>
     </b-modal>
@@ -151,12 +165,13 @@ export default {
     },
     hasInputErrorAndDirty(input) {
       return (
-        this.$v.bankToEdit[input].$error &&
-        this.$v.bankToEdit[input].$dirty
+        this.$v.bankToEdit[input].$error && this.$v.bankToEdit[input].$dirty
       );
     },
     isInvalidInputMsg(input, role) {
-      return !this.$v.bankToEdit[input][role] && this.$v.bankToEdit[input].$error;
+      return (
+        !this.$v.bankToEdit[input][role] && this.$v.bankToEdit[input].$error
+      );
     }
   }
 };

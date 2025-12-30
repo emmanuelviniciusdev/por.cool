@@ -8,10 +8,13 @@
         <section class="modal-card-body">
           <b-field
             label="nome"
-            :type="{'is-danger': hasInputErrorAndDirty('nome')}"
+            :type="{ 'is-danger': hasInputErrorAndDirty('nome') }"
             :message="{
-              'insira o nome do banco ou instituição': isInvalidInputMsg('nome', 'required'),
-              'o nome é muito grande': isInvalidInputMsg('nome', 'maxLength'),
+              'insira o nome do banco ou instituição': isInvalidInputMsg(
+                'nome',
+                'required'
+              ),
+              'o nome é muito grande': isInvalidInputMsg('nome', 'maxLength')
             }"
           >
             <b-input
@@ -27,22 +30,31 @@
             <label class="label">tipos de operações</label>
             <div class="control checkboxes-control">
               <div class="checkbox-wrapper">
-                <b-checkbox v-model="form.cartaoCredito">cartão de crédito</b-checkbox>
+                <b-checkbox v-model="form.cartaoCredito"
+                  >cartão de crédito</b-checkbox
+                >
               </div>
               <div class="checkbox-wrapper">
-                <b-checkbox v-model="form.movimentacaoDinheiro">movimentação de dinheiro</b-checkbox>
+                <b-checkbox v-model="form.movimentacaoDinheiro"
+                  >movimentação de dinheiro</b-checkbox
+                >
               </div>
               <div class="checkbox-wrapper">
-                <b-checkbox v-model="form.investimentos">investimentos</b-checkbox>
+                <b-checkbox v-model="form.investimentos"
+                  >investimentos</b-checkbox
+                >
               </div>
             </div>
           </div>
 
           <b-field
             label="observações (opcional)"
-            :type="{'is-danger': hasInputErrorAndDirty('observacoes')}"
+            :type="{ 'is-danger': hasInputErrorAndDirty('observacoes') }"
             :message="{
-              'as observações são muito grandes': isInvalidInputMsg('observacoes', 'maxLength'),
+              'as observações são muito grandes': isInvalidInputMsg(
+                'observacoes',
+                'maxLength'
+              )
             }"
           >
             <b-input
@@ -56,13 +68,19 @@
           </b-field>
         </section>
         <footer class="modal-card-foot">
-          <b-button type="is-default" @click="onOpenModal(false)">cancelar</b-button>
-          <b-button type="is-primary" @click="addBank()" :loading="loading">adicionar</b-button>
+          <b-button type="is-default" @click="onOpenModal(false)"
+            >cancelar</b-button
+          >
+          <b-button type="is-primary" @click="addBank()" :loading="loading"
+            >adicionar</b-button
+          >
         </footer>
       </div>
     </b-modal>
 
-    <b-button type="is-success" icon-left="plus" @click="onOpenModal()">adicionar</b-button>
+    <b-button type="is-success" icon-left="plus" @click="onOpenModal()"
+      >adicionar</b-button
+    >
   </div>
 </template>
 
@@ -144,9 +162,10 @@ export default {
 
         this.onOpenModal(false);
       } catch (err) {
-        console.error('Error in addBank:', err);
+        console.error("Error in addBank:", err);
         this.$buefy.toast.open({
-          message: `Erro: ${err.message || 'ocorreu um erro ao tentar adicionar banco ou instituição'}`,
+          message: `Erro: ${err.message ||
+            "ocorreu um erro ao tentar adicionar banco ou instituição"}`,
           type: "is-danger",
           position: "is-bottom",
           duration: 5000

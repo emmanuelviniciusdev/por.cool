@@ -4,20 +4,32 @@
       <div class="column">
         <div class="introduction">
           <h1 class="title">criar uma conta</h1>
-          <p>para a alegria de alguns e tristeza de muitos, vivemos em uma sociedade capitalista.</p>
-          <p>então, você terá que desembolsar uma bagatela de R$ 10,00 por mês para utilizar o porcool.</p>
+          <p>
+            para a alegria de alguns e tristeza de muitos, vivemos em uma
+            sociedade capitalista.
+          </p>
+          <p>
+            então, você terá que desembolsar uma bagatela de R$ 10,00 por mês
+            para utilizar o porcool.
+          </p>
         </div>
         <form @submit.prevent="signUp()">
           <div class="columns">
             <div class="column">
               <b-field
                 label="nome"
-                :type="{'is-danger': hasInputErrorAndDirty('name')}"
+                :type="{ 'is-danger': hasInputErrorAndDirty('name') }"
                 :message="{
                   'insira o seu nome': isInvalidInputMsg('name', 'required'),
-                  'o nome é muito curto': isInvalidInputMsg('name', 'minLength'),
-                  'o nome é muito grande': isInvalidInputMsg('name', 'maxLength'),
-                  }"
+                  'o nome é muito curto': isInvalidInputMsg(
+                    'name',
+                    'minLength'
+                  ),
+                  'o nome é muito grande': isInvalidInputMsg(
+                    'name',
+                    'maxLength'
+                  )
+                }"
               >
                 <b-input
                   placeholder="seu nome"
@@ -29,12 +41,21 @@
 
               <b-field
                 label="sobrenome"
-                :type="{'is-danger': hasInputErrorAndDirty('lastName')}"
+                :type="{ 'is-danger': hasInputErrorAndDirty('lastName') }"
                 :message="{
-                  'insira o seu sobrenome': isInvalidInputMsg('lastName', 'required'),
-                  'o sobrenome é muito curto': isInvalidInputMsg('lastName', 'minLength'),
-                  'o sobrenome é muito grande': isInvalidInputMsg('lastName', 'maxLength'),
-                  }"
+                  'insira o seu sobrenome': isInvalidInputMsg(
+                    'lastName',
+                    'required'
+                  ),
+                  'o sobrenome é muito curto': isInvalidInputMsg(
+                    'lastName',
+                    'minLength'
+                  ),
+                  'o sobrenome é muito grande': isInvalidInputMsg(
+                    'lastName',
+                    'maxLength'
+                  )
+                }"
               >
                 <b-input
                   placeholder="seu sobrenome"
@@ -46,11 +67,14 @@
 
               <b-field
                 label="e-mail"
-                :type="{'is-danger': hasInputErrorAndDirty('email')}"
+                :type="{ 'is-danger': hasInputErrorAndDirty('email') }"
                 :message="{
                   'insira o seu e-mail': isInvalidInputMsg('email', 'required'),
-                  'insira um e-mail válido...': isInvalidInputMsg('email', 'email')
-                  }"
+                  'insira um e-mail válido...': isInvalidInputMsg(
+                    'email',
+                    'email'
+                  )
+                }"
               >
                 <b-input
                   type="email"
@@ -63,11 +87,17 @@
             <div class="column">
               <b-field
                 label="senha"
-                :type="{'is-danger': hasInputErrorAndDirty('password')}"
+                :type="{ 'is-danger': hasInputErrorAndDirty('password') }"
                 :message="{
-                  'insira uma senha segura': isInvalidInputMsg('password', 'required'),
-                  'no mínimo, sua senha deve conter 6 caracteres': isInvalidInputMsg('password', 'minLength')
-                  }"
+                  'insira uma senha segura': isInvalidInputMsg(
+                    'password',
+                    'required'
+                  ),
+                  'no mínimo, sua senha deve conter 6 caracteres': isInvalidInputMsg(
+                    'password',
+                    'minLength'
+                  )
+                }"
               >
                 <b-input
                   type="password"
@@ -79,25 +109,41 @@
 
               <b-field
                 label="confirmar senha"
-                :type="{'is-danger': hasInputErrorAndDirty('cPassword')}"
+                :type="{ 'is-danger': hasInputErrorAndDirty('cPassword') }"
                 :message="{
-                  'insira uma senha segura': isInvalidInputMsg('cPassword', 'required'),
-                  'no mínimo, sua senha deve conter 6 caracteres': isInvalidInputMsg('cPassword', 'minLength'),
-                  'as duas senhas não batem': isInvalidInputMsg('cPassword', 'sameAsPassword'),
-                  }"
+                  'insira uma senha segura': isInvalidInputMsg(
+                    'cPassword',
+                    'required'
+                  ),
+                  'no mínimo, sua senha deve conter 6 caracteres': isInvalidInputMsg(
+                    'cPassword',
+                    'minLength'
+                  ),
+                  'as duas senhas não batem': isInvalidInputMsg(
+                    'cPassword',
+                    'sameAsPassword'
+                  )
+                }"
               >
                 <b-input
                   type="password"
                   placeholder="**********"
                   v-model.trim="form.cPassword"
-                  @change.native="$v.form.cPassword.$model = $event.target.value"
+                  @change.native="
+                    $v.form.cPassword.$model = $event.target.value
+                  "
                 ></b-input>
               </b-field>
 
               <b-checkbox class="terms-checkbox" v-model="form.termsOfUse">
                 li e aceito os
-                <router-link :to="{name: 'terms-of-use'}">termos de uso</router-link> e a
-                <router-link :to="{name: 'privacy-policy'}">política de privacidade</router-link>
+                <router-link :to="{ name: 'terms-of-use' }"
+                  >termos de uso</router-link
+                >
+                e a
+                <router-link :to="{ name: 'privacy-policy' }"
+                  >política de privacidade</router-link
+                >
               </b-checkbox>
 
               <b-field>
@@ -108,7 +154,8 @@
                   :disabled="!form.termsOfUse"
                   :loading="formLoading"
                   native-type="submit"
-                >criar conta</b-button>
+                  >criar conta</b-button
+                >
               </b-field>
             </div>
           </div>
@@ -128,7 +175,7 @@ import {
 } from "vuelidate/lib/validators";
 import firebase from "firebase/app";
 import "firebase/auth";
-import moment from 'moment';
+import moment from "moment";
 import settings from "../services/settings";
 
 export default {
@@ -231,7 +278,10 @@ export default {
             name: name.toLowerCase(),
             lastName: lastName.toLowerCase(),
             email: email.toLowerCase(),
-            lookingAtSpendingDate: moment().startOf('months').startOf('day').toDate(),
+            lookingAtSpendingDate: moment()
+              .startOf("months")
+              .startOf("day")
+              .toDate(),
             pendingPayment: true
           });
 

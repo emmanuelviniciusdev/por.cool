@@ -24,23 +24,26 @@
           <money
             v-model="expense.amount"
             v-bind="{
-                decimal: ',',
-                thousands: '.',
-                prefix: 'R$',
-                precision: 2
+              decimal: ',',
+              thousands: '.',
+              prefix: 'R$',
+              precision: 2
             }"
             class="input input-amount"
           ></money>
         </b-field>
-        <b-field label="valor que já foi pago" v-if="expense.status === 'partially_paid'">
+        <b-field
+          label="valor que já foi pago"
+          v-if="expense.status === 'partially_paid'"
+        >
           <money
             :ref="'alreadyPaidAmountInput_' + expense.key"
             v-model="expense.alreadyPaidAmount"
             v-bind="{
-                decimal: ',',
-                thousands: '.',
-                prefix: 'R$',
-                precision: 2
+              decimal: ',',
+              thousands: '.',
+              prefix: 'R$',
+              precision: 2
             }"
             class="input input-amount"
           ></money>
@@ -49,7 +52,9 @@
           <div class="select">
             <select
               v-model="expense.status"
-              @change="onAlreadyPaidAmountFocus($event.target.value, expense.key)"
+              @change="
+                onAlreadyPaidAmountFocus($event.target.value, expense.key)
+              "
             >
               <option value="pending">pendente</option>
               <option value="partially_paid">parcialmente pago</option>
@@ -72,7 +77,11 @@
           style="display: inline-block !important;"
         >
           <b-field
-            :label="expense.type === 'invoice' ? 'esta fatura vai até' : 'esta poupança vai até'"
+            :label="
+              expense.type === 'invoice'
+                ? 'esta fatura vai até'
+                : 'esta poupança vai até'
+            "
           >
             <b-datepicker
               type="month"
@@ -86,7 +95,8 @@
             <b-checkbox
               class="input-checkbox"
               v-model="expense.indeterminateValidity"
-            >tempo indeterminado</b-checkbox>
+              >tempo indeterminado</b-checkbox
+            >
           </b-field>
         </div>
       </b-field>
@@ -99,7 +109,11 @@
         </b-button>
       </b-tooltip>
       <b-tooltip label="adicionar" type="is-dark">
-        <button class="button is-warning" @click="insertExpense()" :disabled="loading">
+        <button
+          class="button is-warning"
+          @click="insertExpense()"
+          :disabled="loading"
+        >
           <b-icon icon="plus" size="is-small"></b-icon>
         </button>
       </b-tooltip>
@@ -249,14 +263,14 @@ export default {
 
       await expenses.insert(expensesToInsert);
 
-      this.$store.dispatch('balances/setCurrentBalance', {
+      this.$store.dispatch("balances/setCurrentBalance", {
         userUid: this.userData.uid,
         spendingDate: this.userData.lookingAtSpendingDate
       });
 
       this.$router.push({ name: "home" });
       this.onLoading(false);
-    },
+    }
   }
 };
 </script>

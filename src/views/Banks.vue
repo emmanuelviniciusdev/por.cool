@@ -11,11 +11,20 @@
             <template v-slot:title>bancos e instituições</template>
             <template v-slot:body>
               <div class="content">
-                <h1 class="subtitle has-text-weight-normal">O que eu posso fazer por aqui?</h1>
-                <p
-                  class="is-size-5 has-text-weight-normal"
-                >Esta tela é para você gerenciar os seus bancos e instituições financeiras. Por aqui, você poderá cadastrar os bancos, corretoras e outras instituições que você utiliza, além de indicar quais tipos de operações você faz em cada uma delas (cartão de crédito, movimentação de dinheiro, investimentos).</p>
-                <p class="is-size-5 has-text-weight-normal">Você pode adicionar, editar e remover bancos e instituições a qualquer momento.</p>
+                <h1 class="subtitle has-text-weight-normal">
+                  O que eu posso fazer por aqui?
+                </h1>
+                <p class="is-size-5 has-text-weight-normal">
+                  Esta tela é para você gerenciar os seus bancos e instituições
+                  financeiras. Por aqui, você poderá cadastrar os bancos,
+                  corretoras e outras instituições que você utiliza, além de
+                  indicar quais tipos de operações você faz em cada uma delas
+                  (cartão de crédito, movimentação de dinheiro, investimentos).
+                </p>
+                <p class="is-size-5 has-text-weight-normal">
+                  Você pode adicionar, editar e remover bancos e instituições a
+                  qualquer momento.
+                </p>
               </div>
             </template>
           </Help>
