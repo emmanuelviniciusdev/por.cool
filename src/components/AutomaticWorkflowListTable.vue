@@ -47,15 +47,19 @@
           {{ props.row.description || "-" }}
         </b-table-column>
 
-        <b-table-column field="created" label="criado em">
-          {{ formatDate(props.row.created) }}
+        <b-table-column field="created" label="data de criação">
+          {{ formatDateOnly(props.row.created) }}
+        </b-table-column>
+
+        <b-table-column field="syncProcessedDate" label="data de sincronização">
+          {{ formatDateOnly(props.row.syncProcessedDate) }}
         </b-table-column>
 
         <b-table-column field="details" label="#" centered>
           <b-tooltip
             :label="
               props.row.syncStatus === 'pending'
-                ? 'aguardando processamento'
+                ? 'aguardando sincronização'
                 : 'ver detalhes'
             "
             type="is-dark"
@@ -139,14 +143,14 @@ export default {
       };
       return labels[status] || status;
     },
-    formatDate(date) {
+    formatDateOnly(date) {
       if (!date) return "-";
       if (date.seconds) {
         date = dateAndTimeHelper.transformSecondsToDate(date.seconds, {
           dontSetMidnight: true
         });
       }
-      return moment(date).format("DD/MM/YYYY HH:mm");
+      return moment(date).format("DD/MM/YYYY");
     },
     openImageModal(base64Image) {
       this.selectedImage = base64Image;
