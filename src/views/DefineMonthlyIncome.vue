@@ -1,7 +1,9 @@
 <template>
   <div class="columns">
     <div class="column">
-      <h1 class="title has-text-black">para começar, informe a sua renda fixa mensal</h1>
+      <h1 class="title has-text-black">
+        para começar, informe a sua renda fixa mensal
+      </h1>
       <money
         v-model="income"
         v-bind="{
@@ -9,15 +11,19 @@
           thousands: '.',
           prefix: 'R$',
           precision: 2
-      }"
+        }"
         @keyup.enter.native="submit()"
         v-if="!noFixedIncome"
         class="input-text-no-border"
       ></money>
       <div class="centralize">
-        <b-checkbox class="no-fixed-income" v-model="noFixedIncome">eu não tenho uma renda fixa</b-checkbox>
+        <b-checkbox class="no-fixed-income" v-model="noFixedIncome"
+          >eu não tenho uma renda fixa</b-checkbox
+        >
       </div>
-      <b-button type="is-primary" @click="submit()" :loading="loading">continuar</b-button>
+      <b-button type="is-primary" @click="submit()" :loading="loading"
+        >continuar</b-button
+      >
     </div>
   </div>
 </template>
@@ -47,7 +53,7 @@ export default {
       const users = firebase.firestore().collection("users");
 
       await users.doc(this.userData.uid).update({ monthlyIncome });
-      
+
       this.$store.dispatch("user/update", { monthlyIncome });
       this.$store.dispatch("balances/setBalances", {
         userUid: this.userData.uid,

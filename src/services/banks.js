@@ -1,7 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
 
-const banksCollection = () => firebase.firestore().collection('banks');
+const banksCollection = () => firebase.firestore().collection("banks");
 
 /**
  * Inserts a new bank/institution.
@@ -9,21 +9,28 @@ const banksCollection = () => firebase.firestore().collection('banks');
  * @param object data
  */
 const addBank = async data => {
-    try {
-        const { nome, cartaoCredito, movimentacaoDinheiro, investimentos, observacoes, userUid: user } = data;
-        await banksCollection().add({
-            nome,
-            cartaoCredito,
-            movimentacaoDinheiro,
-            investimentos,
-            observacoes,
-            user,
-            created: new Date()
-        });
-    } catch (err) {
-        console.error('Error adding bank:', err);
-        throw err;
-    }
+  try {
+    const {
+      nome,
+      cartaoCredito,
+      movimentacaoDinheiro,
+      investimentos,
+      observacoes,
+      userUid: user
+    } = data;
+    await banksCollection().add({
+      nome,
+      cartaoCredito,
+      movimentacaoDinheiro,
+      investimentos,
+      observacoes,
+      user,
+      created: new Date()
+    });
+  } catch (err) {
+    console.error("Error adding bank:", err);
+    throw err;
+  }
 };
 
 /**
@@ -32,17 +39,17 @@ const addBank = async data => {
  * @param string userUid
  */
 const getBanks = async userUid => {
-    try {
-        const banks = await banksCollection()
-            .where('user', '==', userUid)
-            .orderBy('created', 'desc')
-            .get();
+  try {
+    const banks = await banksCollection()
+      .where("user", "==", userUid)
+      .orderBy("created", "desc")
+      .get();
 
-        return banks.docs.map(bank => ({ id: bank.id, ...bank.data() }));
-    } catch (err) {
-        console.error('Error getting banks:', err);
-        throw err;
-    }
+    return banks.docs.map(bank => ({ id: bank.id, ...bank.data() }));
+  } catch (err) {
+    console.error("Error getting banks:", err);
+    throw err;
+  }
 };
 
 /**
@@ -51,19 +58,28 @@ const getBanks = async userUid => {
  * @param object data
  */
 const updateBank = async data => {
-    try {
-        const { id, nome, cartaoCredito, movimentacaoDinheiro, investimentos, observacoes } = data;
-        await banksCollection().doc(id).update({
-            nome,
-            cartaoCredito,
-            movimentacaoDinheiro,
-            investimentos,
-            observacoes,
-            updated: new Date()
-        });
-    } catch (err) {
-        throw new Error(err);
-    }
+  try {
+    const {
+      id,
+      nome,
+      cartaoCredito,
+      movimentacaoDinheiro,
+      investimentos,
+      observacoes
+    } = data;
+    await banksCollection()
+      .doc(id)
+      .update({
+        nome,
+        cartaoCredito,
+        movimentacaoDinheiro,
+        investimentos,
+        observacoes,
+        updated: new Date()
+      });
+  } catch (err) {
+    throw new Error(err);
+  }
 };
 
 /**
@@ -72,16 +88,18 @@ const updateBank = async data => {
  * @param string docId
  */
 const removeBank = async docId => {
-    try {
-        await banksCollection().doc(docId).delete();
-    } catch (err) {
-        throw new Error(err);
-    }
+  try {
+    await banksCollection()
+      .doc(docId)
+      .delete();
+  } catch (err) {
+    throw new Error(err);
+  }
 };
 
 export default {
-    addBank,
-    getBanks,
-    updateBank,
-    removeBank
-}
+  addBank,
+  getBanks,
+  updateBank,
+  removeBank
+};

@@ -9,14 +9,24 @@
       :per-page="10"
     >
       <template slot-scope="props">
-        <b-table-column field="nome" label="nome">{{props.row.nome}}</b-table-column>
-        <b-table-column field="cartaoCredito" label="cartão de crédito" centered>
+        <b-table-column field="nome" label="nome">{{
+          props.row.nome
+        }}</b-table-column>
+        <b-table-column
+          field="cartaoCredito"
+          label="cartão de crédito"
+          centered
+        >
           <b-icon
             :icon="props.row.cartaoCredito ? 'check' : 'times'"
             :type="props.row.cartaoCredito ? 'is-success' : 'is-danger'"
           ></b-icon>
         </b-table-column>
-        <b-table-column field="movimentacaoDinheiro" label="movimentação de dinheiro" centered>
+        <b-table-column
+          field="movimentacaoDinheiro"
+          label="movimentação de dinheiro"
+          centered
+        >
           <b-icon
             :icon="props.row.movimentacaoDinheiro ? 'check' : 'times'"
             :type="props.row.movimentacaoDinheiro ? 'is-success' : 'is-danger'"
@@ -29,16 +39,24 @@
           ></b-icon>
         </b-table-column>
         <b-table-column field="observacoes" label="observações">
-          <span class="observacoes-text">{{truncateText(props.row.observacoes, 15)}}</span>
+          <span class="observacoes-text">{{
+            truncateText(props.row.observacoes, 15)
+          }}</span>
         </b-table-column>
         <b-table-column field="action" label="#">
           <b-tooltip label="editar" type="is-dark" class="action-button">
-            <button class="button is-warning is-small" @click="editBank(props.row)">
+            <button
+              class="button is-warning is-small"
+              @click="editBank(props.row)"
+            >
               <b-icon icon="edit"></b-icon>
             </button>
           </b-tooltip>
           <b-tooltip label="remover" type="is-dark" class="action-button">
-            <button class="button is-danger is-small" @click="deleteBank(props.row)">
+            <button
+              class="button is-danger is-small"
+              @click="deleteBank(props.row)"
+            >
               <b-icon icon="trash"></b-icon>
             </button>
           </b-tooltip>
@@ -49,7 +67,9 @@
         <section class="section">
           <div class="content has-text-black has-text-centered">
             <div v-if="!loadingBanksListError">
-              <div class="notification">Nenhum banco ou instituição foi encontrado por aqui...</div>
+              <div class="notification">
+                Nenhum banco ou instituição foi encontrado por aqui...
+              </div>
             </div>
 
             <div class="notification is-danger" v-if="loadingBanksListError">
@@ -91,9 +111,9 @@ export default {
   },
   methods: {
     truncateText(text, maxLength) {
-      if (!text) return '-';
+      if (!text) return "-";
       if (text.length <= maxLength) return text;
-      return text.substring(0, maxLength) + '...';
+      return text.substring(0, maxLength) + "...";
     },
     editBank(bank) {
       this.$emit("edit-bank", bank);
