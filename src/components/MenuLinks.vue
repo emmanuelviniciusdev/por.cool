@@ -9,6 +9,12 @@
           :active="isActiveRoute('add-expenses')"
         ></b-menu-item>
         <b-menu-item
+          label="novo gasto (workflow automático)"
+          icon="magic"
+          @click="redirectTo('automatic-expense-workflow')"
+          :active="isActiveRoute('automatic-expense-workflow')"
+        ></b-menu-item>
+        <b-menu-item
           label="meus gastos"
           icon="dollar-sign"
           @click="redirectTo('home')"
@@ -32,7 +38,11 @@
           @click="redirectTo('my-account')"
           :active="isActiveRoute('my-account')"
         ></b-menu-item>
-        <b-menu-item label="sair" icon="sad-tear" @click="signOut()"></b-menu-item>
+        <b-menu-item
+          label="sair"
+          icon="sad-tear"
+          @click="signOut()"
+        ></b-menu-item>
       </b-menu-list>
     </b-menu>
   </div>
@@ -66,5 +76,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

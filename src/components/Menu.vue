@@ -6,7 +6,8 @@
         outlined
         class="btn-open-menu"
         @click="isMenuOpened = !isMenuOpened"
-      >menu</b-button>
+        >menu</b-button
+      >
       <MenuLinks v-if="isMenuOpened" />
     </div>
     <div class="desktop-menu">

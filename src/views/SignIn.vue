@@ -2,9 +2,10 @@
   <div class="columns is-multiline">
     <div class="column is-12 is-6-desktop">
       <div class="introduction">
-        <h1
-          class="has-text-black"
-        >fazer o controle dos seus gastos financeiros cotidianos nunca ficou tão fácil. e prático.</h1>
+        <h1 class="has-text-black">
+          fazer o controle dos seus gastos financeiros cotidianos nunca ficou
+          tão fácil. e prático.
+        </h1>
 
         <img src="../assets/images/pig1.png" alt="porcool <3" />
 
@@ -22,8 +23,11 @@
         <form @submit.prevent="signIn()">
           <b-field
             label="e-mail"
-            :type="{'is-danger': hasInputErrorAndDirty('email')}"
-            :message="{'insira o seu e-mail': isInvalidInputMsg('email', 'required'), 'insira um e-mail válido...': isInvalidInputMsg('email', 'email')}"
+            :type="{ 'is-danger': hasInputErrorAndDirty('email') }"
+            :message="{
+              'insira o seu e-mail': isInvalidInputMsg('email', 'required'),
+              'insira um e-mail válido...': isInvalidInputMsg('email', 'email')
+            }"
           >
             <b-input
               type="email"
@@ -34,16 +38,29 @@
           </b-field>
           <b-field
             label="senha"
-            :type="{'is-danger': hasInputErrorAndDirty('password')}"
-            :message="{'insira a sua senha': isInvalidInputMsg('password', 'required')}"
+            :type="{ 'is-danger': hasInputErrorAndDirty('password') }"
+            :message="{
+              'insira a sua senha': isInvalidInputMsg('password', 'required')
+            }"
           >
-            <b-input type="password" placeholder="*******" v-model.trim="$v.form.password.$model"></b-input>
+            <b-input
+              type="password"
+              placeholder="*******"
+              v-model.trim="$v.form.password.$model"
+            ></b-input>
           </b-field>
-          <b-button type="is-primary" :loading="formLoading" native-type="submit">entrar</b-button>
+          <b-button
+            type="is-primary"
+            :loading="formLoading"
+            native-type="submit"
+            >entrar</b-button
+          >
         </form>
 
-        <router-link :to="{name: 'signup'}">criar uma conta</router-link>
-        <router-link :to="{name: 'recover-password'}">recuperar minha senha</router-link>
+        <router-link :to="{ name: 'signup' }">criar uma conta</router-link>
+        <router-link :to="{ name: 'recover-password' }"
+          >recuperar minha senha</router-link
+        >
 
         <div class="social-media-signin">
           <h1 class="title has-text-black">entre com a sua rede social</h1>

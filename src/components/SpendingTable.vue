@@ -14,12 +14,12 @@
         <b-table-column
           field="expenseName"
           label="#"
-          :class="{'has-text-weight-bold': props.row.type !== 'expense'}"
-        >{{ props.row.expenseName }}</b-table-column>
-        <b-table-column
-          field="amount"
-          label="gasto"
-        >{{ props.row.amount | sumAmounts(props.row) | currency }}</b-table-column>
+          :class="{ 'has-text-weight-bold': props.row.type !== 'expense' }"
+          >{{ props.row.expenseName }}</b-table-column
+        >
+        <b-table-column field="amount" label="gasto">{{
+          props.row.amount | sumAmounts(props.row) | currency
+        }}</b-table-column>
         <b-table-column field="status" label="status">
           <b-button
             :type="status_types[props.row.status]"
@@ -32,7 +32,8 @@
               v-if="props.row.status === 'partially_paid'"
               :label="props.row.alreadyPaidAmount | currency"
               type="is-dark"
-            >{{ status_labels[props.row.status] }}</b-tooltip>
+              >{{ status_labels[props.row.status] }}</b-tooltip
+            >
             <span v-else>{{ status_labels[props.row.status] }}</span>
           </b-button>
         </b-table-column>

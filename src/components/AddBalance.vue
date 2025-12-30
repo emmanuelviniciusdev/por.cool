@@ -5,15 +5,22 @@
         <div class="modal-card-head">
           <p class="modal-card-title">
             adicionando saldo para
-            <b>{{formatedUserLookingAtSpendingDate.month + ' de ' + formatedUserLookingAtSpendingDate.year}}</b>
+            <b>{{
+              formatedUserLookingAtSpendingDate.month +
+                " de " +
+                formatedUserLookingAtSpendingDate.year
+            }}</b>
           </p>
         </div>
         <section class="modal-card-body">
           <b-field
             label="valor do saldo"
-            :type="{'is-danger': hasInputErrorAndDirty('balance')}"
+            :type="{ 'is-danger': hasInputErrorAndDirty('balance') }"
             :message="{
-              'insira o valor do saldo': isInvalidInputMsg('balance', 'required'),
+              'insira o valor do saldo': isInvalidInputMsg(
+                'balance',
+                'required'
+              )
             }"
           >
             <money
@@ -21,18 +28,21 @@
               style="width: 200px;"
               v-model.trim="$v.form.balance.$model"
               v-bind="{
-                    decimal: ',',
-                    thousands: '.',
-                    prefix: 'R$',
-                    precision: 2
-                }"
+                decimal: ',',
+                thousands: '.',
+                prefix: 'R$',
+                precision: 2
+              }"
             ></money>
           </b-field>
           <b-field
             label="descrição (opcional)"
-            :type="{'is-danger': hasInputErrorAndDirty('description')}"
+            :type="{ 'is-danger': hasInputErrorAndDirty('description') }"
             :message="{
-              'a descrição é muito grande': isInvalidInputMsg('description', 'maxLength'),
+              'a descrição é muito grande': isInvalidInputMsg(
+                'description',
+                'maxLength'
+              )
             }"
           >
             <b-input
@@ -45,13 +55,19 @@
           </b-field>
         </section>
         <footer class="modal-card-foot">
-          <b-button type="is-default" @click="openModal = false">cancelar</b-button>
-          <b-button type="is-primary" @click="addBalance()" :loading="loading">adicionar</b-button>
+          <b-button type="is-default" @click="openModal = false"
+            >cancelar</b-button
+          >
+          <b-button type="is-primary" @click="addBalance()" :loading="loading"
+            >adicionar</b-button
+          >
         </footer>
       </div>
     </b-modal>
 
-    <b-button type="is-success" icon-left="dollar-sign" @click="onOpenModal()">novo saldo</b-button>
+    <b-button type="is-success" icon-left="dollar-sign" @click="onOpenModal()"
+      >novo saldo</b-button
+    >
   </div>
 </template>
 
@@ -158,5 +174,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

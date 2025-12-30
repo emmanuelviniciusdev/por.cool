@@ -4,24 +4,37 @@
 
     <div class="column" v-if="user">
       <div class="welcome" v-if="user.isNewUser">
-        <h1 class="title has-text-black">É isso aí, {{user.displayName | capitalizeName}}! Você já está quase lá.</h1>
-        <h2 class="subtitle has-text-black">Para continuar, efetue o pagamento no valor de R$ 10,00.</h2>
+        <h1 class="title has-text-black">
+          É isso aí, {{ user.displayName | capitalizeName }}! Você já está quase
+          lá.
+        </h1>
+        <h2 class="subtitle has-text-black">
+          Para continuar, efetue o pagamento no valor de R$ 10,00.
+        </h2>
         <div class="notification is-warning">
-          <b>O pagamento deverá ser realizado a cada 30 dias, mas não existe nenhum tipo de vínculo que te prenda e te obrigue a pagar todo mês. Você só paga quando quiser utilizar.</b>
+          <b
+            >O pagamento deverá ser realizado a cada 30 dias, mas não existe
+            nenhum tipo de vínculo que te prenda e te obrigue a pagar todo mês.
+            Você só paga quando quiser utilizar.</b
+          >
         </div>
         <div class="notification is-info" v-if="!user.requestedPayment">
           Em breve, uma solicitação de pagamento via
-          <b>paypal</b> será enviada para o seu e-mail e, assim que aprovado o pagamento, a sua conta será liberada.
+          <b>paypal</b> será enviada para o seu e-mail e, assim que aprovado o
+          pagamento, a sua conta será liberada.
         </div>
       </div>
 
       <div class="levy" v-if="!user.isNewUser">
-        <h1
-          class="title has-text-black"
-        >Oh, {{user.displayName | capitalizeName}}. Os seus 30 dias de utilização se expiraram e você ainda não efetuou um novo pagamento para continuar utilizando o porcool.</h1>
-        <h2
-          class="subtitle has-text-black"
-        >Sem a ajuda do porcool, a sua vida financeira fica uma bagunça 😱!1! Não perca tempo e PAGUE agora mesmo!11!!!</h2>
+        <h1 class="title has-text-black">
+          Oh, {{ user.displayName | capitalizeName }}. Os seus 30 dias de
+          utilização se expiraram e você ainda não efetuou um novo pagamento
+          para continuar utilizando o porcool.
+        </h1>
+        <h2 class="subtitle has-text-black">
+          Sem a ajuda do porcool, a sua vida financeira fica uma bagunça 😱!1!
+          Não perca tempo e PAGUE agora mesmo!11!!!
+        </h2>
         <div class="notification is-info" v-if="!user.requestedPayment">
           Uma solicitação de pagamento via
           <b>paypal</b> será enviada em breve para o seu e-mail.
@@ -36,7 +49,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import paymentHelper from "../helpers/payment";
-import filters from '../filters';
+import filters from "../filters";
 
 export default {
   name: "Payment",

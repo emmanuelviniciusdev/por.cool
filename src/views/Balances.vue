@@ -11,11 +11,20 @@
             <template v-slot:title>meu saldos</template>
             <template v-slot:body>
               <div class="content">
-                <h1 class="subtitle has-text-weight-normal">O que eu posso fazer por aqui?</h1>
-                <p
-                  class="is-size-5 has-text-weight-normal"
-                >Esta tela é para você que não recebe uma renda fixa mensal ou fez um dinheirinho extra durante o mês. Por aqui, você poderá inserir as suas rendas clicando em "novo saldo". Cada saldo adicionado é uma quantia de dinheiro que você fez durante um determinado período do mês.</p>
-                <p class="is-size-5 has-text-weight-normal">Você também pode alterar a sua renda fixa mensal por esta tela.</p>
+                <h1 class="subtitle has-text-weight-normal">
+                  O que eu posso fazer por aqui?
+                </h1>
+                <p class="is-size-5 has-text-weight-normal">
+                  Esta tela é para você que não recebe uma renda fixa mensal ou
+                  fez um dinheirinho extra durante o mês. Por aqui, você poderá
+                  inserir as suas rendas clicando em "novo saldo". Cada saldo
+                  adicionado é uma quantia de dinheiro que você fez durante um
+                  determinado período do mês.
+                </p>
+                <p class="is-size-5 has-text-weight-normal">
+                  Você também pode alterar a sua renda fixa mensal por esta
+                  tela.
+                </p>
               </div>
             </template>
           </Help>
@@ -61,7 +70,7 @@ export default {
   data() {
     return {
       filterSpendingDate: null
-    }
+    };
   },
   computed: {
     ...mapState({

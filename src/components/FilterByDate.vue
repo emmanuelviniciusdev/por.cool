@@ -2,25 +2,33 @@
   <div>
     <div class="date-filter">
       <b-field label="ano" class="input-select">
-        <div class="select" :class="{'is-loading': spendingDatesList.length === 0}">
+        <div
+          class="select"
+          :class="{ 'is-loading': spendingDatesList.length === 0 }"
+        >
           <select @change="onDateChange('yearInput', $event.target.value)">
             <option
               v-for="spendingDate in spendingDatesList"
               :key="spendingDate.year"
               :selected="spendingDate.year == currentYear"
-            >{{spendingDate.year}}</option>
+              >{{ spendingDate.year }}</option
+            >
           </select>
         </div>
       </b-field>
       <b-field label="mês" class="input-select">
         <div v-if="spendingDatesListOnlyMonths">
-          <div class="select" :class="{'is-loading': spendingDatesList.length === 0}">
+          <div
+            class="select"
+            :class="{ 'is-loading': spendingDatesList.length === 0 }"
+          >
             <select @change="onDateChange('monthInput', $event.target.value)">
               <option
                 v-for="month in spendingDatesListOnlyMonths"
                 :key="month"
                 :selected="month === currentMonth"
-              >{{month}}</option>
+                >{{ month }}</option
+              >
             </select>
           </div>
         </div>
@@ -63,8 +71,7 @@ export default {
   },
   watch: {
     lookingAtSpendingDate() {
-      if (this.lookingAtSpendingDate !== undefined)
-        this.setCurrentDate();
+      if (this.lookingAtSpendingDate !== undefined) this.setCurrentDate();
     }
   },
   methods: {
