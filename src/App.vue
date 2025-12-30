@@ -14,7 +14,7 @@
       <div class="columns">
         <div class="column">
           <h6 class="title is-6">informações</h6>
-          <p><b>v1.1.0</b> — porcool — produção independente</p>
+          <p><b>v1.2.0</b> — porcool — produção independente</p>
           <p>
             dúvidas, ajuda? entre em contato pelo
             <br />
