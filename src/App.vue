@@ -14,7 +14,7 @@
       <div class="columns">
         <div class="column">
           <h6 class="title is-6">informações</h6>
-          <p><b>v1.2.1</b> — porcool — produção independente</p>
+          <p><b>v1.2.2</b> — porcool — produção independente</p>
           <p>
             dúvidas, ajuda? entre em contato pelo
             <br />
@@ -43,6 +43,11 @@ export default {
 
 <style lang="scss">
 .hero .hero-body {
+  // Garante que o container ocupe toda a largura para transições funcionarem
+  .container {
+    width: 100%;
+  }
+
   .app-title {
     width: auto;
     text-align: center;
