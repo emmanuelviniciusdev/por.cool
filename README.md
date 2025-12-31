@@ -141,7 +141,7 @@ sequenceDiagram
     FB-->>F: Confirmação
     F-->>U: Upload concluído
 
-    Note over IA: Processamento assíncrono via Cloud Function
+    Note over IA: Processamento assíncrono
     IA->>FB: Lê documento pendente
     IA->>IA: Extrai dados da imagem
     IA->>FB: Atualiza com dados extraídos (syncStatus: success/error)
