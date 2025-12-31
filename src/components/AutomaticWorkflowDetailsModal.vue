@@ -17,6 +17,13 @@
           </b-message>
         </div>
 
+        <div class="description-section" v-if="description">
+          <b-message type="is-info" has-icon>
+            <p><strong>Descrição</strong></p>
+            <p class="description-text">{{ description }}</p>
+          </b-message>
+        </div>
+
         <div
           class="extracted-content-section"
           v-if="parsedExtractedContent && parsedExtractedContent.length > 0"
@@ -92,6 +99,10 @@ export default {
       type: String,
       default: ""
     },
+    description: {
+      type: String,
+      default: ""
+    },
     extractedContent: {
       type: [Array, String],
       default: () => []
@@ -127,6 +138,16 @@ export default {
 <style lang="scss" scoped>
 .processing-message-section {
   margin-bottom: 20px;
+}
+
+.description-section {
+  margin-bottom: 20px;
+
+  .description-text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-top: 5px;
+  }
 }
 
 .extracted-content-section {

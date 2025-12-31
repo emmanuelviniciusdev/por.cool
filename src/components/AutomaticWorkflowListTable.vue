@@ -10,6 +10,7 @@
       :isOpen="isDetailsModalOpen"
       :processingMessage="selectedEntry.processingMessage"
       :syncStatus="selectedEntry.syncStatus"
+      :description="selectedEntry.description"
       :extractedContent="selectedEntry.extracted_expense_content_from_image"
       @close="closeDetailsModal"
     />
@@ -44,7 +45,7 @@
         </b-table-column>
 
         <b-table-column field="description" label="descrição">
-          {{ props.row.description || "-" }}
+          {{ truncateDescription(props.row.description) }}
         </b-table-column>
 
         <b-table-column field="created" label="data de criação">
@@ -142,6 +143,11 @@ export default {
         error: "falha"
       };
       return labels[status] || status;
+    },
+    truncateDescription(description, maxLength = 30) {
+      if (!description) return "-";
+      if (description.length <= maxLength) return description;
+      return description.substring(0, maxLength) + "...";
     },
     formatDateOnly(date) {
       if (!date) return "-";
