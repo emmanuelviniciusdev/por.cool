@@ -250,7 +250,7 @@ erDiagram
     USERS ||--o{ BANKS : "possui"
     USERS ||--o{ EXPENSE_AUTOMATIC_WORKFLOW : "possui"
     USERS ||--o{ PAYMENTS : "possui"
-    USERS ||--o{ PRE_SAVED_DESCRIPTIONS : "possui"
+    USERS ||--o{ EXPENSE_AUTOMATIC_WORKFLOW_PRE_SAVED_DESCRIPTIONS : "possui"
 
     USERS {
         string uid PK
@@ -324,7 +324,7 @@ erDiagram
         timestamp updated
     }
 
-    PRE_SAVED_DESCRIPTIONS {
+    EXPENSE_AUTOMATIC_WORKFLOW_PRE_SAVED_DESCRIPTIONS {
         string docId PK
         string user FK
         string description
