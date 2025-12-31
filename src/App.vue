@@ -13,13 +13,19 @@
     <footer class="hero-foot footer is-primary">
       <div class="columns">
         <div class="column">
-          <h6 class="title is-6">informações</h6>
+          <p class="title is-6"><b>v1.2.4</b> — porcool — produção independente</p>
+        </div>
+        <div class="column">
+          <p class="title is-6">fique por dentro</p>
+          <router-link :to="{ name: 'terms-of-use' }">Termos de Uso</router-link>
+          <br>
+          <router-link :to="{ name: 'privacy-policy' }">Política de Privacidade</router-link>
+        </div>
+      </div>
+      <!-- <div class="columns">
+        <div class="column">
+          <img src="@/assets/images/pig2.png" alt="pig" style="width: 100px;" />
           <p><b>v1.2.3</b> — porcool — produção independente</p>
-          <p>
-            dúvidas, ajuda? entre em contato pelo
-            <br />
-            <b>porcool@yahoo.com</b>
-          </p>
         </div>
 
         <div class="column">
@@ -30,7 +36,7 @@
             >Política de Privacidade</router-link
           >
         </div>
-      </div>
+      </div> -->
     </footer>
   </div>
 </template>
