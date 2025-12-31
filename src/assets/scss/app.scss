@@ -49,12 +49,19 @@ label {
 }
 
 // Transition between pages effect
-.slide-enter-active, .slide-leave-active {
-  transition: opacity 0.6s, transform 0.6s;
+.slide-enter-active,
+.slide-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
-.slide-enter, .slide-leave-to {
+
+.slide-enter {
   opacity: 0;
-  transform: translateX(-30%);
+  transform: translateX(20px);
+}
+
+.slide-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 
 // "Helpers"
