@@ -1,6 +1,6 @@
 <template>
-  <div class="hero">
-    <section class="hero-body">
+  <div class="hero is-fullheight">
+    <section class="hero-body is-align-items-start">
       <div class="container">
         <router-link :to="{ name: 'signin' }" class="title app-title">
           por.<span>cool</span>
@@ -10,11 +10,11 @@
         </transition>
       </div>
     </section>
-    <footer class="footer is-primary">
+    <footer class="hero-foot footer is-primary">
       <div class="columns">
         <div class="column">
           <h6 class="title is-6">informações</h6>
-          <p><b>v1.2.0</b> — porcool — produção independente</p>
+          <p><b>v1.2.1</b> — porcool — produção independente</p>
           <p>
             dúvidas, ajuda? entre em contato pelo
             <br />
