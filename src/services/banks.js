@@ -25,7 +25,8 @@ const addBank = async data => {
       investimentos,
       observacoes,
       user,
-      created: new Date()
+      created: new Date(),
+      onPremiseSyncDatetime: null
     });
   } catch (err) {
     console.error("Error adding bank:", err);
