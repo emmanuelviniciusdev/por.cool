@@ -40,7 +40,8 @@ const insert = async data => {
   try {
     const docRef = await preSavedDescriptions().add({
       ...data,
-      created: new Date()
+      created: new Date(),
+      onPremiseSyncDatetime: null
     });
     return docRef.id;
   } catch (err) {

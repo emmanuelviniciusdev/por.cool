@@ -10,6 +10,24 @@ const messages = {
     "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde"
 };
 
+const getSyncMetadata = async () => {
+  try {
+    const settingsReq = await firebase
+      .firestore()
+      .collection(`settings`)
+      .limit(1)
+      .get();
+
+    if (settingsReq.empty) return [];
+
+    const settings = settingsReq.docs[0].data();
+    return settings.syncMetadata || [];
+  } catch (err) {
+    console.error("Erro ao buscar metadados de sincronização:", err);
+    return [];
+  }
+};
+
 const checkMaintenances = async (filterBy = "") => {
   let status = {};
 
@@ -47,5 +65,6 @@ const checkMaintenances = async (filterBy = "") => {
 };
 
 export default {
-  checkMaintenances
+  checkMaintenances,
+  getSyncMetadata
 };
