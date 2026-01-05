@@ -64,6 +64,7 @@ const insert = async expensesToInsert => {
       )
         delete expense.differenceAmount;
 
+      expense.onPremiseSyncDatetime = null;
       batch.set(expenses().doc(), expense);
     });
     await batch.commit();
@@ -236,6 +237,7 @@ const _getExpensesToClone = async (
       expense.status = "pending";
       expense.created = new Date();
       expense.spendingDate = nextLookingAtSpendingDate;
+      expense.onPremiseSyncDatetime = null;
       return expense;
     };
 

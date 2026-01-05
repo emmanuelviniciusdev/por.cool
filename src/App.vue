@@ -13,7 +13,7 @@
     <footer class="hero-foot footer is-primary">
       <div class="columns">
         <div class="column">
-          <p class="title is-6"><b>v1.3.0</b> — porcool — produção independente</p>
+          <p class="title is-6"><b>v1.3.1</b> — porcool — produção independente</p>
         </div>
         <div class="column">
           <p class="title is-6">fique por dentro</p>

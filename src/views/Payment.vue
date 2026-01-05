@@ -116,7 +116,7 @@ export default {
         if (!pendingPayment && requestedPayment && paidPayment) {
           const { FieldValue } = firebase.firestore;
 
-          await payments.add({ user: user.uid, paymentDate: new Date() });
+          await payments.add({ user: user.uid, paymentDate: new Date(), onPremiseSyncDatetime: null });
           await users.doc(user.uid).update({
             pendingPayment: FieldValue.delete(),
             requestedPayment: FieldValue.delete(),
