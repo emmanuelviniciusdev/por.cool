@@ -737,8 +737,8 @@ When the expense type is `"invoice"` or `"savings"` and the `validity` field has
 flowchart TD
     Expense[Expense Document] --> CheckType{Expense Type?}
 
-    CheckType --> |type = "expense"| SimpleExpense[Create Simple Expense Record]
-    CheckType --> |type = "invoice" OR "savings"| CheckValidity{Has Validity?}
+    CheckType --> |expense| SimpleExpense[Create Simple Expense Record]
+    CheckType --> |invoice/savings| CheckValidity{Has Validity?}
 
     CheckValidity --> |No validity| SimpleExpense
     CheckValidity --> |Has validity| CheckExisting{Existing Aggregate?}
