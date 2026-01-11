@@ -254,10 +254,11 @@ type SettingsDocument struct {
 
 // SuccessfullyIngestedFirestoreDocsDocument represents ingestion tracking
 // (collection: succesfully_ingested_firestore_docs)
-// MongoDB fields: _id, createdAt, ingestedBy, map_collection_to_docs, onPremiseSyncService
+// MongoDB fields: _id, createdAt, ingestedAt, ingestedBy, map_collection_to_docs, onPremiseSyncService
 type SuccessfullyIngestedFirestoreDocsDocument struct {
 	ID                   interface{}            `bson:"_id"`
 	CreatedAt            time.Time              `bson:"createdAt"`
+	IngestedAt           *time.Time             `bson:"ingestedAt"`
 	IngestedBy           *string                `bson:"ingestedBy"`
 	MapCollectionToDocs  map[string]interface{} `bson:"map_collection_to_docs"`
 	OnPremiseSyncService string                 `bson:"onPremiseSyncService"`
@@ -729,6 +730,40 @@ func (c *Connection) GetSettingsByIDs(ctx context.Context, ids []string) ([]Sett
 	}
 
 	return settings, nil
+}
+
+// MarkIngestionDocAsProcessed updates the ingestedBy and ingestedAt fields
+// in a succesfully_ingested_firestore_docs document after processing is complete.
+func (c *Connection) MarkIngestionDocAsProcessed(ctx context.Context, docID string, serviceName string) error {
+	collection := c.Collection("succesfully_ingested_firestore_docs")
+
+	// Try to convert docID to ObjectID first, then fall back to string
+	var filter bson.M
+	objectID, err := primitive.ObjectIDFromHex(docID)
+	if err == nil {
+		filter = bson.M{"_id": objectID}
+	} else {
+		filter = bson.M{"_id": docID}
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"ingestedBy": serviceName,
+			"ingestedAt": time.Now(),
+		},
+	}
+
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return fmt.Errorf("failed to mark ingestion doc as processed: %w", err)
+	}
+
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("ingestion document not found for ID: %s", docID)
+	}
+
+	log.Printf("Marked ingestion document %s as processed by %s", docID, serviceName)
+	return nil
 }
 
 // GetExpenseAggregate fetches all expenses with the same name and validity for a specific user.

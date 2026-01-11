@@ -425,6 +425,12 @@ func (s *Service) ProcessIngestionMessage(ctx context.Context, docID string) err
 		return fmt.Errorf("failed to sync %d collection(s): %s", len(collectionErrors), strings.Join(collectionErrors, "; "))
 	}
 
+	// Mark the ingestion document as processed with ingestedBy and ingestedAt
+	if err := s.mongoDB.MarkIngestionDocAsProcessed(ctx, docID, serviceName); err != nil {
+		log.Printf("Warning: failed to mark ingestion document as processed: %v", err)
+		// Don't return error here - the ingestion was successful, this is just metadata
+	}
+
 	return nil
 }
 
