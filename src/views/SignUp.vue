@@ -282,7 +282,8 @@ export default {
               .startOf("months")
               .startOf("day")
               .toDate(),
-            pendingPayment: true
+            pendingPayment: true,
+            onPremiseSyncDatetime: null
           });
 
         this.clearForm();

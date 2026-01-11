@@ -280,6 +280,30 @@
           </p>
         </div>
 
+        <div class="notification" v-if="userData.admin">
+          <p class="is-size-5 has-text-weight-bold">Sincronizações</p>
+          <table
+            v-if="syncMetadata.length > 0"
+            class="table is-fullwidth is-striped sync-table"
+          >
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Última sincronização</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(sync, index) in syncMetadata" :key="index">
+                <td>{{ sync.name }}</td>
+                <td>{{ formatSyncDate(sync.latestSyncDatetime) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p v-else class="is-size-6 has-text-weight-normal" style="margin-top: 10px;">
+            Nenhuma sincronização realizada até o momento.
+          </p>
+        </div>
+
         <div class="notification">
           <p class="is-size-5 has-text-weight-bold">e-mail e senha</p>
           <b-button
@@ -352,6 +376,7 @@ import filters from "../filters";
 import paymentService from "../services/payment";
 import authService from "../services/auth";
 import userService from "../services/user";
+import settingsService from "../services/settings";
 
 // Helpers
 import dateAndTimeHelper from "../helpers/dateAndTime";
@@ -368,6 +393,7 @@ export default {
   data() {
     return {
       paymentRemainingDays: 0,
+      syncMetadata: [],
 
       openModalChangePassword: false,
       loadingChangePassword: false,
@@ -607,11 +633,26 @@ export default {
     },
     isInvalidInputMsg(form, input, role) {
       return !this.$v[form][input][role] && this.$v[form][input].$error;
+    },
+    formatSyncDate(date) {
+      if (!date) return "-";
+      const d = date.toDate ? date.toDate() : new Date(date);
+      return d.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
     }
   },
   async created() {
     const lastPayment = await paymentService.lastPaymentInfo(this.userData.uid);
     this.paymentRemainingDays = lastPayment.remainingDays;
+
+    if (this.userData.admin) {
+      this.syncMetadata = await settingsService.getSyncMetadata();
+    }
   }
 };
 </script>
@@ -621,6 +662,11 @@ export default {
   p:last-child {
     margin-top: 5px;
   }
+}
+
+.sync-table {
+  margin-top: 10px;
+  background: transparent;
 }
 
 @media screen and (min-width: 769px) {

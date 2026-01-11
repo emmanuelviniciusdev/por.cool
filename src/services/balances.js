@@ -99,7 +99,8 @@ const recordHistory = async ({ userUid, spendingDate }) => {
         lastMonthBalance.balance !== undefined ? lastMonthBalance.balance : 0,
       user: userUid,
       spendingDate,
-      created: new Date()
+      created: new Date(),
+      onPremiseSyncDatetime: null
     });
   } catch (err) {
     throw new Error(err);
@@ -174,7 +175,8 @@ const addAdditionalBalance = async data => {
       description,
       spendingDate,
       user,
-      created: new Date()
+      created: new Date(),
+      onPremiseSyncDatetime: null
     });
   } catch (err) {
     throw new Error(err);
