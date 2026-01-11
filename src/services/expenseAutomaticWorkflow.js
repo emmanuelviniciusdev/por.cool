@@ -55,7 +55,8 @@ const insert = async data => {
       ...data,
       created: new Date(),
       syncStatus: "pending",
-      extracted_expense_content_from_image: []
+      extracted_expense_content_from_image: [],
+      onPremiseSyncDatetime: null
     });
     return docRef.id;
   } catch (err) {
