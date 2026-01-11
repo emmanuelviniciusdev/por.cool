@@ -62,6 +62,7 @@ flowchart LR
 - **Message-Based Processing**: Processes specific documents referenced in queue messages
 - **Minimal Docker Image**: Uses multi-stage build with `scratch` base for tiny image size (~10MB)
 - **Graceful Shutdown**: Properly handles SIGINT/SIGTERM signals and message acknowledgment
+- **Centralized Logging**: Optional OpenSearch logging with 90-day retention and automatic fallback to stdout
 
 ## Message Flow
 
@@ -507,6 +508,8 @@ flowchart LR
 
 The service is configured via environment variables:
 
+### Database Configuration
+
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `MARIADB_HOST` | MariaDB hostname | `localhost` |
@@ -516,9 +519,51 @@ The service is configured via environment variables:
 | `MARIADB_DATABASE` | MariaDB database name | `porcool` |
 | `MONGODB_URI` | MongoDB connection URI | `mongodb://localhost:27017` |
 | `MONGODB_DATABASE` | MongoDB database name | `porcool` |
+
+### Message Queue Configuration
+
+| Variable | Description | Default |
+|----------|-------------|---------|
 | `RABBITMQ_URI` | RabbitMQ connection URI | `amqp://guest:guest@localhost:5672/` |
 | `RABBITMQ_QUEUE_NAME` | RabbitMQ queue name | `porcool-ingestion-non-relational-database-to-relational-database` |
 | `INGESTION_BATCH_SIZE` | Max documents per sync batch | `100` |
+
+### OpenSearch Logging Configuration
+
+The service supports centralized logging to OpenSearch with automatic fallback to stdout if OpenSearch is unavailable.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `OPENSEARCH_ENABLED` | Enable OpenSearch logging | `false` |
+| `OPENSEARCH_URL` | OpenSearch URL (e.g., `https://opensearch:9200`) | `` |
+| `OPENSEARCH_USERNAME` | OpenSearch username for authentication | `` |
+| `OPENSEARCH_PASSWORD` | OpenSearch password for authentication | `` |
+| `OPENSEARCH_INDEX_PREFIX` | Prefix for log indices | `porcool-ingestion-non-relational-database-to-relational-database` |
+| `OPENSEARCH_RETENTION_DAYS` | Log retention period in days | `90` |
+
+#### OpenSearch Logging Features
+
+- **Automatic Fallback**: If OpenSearch is not configured or unavailable, logs are written to stdout
+- **Automatic Reconnection**: The service periodically attempts to reconnect if OpenSearch becomes unavailable
+- **Index State Management**: Automatically creates ISM policies for log retention (90 days by default)
+- **Daily Indices**: Logs are stored in daily indices (e.g., `porcool-ingestion-non-relational-database-to-relational-database-2024.01.15`)
+- **Structured Logging**: All logs include timestamp, level, message, service name, and optional fields
+
+#### Log Entry Format
+
+```json
+{
+  "@timestamp": "2024-01-15T10:30:00Z",
+  "level": "INFO",
+  "message": "Processing ingestion message for document ID: doc123",
+  "service": "porcool-ingestion-non-relational-database-to-relational-database",
+  "host": "ingestion-pod-1",
+  "fields": {
+    "docID": "doc123",
+    "collections": 5
+  }
+}
+```
 
 ## Project Structure
 
@@ -547,6 +592,11 @@ ingestion/
     │   └── mongodb/
     │       ├── connection.go            # MongoDB connection and queries
     │       └── connection_test.go       # MongoDB tests
+    ├── logging/
+    │   ├── logger.go                    # Logger with fallback support
+    │   ├── logger_test.go               # Logger tests
+    │   ├── opensearch.go                # OpenSearch client
+    │   └── opensearch_test.go           # OpenSearch tests
     ├── queue/
     │   └── rabbitmq/
     │       ├── consumer.go              # RabbitMQ consumer
@@ -632,7 +682,11 @@ flowchart LR
 ```mermaid
 flowchart TD
     Start([Start]) --> LoadConfig[Load Configuration]
-    LoadConfig --> ConnectMaria[Connect to MariaDB]
+    LoadConfig --> InitLogger[Initialize Logger]
+    InitLogger --> |OpenSearch enabled| ConnectOpenSearch[Connect to OpenSearch]
+    InitLogger --> |OpenSearch disabled| UseStdout[Use stdout logging]
+    ConnectOpenSearch --> |Success or Failure| UseStdout
+    UseStdout --> ConnectMaria[Connect to MariaDB]
     ConnectMaria --> |Success| RunMigrations[Run Migrations]
     ConnectMaria --> |Failure| Exit1([Exit with Error])
     RunMigrations --> |Success| SeedDomains[Seed Domains]

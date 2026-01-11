@@ -8,10 +8,11 @@ import (
 
 // Config holds all configuration for the ingestion service
 type Config struct {
-	MariaDB   MariaDBConfig
-	MongoDB   MongoDBConfig
-	RabbitMQ  RabbitMQConfig
-	Ingestion IngestionConfig
+	MariaDB    MariaDBConfig
+	MongoDB    MongoDBConfig
+	RabbitMQ   RabbitMQConfig
+	Ingestion  IngestionConfig
+	OpenSearch OpenSearchConfig
 }
 
 // MariaDBConfig holds MariaDB connection configuration
@@ -40,6 +41,16 @@ type IngestionConfig struct {
 	BatchSize int
 }
 
+// OpenSearchConfig holds OpenSearch logging configuration
+type OpenSearchConfig struct {
+	Enabled       bool
+	URL           string
+	Username      string
+	Password      string
+	IndexPrefix   string
+	RetentionDays int
+}
+
 // Load loads configuration from environment variables
 func Load() (*Config, error) {
 	mariaPort, err := strconv.Atoi(getEnv("MARIADB_PORT", "3306"))
@@ -50,6 +61,12 @@ func Load() (*Config, error) {
 	batchSize, err := strconv.Atoi(getEnv("INGESTION_BATCH_SIZE", "100"))
 	if err != nil {
 		return nil, fmt.Errorf("invalid INGESTION_BATCH_SIZE: %w", err)
+	}
+
+	opensearchEnabled := getEnv("OPENSEARCH_ENABLED", "false") == "true"
+	opensearchRetentionDays, err := strconv.Atoi(getEnv("OPENSEARCH_RETENTION_DAYS", "90"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid OPENSEARCH_RETENTION_DAYS: %w", err)
 	}
 
 	return &Config{
@@ -70,6 +87,14 @@ func Load() (*Config, error) {
 		},
 		Ingestion: IngestionConfig{
 			BatchSize: batchSize,
+		},
+		OpenSearch: OpenSearchConfig{
+			Enabled:       opensearchEnabled,
+			URL:           getEnv("OPENSEARCH_URL", ""),
+			Username:      getEnv("OPENSEARCH_USERNAME", ""),
+			Password:      getEnv("OPENSEARCH_PASSWORD", ""),
+			IndexPrefix:   getEnv("OPENSEARCH_INDEX_PREFIX", "porcool-ingestion-non-relational-database-to-relational-database"),
+			RetentionDays: opensearchRetentionDays,
 		},
 	}, nil
 }
