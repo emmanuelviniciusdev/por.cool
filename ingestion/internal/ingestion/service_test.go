@@ -180,6 +180,16 @@ func TestFormatSpendingDate(t *testing.T) {
 			input:    "2023",
 			expected: "2023",
 		},
+		{
+			name:     "ISO format with time (validity field format)",
+			input:    "2026-03-01T03:00:00Z",
+			expected: "2026/03",
+		},
+		{
+			name:     "ISO format with date only",
+			input:    "2026-03-01",
+			expected: "2026/03",
+		},
 	}
 
 	for _, tt := range tests {

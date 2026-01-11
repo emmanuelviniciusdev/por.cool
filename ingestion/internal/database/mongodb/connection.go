@@ -3,9 +3,11 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -21,10 +23,13 @@ type Connection struct {
 
 // NewConnection creates a new MongoDB connection
 func NewConnection(cfg config.MongoDBConfig) (*Connection, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	clientOptions := options.Client().ApplyURI(cfg.URI)
+	clientOptions := options.Client().
+		ApplyURI(cfg.URI).
+		SetConnectTimeout(10 * time.Second).
+		SetServerSelectionTimeout(10 * time.Second)
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
@@ -515,15 +520,28 @@ func (c *Connection) MarkAsSynced(ctx context.Context, collectionName string, do
 func (c *Connection) GetSuccessfullyIngestedFirestoreDoc(ctx context.Context, docID string) (*SuccessfullyIngestedFirestoreDocsDocument, error) {
 	collection := c.Collection("succesfully_ingested_firestore_docs")
 
+	// Try to convert docID to ObjectID first, then fall back to string
+	var filter bson.M
+	objectID, err := primitive.ObjectIDFromHex(docID)
+	if err == nil {
+		filter = bson.M{"_id": objectID}
+		log.Printf("Querying succesfully_ingested_firestore_docs with ObjectID: %s", objectID.Hex())
+	} else {
+		filter = bson.M{"_id": docID}
+		log.Printf("Querying succesfully_ingested_firestore_docs with string ID: %s", docID)
+	}
+
 	var doc SuccessfullyIngestedFirestoreDocsDocument
-	err := collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&doc)
+	err = collection.FindOne(ctx, filter).Decode(&doc)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, nil
+			log.Printf("Document not found in succesfully_ingested_firestore_docs for ID: %s", docID)
+			return nil, fmt.Errorf("document not found for ID: %s", docID)
 		}
 		return nil, fmt.Errorf("failed to find document: %w", err)
 	}
 
+	log.Printf("Found document with %d collections in map_collection_to_docs", len(doc.MapCollectionToDocs))
 	return &doc, nil
 }
 
@@ -531,6 +549,7 @@ func (c *Connection) GetSuccessfullyIngestedFirestoreDoc(ctx context.Context, do
 func (c *Connection) GetUsersByIDs(ctx context.Context, ids []string) ([]UserDocument, error) {
 	collection := c.Collection("users")
 
+	log.Printf("Fetching %d users from MongoDB", len(ids))
 	filter := bson.M{"_id": bson.M{"$in": ids}}
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
@@ -543,6 +562,11 @@ func (c *Connection) GetUsersByIDs(ctx context.Context, ids []string) ([]UserDoc
 		return nil, fmt.Errorf("failed to decode users: %w", err)
 	}
 
+	log.Printf("Retrieved %d users from MongoDB (requested %d)", len(users), len(ids))
+	if len(users) != len(ids) {
+		log.Printf("Warning: Some user IDs were not found in MongoDB")
+	}
+
 	return users, nil
 }
 
@@ -550,6 +574,7 @@ func (c *Connection) GetUsersByIDs(ctx context.Context, ids []string) ([]UserDoc
 func (c *Connection) GetExpensesByIDs(ctx context.Context, ids []string) ([]ExpenseDocument, error) {
 	collection := c.Collection("expenses")
 
+	log.Printf("Fetching %d expenses from MongoDB", len(ids))
 	filter := bson.M{"_id": bson.M{"$in": ids}}
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
@@ -562,6 +587,11 @@ func (c *Connection) GetExpensesByIDs(ctx context.Context, ids []string) ([]Expe
 		return nil, fmt.Errorf("failed to decode expenses: %w", err)
 	}
 
+	log.Printf("Retrieved %d expenses from MongoDB (requested %d)", len(expenses), len(ids))
+	if len(expenses) != len(ids) {
+		log.Printf("Warning: Some expense IDs were not found in MongoDB")
+	}
+
 	return expenses, nil
 }
 
@@ -569,6 +599,7 @@ func (c *Connection) GetExpensesByIDs(ctx context.Context, ids []string) ([]Expe
 func (c *Connection) GetFinancialInstitutionsByIDs(ctx context.Context, ids []string) ([]FinancialInstitutionDocument, error) {
 	collection := c.Collection("banks")
 
+	log.Printf("Fetching %d financial institutions from MongoDB", len(ids))
 	filter := bson.M{"_id": bson.M{"$in": ids}}
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
@@ -580,6 +611,8 @@ func (c *Connection) GetFinancialInstitutionsByIDs(ctx context.Context, ids []st
 	if err := cursor.All(ctx, &institutions); err != nil {
 		return nil, fmt.Errorf("failed to decode financial institutions: %w", err)
 	}
+
+	log.Printf("Retrieved %d financial institutions from MongoDB (requested %d)", len(institutions), len(ids))
 
 	return institutions, nil
 }

@@ -3,6 +3,7 @@ package mariadb
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,6 +33,7 @@ func (r *UserRepository) UpsertUser(user *models.User) error {
 	if err == sql.ErrNoRows {
 		// Insert new user with a new random UUID for guid
 		newGUID := uuid.New().String()
+		log.Printf("Inserting new user into MariaDB: source_id=%s, email=%s", user.SourceID, user.Email)
 		result, err := r.conn.db.Exec(`
 			INSERT INTO user (guid, source_id, first_name, last_name, email, fl_admin, monthly_income,
 				fl_payment_requested, fl_payment_pending, fl_payment_paid, current_spending_date,
@@ -47,12 +49,14 @@ func (r *UserRepository) UpsertUser(user *models.User) error {
 		id, _ := result.LastInsertId()
 		user.ID = id
 		user.GUID = newGUID
+		log.Printf("Successfully inserted user into MariaDB: id=%d, guid=%s", user.ID, user.GUID)
 		return nil
 	} else if err != nil {
 		return fmt.Errorf("failed to check user existence: %w", err)
 	}
 
 	// Update existing user
+	log.Printf("Updating existing user in MariaDB: id=%d, source_id=%s", existingID, user.SourceID)
 	_, err = r.conn.db.Exec(`
 		UPDATE user SET first_name = ?, last_name = ?, email = ?, fl_admin = ?, monthly_income = ?,
 			fl_payment_requested = ?, fl_payment_pending = ?, fl_payment_paid = ?, current_spending_date = ?,
@@ -67,6 +71,7 @@ func (r *UserRepository) UpsertUser(user *models.User) error {
 	}
 	user.ID = existingID
 	user.GUID = existingGUID
+	log.Printf("Successfully updated user in MariaDB: id=%d, guid=%s", user.ID, user.GUID)
 	return nil
 }
 

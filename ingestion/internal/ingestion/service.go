@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/porcool/ingestion/internal/config"
 	"github.com/porcool/ingestion/internal/database/mariadb"
 	"github.com/porcool/ingestion/internal/database/mongodb"
@@ -165,9 +167,13 @@ func (s *Service) syncExpenseWithInstallments(ctx context.Context, mongoExpense 
 		return fmt.Errorf("failed to get expense aggregate: %w", err)
 	}
 
+	// Format validity to YYYY/MM for database lookup
+	// The validity from MongoDB can be in ISO format (2026-03-01T03:00:00Z) or YYYY-MM format
+	validityFormatted := formatSpendingDate(validity)
+
 	// If this aggregate has already been processed, just mark as synced and return
 	// We check by looking for an existing expense with this name, validity, and no spending_date
-	existingExpense, err := expenseRepo.GetExpenseByNameValidityUser(expenseName, validity, userID)
+	existingExpense, err := expenseRepo.GetExpenseByNameValidityUser(expenseName, validityFormatted, userID)
 	if err != nil {
 		return fmt.Errorf("failed to check existing expense: %w", err)
 	}
@@ -181,7 +187,8 @@ func (s *Service) syncExpenseWithInstallments(ctx context.Context, mongoExpense 
 	}
 
 	var validityDate sql.NullTime
-	t, err := parseSpendingDateToTime(validity)
+	// Use the formatted validity (YYYY/MM) for parsing to time.Time
+	t, err := parseSpendingDateToTime(validityFormatted)
 	if err == nil {
 		validityDate = sql.NullTime{Time: t, Valid: true}
 	}
@@ -331,10 +338,12 @@ func (s *Service) ProcessIngestionMessage(ctx context.Context, docID string) err
 	// Fetch the document from succesfully_ingested_firestore_docs collection
 	doc, err := s.mongoDB.GetSuccessfullyIngestedFirestoreDoc(ctx, docID)
 	if err != nil {
-		return err
+		log.Printf("Error fetching document from MongoDB: %v", err)
+		return fmt.Errorf("failed to fetch ingestion document: %w", err)
 	}
 	if doc == nil {
-		return nil // Document not found, nothing to process
+		log.Printf("Document not found for ID: %s - this should not happen", docID)
+		return fmt.Errorf("document not found for ID: %s", docID)
 	}
 
 	log.Printf("Found document with %d collections to process", len(doc.MapCollectionToDocs))
@@ -352,6 +361,11 @@ func (s *Service) ProcessIngestionMessage(ctx context.Context, docID string) err
 		"settings",
 	}
 
+	// Track errors for each collection
+	var collectionErrors []string
+	processedCollections := 0
+	successfulCollections := 0
+
 	// Process collections in the correct order
 	for _, collectionName := range collectionOrder {
 		docIDs, exists := doc.MapCollectionToDocs[collectionName]
@@ -365,51 +379,52 @@ func (s *Service) ProcessIngestionMessage(ctx context.Context, docID string) err
 			continue
 		}
 
+		processedCollections++
 		log.Printf("Processing %d documents from collection: %s", len(ids), collectionName)
 
+		var syncErr error
 		switch collectionName {
 		case "users":
-			if err := s.syncUsersByIDs(ctx, ids); err != nil {
-				log.Printf("Error syncing users: %v", err)
-			}
+			syncErr = s.syncUsersByIDs(ctx, ids)
 		case "expenses":
-			if err := s.syncExpensesByIDs(ctx, ids); err != nil {
-				log.Printf("Error syncing expenses: %v", err)
-			}
+			syncErr = s.syncExpensesByIDs(ctx, ids)
 		case "banks":
-			if err := s.syncFinancialInstitutionsByIDs(ctx, ids); err != nil {
-				log.Printf("Error syncing financial institutions: %v", err)
-			}
+			syncErr = s.syncFinancialInstitutionsByIDs(ctx, ids)
 		case "additional_balances":
-			if err := s.syncAdditionalBalancesByIDs(ctx, ids); err != nil {
-				log.Printf("Error syncing additional balances: %v", err)
-			}
+			syncErr = s.syncAdditionalBalancesByIDs(ctx, ids)
 		case "balance_history":
-			if err := s.syncBalanceHistoryByIDs(ctx, ids); err != nil {
-				log.Printf("Error syncing balance history: %v", err)
-			}
+			syncErr = s.syncBalanceHistoryByIDs(ctx, ids)
 		case "expense_automatic_workflow":
-			if err := s.syncExpenseAutomaticWorkflowsByIDs(ctx, ids); err != nil {
-				log.Printf("Error syncing expense automatic workflows: %v", err)
-			}
+			syncErr = s.syncExpenseAutomaticWorkflowsByIDs(ctx, ids)
 		case "expense_automatic_workflow_pre_saved_description":
-			if err := s.syncExpenseAutomaticWorkflowPreSavedDescriptionsByIDs(ctx, ids); err != nil {
-				log.Printf("Error syncing expense automatic workflow pre-saved descriptions: %v", err)
-			}
+			syncErr = s.syncExpenseAutomaticWorkflowPreSavedDescriptionsByIDs(ctx, ids)
 		case "payments":
-			if err := s.syncServicePaymentsByIDs(ctx, ids); err != nil {
-				log.Printf("Error syncing service payments: %v", err)
-			}
+			syncErr = s.syncServicePaymentsByIDs(ctx, ids)
 		case "settings":
-			if err := s.syncSettingsByIDs(ctx, ids); err != nil {
-				log.Printf("Error syncing system settings: %v", err)
-			}
+			syncErr = s.syncSettingsByIDs(ctx, ids)
 		default:
 			log.Printf("Unknown collection: %s", collectionName)
+			continue
+		}
+
+		if syncErr != nil {
+			errMsg := fmt.Sprintf("%s: %v", collectionName, syncErr)
+			log.Printf("Error syncing %s: %v", collectionName, syncErr)
+			collectionErrors = append(collectionErrors, errMsg)
+		} else {
+			successfulCollections++
+			log.Printf("Successfully synced collection: %s", collectionName)
 		}
 	}
 
-	log.Printf("Completed processing ingestion message for document ID: %s", docID)
+	log.Printf("Completed processing ingestion message for document ID: %s (processed: %d, successful: %d, failed: %d)",
+		docID, processedCollections, successfulCollections, len(collectionErrors))
+
+	// Return error if any collection failed to sync
+	if len(collectionErrors) > 0 {
+		return fmt.Errorf("failed to sync %d collection(s): %s", len(collectionErrors), strings.Join(collectionErrors, "; "))
+	}
+
 	return nil
 }
 
@@ -418,9 +433,12 @@ func (s *Service) ProcessIngestionMessage(ctx context.Context, docID string) err
 func extractDocIDs(docIDs interface{}) []string {
 	var ids []string
 
+	log.Printf("extractDocIDs: received type %T, value: %v", docIDs, docIDs)
+
 	switch v := docIDs.(type) {
 	case []interface{}:
 		for _, id := range v {
+			log.Printf("extractDocIDs: array element type %T, value: %v", id, id)
 			if strID, ok := id.(string); ok {
 				ids = append(ids, strID)
 			}
@@ -429,8 +447,19 @@ func extractDocIDs(docIDs interface{}) []string {
 		ids = v
 	case string:
 		ids = []string{v}
+	case primitive.A:
+		// MongoDB primitive.A is the BSON array type
+		for _, id := range v {
+			log.Printf("extractDocIDs: primitive.A element type %T, value: %v", id, id)
+			if strID, ok := id.(string); ok {
+				ids = append(ids, strID)
+			}
+		}
+	default:
+		log.Printf("extractDocIDs: unhandled type %T", docIDs)
 	}
 
+	log.Printf("extractDocIDs: extracted %d IDs", len(ids))
 	return ids
 }
 
