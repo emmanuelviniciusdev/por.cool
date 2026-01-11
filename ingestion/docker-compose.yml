@@ -1,0 +1,66 @@
+version: '3.8'
+
+# This docker-compose file is for local testing only.
+# In production, all services (MariaDB, MongoDB, RabbitMQ) run externally.
+
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: porcool-mariadb-test
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_secret}
+      - MYSQL_DATABASE=porcool
+      - MYSQL_USER=porcool
+      - MYSQL_PASSWORD=${MARIADB_PASSWORD:-porcool_secret}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - porcool-test-network
+
+  mongodb:
+    image: mongo:7
+    container_name: porcool-mongodb-test
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - porcool-test-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: porcool-rabbitmq-test
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-guest}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-guest}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - porcool-test-network
+
+volumes:
+  mariadb_data:
+  mongodb_data:
+  rabbitmq_data:
+
+networks:
+  porcool-test-network:
+    driver: bridge
