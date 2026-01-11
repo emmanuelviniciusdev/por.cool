@@ -83,6 +83,8 @@ func TestLoadWithDefaults(t *testing.T) {
 		"MARIADB_DATABASE", "MONGODB_URI", "MONGODB_DATABASE",
 		"RABBITMQ_URI", "RABBITMQ_QUEUE_NAME",
 		"INGESTION_BATCH_SIZE",
+		"OPENSEARCH_ENABLED", "OPENSEARCH_URL", "OPENSEARCH_USERNAME",
+		"OPENSEARCH_PASSWORD", "OPENSEARCH_INDEX_PREFIX", "OPENSEARCH_RETENTION_DAYS",
 	}
 	for _, key := range envVars {
 		os.Unsetenv(key)
@@ -108,6 +110,20 @@ func TestLoadWithDefaults(t *testing.T) {
 	}
 	if cfg.Ingestion.BatchSize != 100 {
 		t.Errorf("Ingestion.BatchSize = %d, want 100", cfg.Ingestion.BatchSize)
+	}
+
+	// Verify OpenSearch defaults
+	if cfg.OpenSearch.Enabled {
+		t.Error("OpenSearch.Enabled should be false by default")
+	}
+	if cfg.OpenSearch.URL != "" {
+		t.Errorf("OpenSearch.URL = %s, want empty", cfg.OpenSearch.URL)
+	}
+	if cfg.OpenSearch.IndexPrefix != "porcool-ingestion-non-relational-database-to-relational-database" {
+		t.Errorf("OpenSearch.IndexPrefix = %s, want porcool-ingestion-non-relational-database-to-relational-database", cfg.OpenSearch.IndexPrefix)
+	}
+	if cfg.OpenSearch.RetentionDays != 90 {
+		t.Errorf("OpenSearch.RetentionDays = %d, want 90", cfg.OpenSearch.RetentionDays)
 	}
 }
 

@@ -11,8 +11,11 @@ import (
 	"github.com/porcool/ingestion/internal/database/mariadb"
 	"github.com/porcool/ingestion/internal/database/mongodb"
 	"github.com/porcool/ingestion/internal/ingestion"
+	"github.com/porcool/ingestion/internal/logging"
 	"github.com/porcool/ingestion/internal/queue/rabbitmq"
 )
+
+const serviceName = "porcool-ingestion-non-relational-database-to-relational-database"
 
 func main() {
 	log.Println("Starting PorCool Ingestion Service (porcool-ingestion-nosql-to-sql-database)...")
@@ -22,6 +25,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
+
+	// Initialize logger with OpenSearch support
+	logger := logging.NewLogger(cfg.OpenSearch, serviceName)
+	if err := logger.Initialize(context.Background()); err != nil {
+		log.Printf("Warning: Logger initialization issue: %v", err)
+	}
+	defer logger.Close()
+
+	// Set as default logger and redirect standard log output
+	logging.SetDefaultLogger(logger)
+	logging.RedirectStdLog(logger)
 
 	// Initialize MariaDB connection
 	mariaDB, err := mariadb.NewConnection(cfg.MariaDB)
