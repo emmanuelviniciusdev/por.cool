@@ -34,6 +34,18 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 # Copy the binary
 COPY --from=builder /app/ingestion /ingestion
 
+# Environment variables with default values
+ENV MARIADB_HOST=localhost \
+    MARIADB_PORT=3306 \
+    MARIADB_USER=root \
+    MARIADB_PASSWORD="" \
+    MARIADB_DATABASE=porcool \
+    MONGODB_URI=mongodb://localhost:27017 \
+    MONGODB_DATABASE=porcool \
+    RABBITMQ_URI=amqp://guest:guest@localhost:5672/ \
+    RABBITMQ_QUEUE_NAME=porcool-ingestion-non-relational-database-to-relational-database \
+    INGESTION_BATCH_SIZE=100
+
 # Run as non-root user (using numeric UID)
 USER 65534
 
