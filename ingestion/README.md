@@ -541,6 +541,26 @@ The service supports centralized logging to OpenSearch with automatic fallback t
 | `OPENSEARCH_INDEX_PREFIX` | Prefix for log indices | `porcool-ingestion-non-relational-database-to-relational-database` |
 | `OPENSEARCH_RETENTION_DAYS` | Log retention period in days | `90` |
 
+### Firebase/Firestore Configuration
+
+The service can update the `syncMetadata` array in the Firestore `settings` collection at the end of each successful ingestion.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `FIREBASE_ENABLED` | Enable Firestore sync metadata updates | `false` |
+| `FIREBASE_SERVICE_ACCOUNT_PATH` | Path to Firebase service account JSON file | `firebase_service_account.json` |
+| `FIREBASE_SYNC_METADATA_SERVICE_NAME` | Service name for syncMetadata entry | `porcool-ingestion-non-relational-db-to-relational-db` |
+
+#### Firebase Setup
+
+1. Copy `firebase_service_account.example.json` to `firebase_service_account.json`
+2. Replace the placeholder values with your actual Firebase service account credentials
+3. Set `FIREBASE_ENABLED=true` in your environment
+
+The service will upsert an entry in the `syncMetadata` array of all documents in the Firestore `settings` collection with:
+- `name`: The configured service name
+- `latestSyncDatetime`: Current UTC timestamp in RFC3339 format
+
 #### OpenSearch Logging Features
 
 - **Automatic Fallback**: If OpenSearch is not configured or unavailable, logs are written to stdout
@@ -576,6 +596,7 @@ ingestion/
 ├── docker-compose.yml                   # Development environment
 ├── .dockerignore                        # Docker build exclusions
 ├── README.md                            # This file
+├── firebase_service_account.example.json # Firebase service account template
 └── internal/
     ├── config/
     │   ├── config.go                    # Configuration loading
@@ -592,6 +613,9 @@ ingestion/
     │   └── mongodb/
     │       ├── connection.go            # MongoDB connection and queries
     │       └── connection_test.go       # MongoDB tests
+    ├── firestore/
+    │   ├── client.go                    # Firestore client for sync metadata
+    │   └── client_test.go               # Firestore client tests
     ├── logging/
     │   ├── logger.go                    # Logger with fallback support
     │   ├── logger_test.go               # Logger tests

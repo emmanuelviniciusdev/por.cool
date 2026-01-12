@@ -15,6 +15,7 @@ import (
 	"github.com/porcool/ingestion/internal/config"
 	"github.com/porcool/ingestion/internal/database/mariadb"
 	"github.com/porcool/ingestion/internal/database/mongodb"
+	"github.com/porcool/ingestion/internal/firestore"
 	"github.com/porcool/ingestion/internal/models"
 )
 
@@ -22,18 +23,32 @@ const serviceName = "porcool-ingestion-non-relational-database-to-relational-dat
 
 // Service handles the ingestion process from MongoDB to MariaDB
 type Service struct {
-	mariaDB *mariadb.Connection
-	mongoDB *mongodb.Connection
-	cfg     *config.Config
+	mariaDB         *mariadb.Connection
+	mongoDB         *mongodb.Connection
+	cfg             *config.Config
+	firestoreClient *firestore.Client
 }
 
 // NewService creates a new ingestion service
 func NewService(mariaDB *mariadb.Connection, mongoDB *mongodb.Connection, cfg *config.Config) *Service {
-	return &Service{
+	svc := &Service{
 		mariaDB: mariaDB,
 		mongoDB: mongoDB,
 		cfg:     cfg,
 	}
+
+	// Initialize Firestore client if enabled
+	if cfg.Firebase.Enabled {
+		client, err := firestore.NewClient(cfg.Firebase.ServiceAccountPath)
+		if err != nil {
+			log.Printf("Warning: Failed to initialize Firestore client: %v", err)
+		} else {
+			svc.firestoreClient = client
+			log.Printf("Firestore client initialized for project: %s", client.GetProjectID())
+		}
+	}
+
+	return svc
 }
 
 // formatSpendingDate converts a spending date to the YYYY/MM format for MariaDB
@@ -429,6 +444,20 @@ func (s *Service) ProcessIngestionMessage(ctx context.Context, docID string) err
 	if err := s.mongoDB.MarkIngestionDocAsProcessed(ctx, docID, serviceName); err != nil {
 		log.Printf("Warning: failed to mark ingestion document as processed: %v", err)
 		// Don't return error here - the ingestion was successful, this is just metadata
+	}
+
+	// Update Firestore settings syncMetadata if enabled
+	if s.firestoreClient != nil {
+		syncServiceName := s.cfg.Firebase.SyncMetadataServiceName
+		if syncServiceName == "" {
+			syncServiceName = "porcool-ingestion-non-relational-db-to-relational-db"
+		}
+		if err := s.firestoreClient.UpdateSettingsSyncMetadata(ctx, syncServiceName); err != nil {
+			log.Printf("Warning: failed to update Firestore settings syncMetadata: %v", err)
+			// Don't return error here - the ingestion was successful, this is just metadata
+		} else {
+			log.Printf("Successfully updated Firestore settings syncMetadata for service: %s", syncServiceName)
+		}
 	}
 
 	return nil
