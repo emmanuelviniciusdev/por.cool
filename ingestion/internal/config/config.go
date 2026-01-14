@@ -13,6 +13,7 @@ type Config struct {
 	RabbitMQ   RabbitMQConfig
 	Ingestion  IngestionConfig
 	OpenSearch OpenSearchConfig
+	Firebase   FirebaseConfig
 }
 
 // MariaDBConfig holds MariaDB connection configuration
@@ -49,6 +50,13 @@ type OpenSearchConfig struct {
 	Password      string
 	IndexPrefix   string
 	RetentionDays int
+}
+
+// FirebaseConfig holds Firebase/Firestore configuration
+type FirebaseConfig struct {
+	Enabled                 bool
+	ServiceAccountPath      string
+	SyncMetadataServiceName string
 }
 
 // Load loads configuration from environment variables
@@ -95,6 +103,11 @@ func Load() (*Config, error) {
 			Password:      getEnv("OPENSEARCH_PASSWORD", ""),
 			IndexPrefix:   getEnv("OPENSEARCH_INDEX_PREFIX", "porcool-ingestion-non-relational-database-to-relational-database"),
 			RetentionDays: opensearchRetentionDays,
+		},
+		Firebase: FirebaseConfig{
+			Enabled:                 getEnv("FIREBASE_ENABLED", "false") == "true",
+			ServiceAccountPath:      getEnv("FIREBASE_SERVICE_ACCOUNT_PATH", "firebase_service_account.json"),
+			SyncMetadataServiceName: getEnv("FIREBASE_SYNC_METADATA_SERVICE_NAME", "porcool-ingestion-non-relational-db-to-relational-db"),
 		},
 	}, nil
 }
